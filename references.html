@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>References — EE 390</title>
+  <meta name="description" content="Board manual, datasheets, videos, software downloads and recommended reading for EE 390.">
+  <link rel="canonical" href="https://ee390.github.io/course_website/references.html">
+  <meta name="theme-color" content="#0b6e4f">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="EE 390">
+  <meta property="og:title" content="References — EE 390">
+  <meta property="og:description" content="Board manual, datasheets, videos, software downloads and recommended reading for EE 390.">
+  <meta property="og:url" content="https://ee390.github.io/course_website/references.html">
+  <meta property="og:image" content="https://ee390.github.io/course_website/assets/img/setup/board-annotated.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔌</text></svg>">
+  <link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="index.html"><span class="brand-mark">8051</span> EE 390</a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+      <nav class="site-nav" id="site-nav">
+        <a href="index.html">Home</a>
+        <a href="getting-started.html">Getting Started</a>
+        <a href="lab-kit.html">Lab Kit</a>
+        <a href="wiki.html">Wiki</a>
+        <a href="examples.html">Examples</a>
+        <a href="assignments.html">Assignments</a>
+        <a href="projects.html">Projects</a>
+        <a href="references.html">References</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap" id="main">
+    <header class="page-header">
+      <h1 class="page-title">References</h1>
+      <p class="page-lead">Documentation, datasheets, videos and tools for the course.</p>
+    </header>
+
+    <h2>Software</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>MIDE-51 <span class="lang-badge lang-asm">ASM</span></h3>
+        <p>Free IDE with the 8051 assembler used in the course (Windows). Also usable as the editor for C files.</p>
+        <div class="btn-row"><a class="btn btn-sm" href="http://www.opcube.com/home.html" target="_blank" rel="noopener">opcube.com ↗</a></div>
+      </div>
+      <div class="card">
+        <h3>STC-ISP v6.91K</h3>
+        <p>Programmer for STC microcontrollers. Portable — no installation needed, just run the .exe.</p>
+        <div class="btn-row">
+          <a class="btn btn-sm btn-primary" href="files/stc-isp-v6.91K.exe" download>Download .exe (5&nbsp;MB)</a>
+          <a class="btn btn-sm" href="https://www.stcmicro.com/rjxz.html" target="_blank" rel="noopener">Official ↗</a>
+        </div>
+      </div>
+      <div class="card">
+        <h3>SDCC <span class="lang-badge lang-c">C</span></h3>
+        <p>Free, open-source C compiler for the 8051, used for the C projects. Install version 4.5 with “Add to PATH”.</p>
+        <div class="btn-row">
+          <a class="btn btn-sm" href="https://sdcc.sourceforge.net/" target="_blank" rel="noopener">sdcc.sourceforge.net ↗</a>
+          <a class="btn btn-sm btn-primary" href="files/c/build.bat" download>build.bat</a>
+        </div>
+      </div>
+      <div class="card">
+        <h3>CH340 USB-serial driver</h3>
+        <p>Needed if Windows doesn't create a COM port for the board.</p>
+        <div class="btn-row"><a class="btn btn-sm" href="https://www.wch-ic.com/downloads/CH341SER_EXE.html" target="_blank" rel="noopener">wch-ic.com ↗</a></div>
+      </div>
+    </div>
+
+    <h2>Videos</h2>
+    <div class="panel">
+      <h3>Programming the STC 8051 board</h3>
+      <p class="section-note">Walkthrough of burning a program with STC-ISP.</p>
+      <video class="video" controls preload="metadata" src="files/programming-the-board.mp4">
+        <a href="files/programming-the-board.mp4">Download the video</a>
+      </video>
+    </div>
+
+    <h2 id="manual">Board manual (Chinese)</h2>
+    <div class="panel">
+      <p><strong>Puzhong 51 MCU Development Guide — A2 board</strong> (普中 51 单片机开发攻略, 313 pages). The official manual for our board. It is in Chinese and its code is in C, but the <strong>hardware design</strong> sections and schematics apply directly. Use your browser's or phone's translate feature on the PDF if needed.</p>
+      <div class="btn-row" style="margin-bottom:16px">
+        <a class="btn btn-primary" href="files/puzhong-51-a2-manual-zh.pdf" target="_blank" rel="noopener">Open PDF (22&nbsp;MB)</a>
+      </div>
+      <details>
+        <summary><strong>English chapter guide</strong> — page numbers are the manual's printed page numbers</summary>
+        <div class="table-scroll" style="margin-top:12px">
+          <table>
+            <thead><tr><th>Ch.</th><th>Topic</th><th>Page</th></tr></thead>
+            <tbody>
+              <tr><td>2</td><td>Board overview, module list, CH340 driver, programming</td><td>3</td></tr>
+              <tr><td>3</td><td>Introduction to the 8051 and the STC89Cxx chip</td><td>16</td></tr>
+              <tr><td>5</td><td>Minimum system: crystal, reset, power, download circuit</td><td>54</td></tr>
+              <tr><td>7</td><td>GPIO and LEDs</td><td>77</td></tr>
+              <tr><td>8</td><td>Buzzer</td><td>90</td></tr>
+              <tr><td>9</td><td>Multiplexed 7-segment display (74HC245, 74HC138)</td><td>96</td></tr>
+              <tr><td>10</td><td>Independent push buttons, debouncing</td><td>106</td></tr>
+              <tr><td>11</td><td>4×4 matrix keypad</td><td>112</td></tr>
+              <tr><td>12</td><td>I/O expansion with the 74HC595 shift register</td><td>120</td></tr>
+              <tr><td>13</td><td>8×8 LED matrix</td><td>126</td></tr>
+              <tr><td>14</td><td>DC motor (ULN2003)</td><td>143</td></tr>
+              <tr><td>15</td><td>Interrupt system</td><td>150</td></tr>
+              <tr><td>16</td><td>External interrupts</td><td>158</td></tr>
+              <tr><td>17</td><td>Timer interrupts</td><td>166</td></tr>
+              <tr><td>18</td><td>I²C and the AT24C02 EEPROM</td><td>178</td></tr>
+              <tr><td>19</td><td>DS18B20 temperature sensor</td><td>198</td></tr>
+              <tr><td>20</td><td>DS1302 real-time clock</td><td>215</td></tr>
+              <tr><td>21</td><td>Infrared remote</td><td>231</td></tr>
+              <tr><td>22</td><td>ADC (XPT2046)</td><td>243</td></tr>
+              <tr><td>23</td><td>DAC / PWM</td><td>259</td></tr>
+              <tr><td>24</td><td>LCD1602 character LCD</td><td>269</td></tr>
+              <tr><td>25</td><td>LCD12864 graphic LCD</td><td>284</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+    </div>
+
+    <h2>Datasheets</h2>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Part</th><th>Used for</th><th>Link</th></tr></thead>
+        <tbody>
+          <tr><td>STC89C52RC</td><td>Microcontroller (English datasheet, covers the whole STC89C5xRC family)</td><td><a href="https://www.stcmicro.com/datasheet/STC89C51RC-en.pdf" target="_blank" rel="noopener">stcmicro.com ↗</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- Add more datasheets (LCD1602, AT24C02, DS1302, DS18B20, XPT2046, 74HC595 …) as rows above. -->
+
+    <h2>C programming</h2>
+    <ul>
+      <li><a href="https://sdcc.sourceforge.net/doc/sdccman.pdf" target="_blank" rel="noopener">SDCC Compiler User Guide (PDF) ↗</a>: see the MCS-51 chapters on storage classes, interrupt service routines and memory models.</li>
+      <li><a href="wiki.html#c-intro">Wiki: C with SDCC</a> and <a href="wiki.html#c-more">C: memory, interrupts &amp; timing</a>, including a Keil C51 → SDCC translation table for code found online and in the board manual.</li>
+    </ul>
+
+    <h2>Recommended reading</h2>
+    <ul>
+      <li>M. A. Mazidi, J. G. Mazidi and R. D. McKinlay, <em>The 8051 Microcontroller and Embedded Systems: Using Assembly and C</em>, 2nd ed., Pearson.</li>
+      <li>I. S. MacKenzie and R. C.-W. Phan, <em>The 8051 Microcontroller</em>, 4th ed., Pearson.</li>
+    </ul>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <a class="brand" href="index.html"><span class="brand-mark">8051</span> EE 390</a>
+        <p>Course website for the 8051 microcontroller lab on the Puzhong 51 A2 board (STC89C52RC).</p>
+      </div>
+      <nav aria-label="Learn">
+        <h2>Learn</h2>
+        <a href="getting-started.html">Getting Started</a>
+        <a href="lab-kit.html">Lab Kit</a>
+        <a href="wiki.html">Wiki</a>
+        <a href="examples.html">Examples</a>
+      </nav>
+      <nav aria-label="Coursework">
+        <h2>Coursework</h2>
+        <a href="assignments.html">Assignments</a>
+        <a href="projects.html">Projects</a>
+      </nav>
+      <nav aria-label="Resources">
+        <h2>Resources</h2>
+        <a href="references.html">References</a>
+        <a href="https://github.com/EE390/course_website/issues">Report a site problem</a>
+      </nav>
+    </div>
+    <div class="wrap footer-legal">
+      <p>© 2026 EE 390 course staff · Code: <a href="https://github.com/EE390/course_website/blob/main/LICENSE">MIT License</a> · Written content: <a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a> · Third-party manuals and software belong to their owners · <a href="https://github.com/EE390/course_website">Source on GitHub</a></p>
+    </div>
+  </footer>
+  <script src="assets/js/site.js"></script>
+</body>
+</html>

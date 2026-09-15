@@ -1,0 +1,33 @@
+name: Report a mistake
+description: A wrong pin, broken link, unclear instruction or example that doesn't build.
+title: "[Mistake] "
+labels: ["mistake"]
+body:
+  - type: input
+    id: page
+    attributes:
+      label: Page
+      description: Paste the link to the page (or the section).
+      placeholder: https://ee390.github.io/course_website/lab-kit.html#pins
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What's wrong?
+      description: What does the page say, and what did you expect or observe on the board?
+    validations:
+      required: true
+  - type: dropdown
+    id: language
+    attributes:
+      label: Language
+      options:
+        - Not code related
+        - Assembly (MIDE-51 / ASEM-51)
+        - C (SDCC)
+  - type: textarea
+    id: details
+    attributes:
+      label: Error message or screenshot
+      description: Optional. Paste the assembler/compiler output, or drag in a screenshot.

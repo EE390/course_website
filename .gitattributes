@@ -1,0 +1,14 @@
+# Normalise text files to LF in the repository
+* text=auto
+
+# Keep example code byte-for-byte (CRLF, Windows-1252) so it assembles exactly as in MIDE-51
+*.asm -text
+# Batch files must keep CRLF or cmd.exe can misread labels
+*.bat -text
+
+*.pdf binary
+*.mp4 binary
+*.exe binary
+*.jpg binary
+*.png binary
+*.hex binary

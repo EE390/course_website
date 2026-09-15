@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions about the course, grades or deadlines
+    url: https://ee390.github.io/course_website/#info
+    about: Please contact the course staff directly. Issues are only for problems with the website.

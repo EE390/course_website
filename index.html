@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EE 390 — 8051 Microcontroller Lab</title>
+  <meta name="description" content="Course website for EE 390: announcements, lab kit setup, 8051 assembly and C examples, projects and references.">
+  <link rel="canonical" href="https://ee390.github.io/course_website/">
+  <meta name="theme-color" content="#0b6e4f">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="EE 390">
+  <meta property="og:title" content="EE 390 — 8051 Microcontroller Lab">
+  <meta property="og:description" content="Course website for EE 390: announcements, lab kit setup, 8051 assembly and C examples, projects and references.">
+  <meta property="og:url" content="https://ee390.github.io/course_website/">
+  <meta property="og:image" content="https://ee390.github.io/course_website/assets/img/setup/board-annotated.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔌</text></svg>">
+  <link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="index.html"><span class="brand-mark">8051</span> EE 390</a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+      <nav class="site-nav" id="site-nav">
+        <a href="index.html">Home</a>
+        <a href="getting-started.html">Getting Started</a>
+        <a href="lab-kit.html">Lab Kit</a>
+        <a href="wiki.html">Wiki</a>
+        <a href="examples.html">Examples</a>
+        <a href="assignments.html">Assignments</a>
+        <a href="projects.html">Projects</a>
+        <a href="references.html">References</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap" id="main">
+    <section class="hero">
+      <div>
+        <div class="eyebrow">EE 390 · 8051 Microcontroller Lab</div>
+        <h1>Program a real microcontroller, in assembly and C.</h1>
+        <p>Everything for the course in one place: board setup, how the 8051 works, example programs in assembly and C, projects and references.</p>
+        <div class="btn-row">
+          <a class="btn btn-primary" href="getting-started.html">Set up your board →</a>
+          <a class="btn" href="wiki.html">Learn how the 8051 works</a>
+        </div>
+      </div>
+      <img src="assets/img/setup/board-annotated.jpg" alt="Puzhong 51 A2 development board with the LEDs, push buttons, USB port and power button highlighted" width="580" height="504">
+    </section>
+
+    <div class="section-head">
+      <h2>Start here</h2>
+      <p>New to the board? Work through these in order.</p>
+    </div>
+    <div class="grid journey">
+      <a class="card" href="getting-started.html">
+        <span class="step" aria-hidden="true"></span>
+        <h3>Getting Started</h3>
+        <p>Install the tools (MIDE-51, SDCC, STC-ISP) and burn your first program in assembly or C.</p>
+        <span class="card-cta">Set up →</span>
+      </a>
+      <a class="card" href="lab-kit.html">
+        <span class="step" aria-hidden="true"></span>
+        <h3>Lab Kit &amp; Pin Map</h3>
+        <p>What is on the board and which pins drive the LEDs, displays, buttons and sensors.</p>
+        <span class="card-cta">See the pin map →</span>
+      </a>
+      <a class="card" href="wiki.html">
+        <span class="step" aria-hidden="true"></span>
+        <h3>8051 Wiki</h3>
+        <p>How the chip works and how to program it: memory, I/O, timers, interrupts, assembly and C.</p>
+        <span class="card-cta">Read the wiki →</span>
+      </a>
+      <a class="card" href="examples.html">
+        <span class="step" aria-hidden="true"></span>
+        <h3>Examples</h3>
+        <p>Ready-to-run programs for the board in assembly and C, from buttons and displays to I²C, SPI and IR.</p>
+        <span class="card-cta">Browse examples →</span>
+      </a>
+    </div>
+
+    <div class="home-columns">
+      <div>
+        <!--
+          ANNOUNCEMENTS
+          Add the newest announcement at the TOP of the list. Copy one <li> block and edit it.
+        -->
+        <h2 id="announcements">Announcements</h2>
+        <ul class="announcements">
+          <li>
+            <time datetime="2026-09-13">13 Sep 2026</time>
+            <strong>Course website is live</strong>
+            <p>All handouts, example code and references will be posted here. Start with <a href="getting-started.html">Getting Started</a> to install the tools and program your board for the first time.</p>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <!--
+          COURSE INFORMATION
+          Replace every "TBA" with the real details.
+        -->
+        <h2 id="info">Course information</h2>
+        <div class="table-scroll">
+          <table>
+            <tbody>
+              <tr><th scope="row">Course</th><td>EE 390</td></tr>
+              <tr><th scope="row">Instructor</th><td class="tba">TBA</td></tr>
+              <tr><th scope="row">Email</th><td class="tba">TBA</td></tr>
+              <tr><th scope="row">Office hours</th><td class="tba">TBA</td></tr>
+              <tr><th scope="row">Lab</th><td class="tba">TBA</td></tr>
+              <tr><th scope="row">Board</th><td>Puzhong 51 A2 (STC89C52RC)</td></tr>
+              <tr><th scope="row">Languages</th><td>8051 assembly (MIDE-51) and C (SDCC)</td></tr>
+              <tr><th scope="row">Programmer</th><td>STC-ISP</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <h2>Coursework &amp; resources</h2>
+    </div>
+    <div class="grid">
+      <a class="card" href="projects.html">
+        <span class="card-icon" aria-hidden="true">🐦</span>
+        <h3>Projects</h3>
+        <p>Mini projects in assembly and C with requirements, starter templates and grading. Currently: Bird Song Synthesizer (assembly and C).</p>
+        <span class="card-cta">Open projects →</span>
+      </a>
+      <a class="card" href="assignments.html">
+        <span class="card-icon" aria-hidden="true">📝</span>
+        <h3>Assignments</h3>
+        <p>Practical quizzes and their handouts.</p>
+        <span class="card-cta">Open assignments →</span>
+      </a>
+      <a class="card" href="references.html">
+        <span class="card-icon" aria-hidden="true">📚</span>
+        <h3>References</h3>
+        <p>Board manual, datasheet, video walkthrough, software downloads and recommended reading.</p>
+        <span class="card-cta">Open references →</span>
+      </a>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <a class="brand" href="index.html"><span class="brand-mark">8051</span> EE 390</a>
+        <p>Course website for the 8051 microcontroller lab on the Puzhong 51 A2 board (STC89C52RC).</p>
+      </div>
+      <nav aria-label="Learn">
+        <h2>Learn</h2>
+        <a href="getting-started.html">Getting Started</a>
+        <a href="lab-kit.html">Lab Kit</a>
+        <a href="wiki.html">Wiki</a>
+        <a href="examples.html">Examples</a>
+      </nav>
+      <nav aria-label="Coursework">
+        <h2>Coursework</h2>
+        <a href="assignments.html">Assignments</a>
+        <a href="projects.html">Projects</a>
+      </nav>
+      <nav aria-label="Resources">
+        <h2>Resources</h2>
+        <a href="references.html">References</a>
+        <a href="https://github.com/EE390/course_website/issues">Report a site problem</a>
+      </nav>
+    </div>
+    <div class="wrap footer-legal">
+      <p>© 2026 EE 390 course staff · Code: <a href="https://github.com/EE390/course_website/blob/main/LICENSE">MIT License</a> · Written content: <a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a> · Third-party manuals and software belong to their owners · <a href="https://github.com/EE390/course_website">Source on GitHub</a></p>
+    </div>
+  </footer>
+  <script src="assets/js/site.js"></script>
+</body>
+</html>

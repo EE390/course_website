@@ -1,0 +1,59 @@
+name: Site checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  links:
+    name: Internal links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check links between pages and files
+        uses: lycheeverse/lychee-action@v2
+        with:
+          # --offline checks only links inside the repo; external sites are not contacted.
+          # 404.html uses absolute /course_website/ paths that only exist on GitHub Pages.
+          args: --offline --no-progress --exclude-path 404.html './**/*.html'
+          fail: true
+
+  c-examples:
+    name: C examples compile (SDCC)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install SDCC
+        run: sudo apt-get update && sudo apt-get install -y sdcc
+      - name: Compile every C example and starter without warnings
+        run: |
+          sdcc --version
+          status=0
+          for f in examples/c/*.c files/*.c; do
+            out=$(mktemp -d)
+            log=$(sdcc -mmcs51 -o "$out/" "$f" 2>&1) || { echo "::error file=$f::build failed"; echo "$log"; status=1; continue; }
+            if echo "$log" | grep -qi "warning"; then
+              echo "::error file=$f::compiler warnings"; echo "$log"; status=1
+            else
+              echo "ok  $f"
+            fi
+          done
+          exit $status
+
+  no-solutions:
+    name: No instructor material
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Block solution and answer-key files
+        run: |
+          bad=$(git ls-files | grep -iE 'solution|answer[-_ ]?key|grading' || true)
+          if [ -n "$bad" ]; then
+            echo "::error::Instructor files must go to the private EE390/instructor repo:"; echo "$bad"; exit 1
+          fi
+          echo "clean"

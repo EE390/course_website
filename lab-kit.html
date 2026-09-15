@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab Kit &amp; Pin Map — EE 390</title>
+  <meta name="description" content="Modules on the Puzhong 51 A2 development board and the STC89C52 pins that drive each of them.">
+  <link rel="canonical" href="https://ee390.github.io/course_website/lab-kit.html">
+  <meta name="theme-color" content="#0b6e4f">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="EE 390">
+  <meta property="og:title" content="Lab Kit &amp; Pin Map — EE 390">
+  <meta property="og:description" content="Modules on the Puzhong 51 A2 development board and the STC89C52 pins that drive each of them.">
+  <meta property="og:url" content="https://ee390.github.io/course_website/lab-kit.html">
+  <meta property="og:image" content="https://ee390.github.io/course_website/assets/img/setup/board-annotated.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔌</text></svg>">
+  <link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="index.html"><span class="brand-mark">8051</span> EE 390</a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+      <nav class="site-nav" id="site-nav">
+        <a href="index.html">Home</a>
+        <a href="getting-started.html">Getting Started</a>
+        <a href="lab-kit.html">Lab Kit</a>
+        <a href="wiki.html">Wiki</a>
+        <a href="examples.html">Examples</a>
+        <a href="assignments.html">Assignments</a>
+        <a href="projects.html">Projects</a>
+        <a href="references.html">References</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap" id="main">
+    <header class="page-header">
+      <h1 class="page-title">Lab Kit &amp; Pin Map</h1>
+      <p class="page-lead">The course uses the <strong>Puzhong 51 A2</strong> development board with an <strong>STC89C52</strong> microcontroller (8051-compatible, 11.0592&nbsp;MHz crystal). Most modules are already wired to fixed pins, so you only need to know which pins to use. To learn how the chip itself works, see the <a href="wiki.html">8051 Wiki</a>.</p>
+    </header>
+
+    <h2>Microcontroller at a glance</h2>
+    <div class="table-scroll">
+      <table>
+        <tbody>
+          <tr><th scope="row">MCU</th><td>STC89C52RC — 8051 core, 8&nbsp;KB flash, 512&nbsp;B RAM, 3 timers, UART, 4 I/O ports (P0–P3)</td></tr>
+          <tr><th scope="row">Crystal</th><td>11.0592&nbsp;MHz — 1 timer count ≈ 1.085&nbsp;µs; <code>TH1 = FDH</code> gives 9600 baud</td></tr>
+          <tr><th scope="row">1&nbsp;ms delay (Timer 0, mode 1)</th><td><code>TH0 = FCH</code>, <code>TL0 = 67H</code></td></tr>
+          <tr><th scope="row">Programming</th><td>USB → CH340 serial chip → STC-ISP, cold start (power-cycle after clicking Download)</td></tr>
+          <tr><th scope="row">Select in STC-ISP</th><td><code>STC89C52RC/LE52RC</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 id="pins">Pin map</h2>
+    <p class="section-note">Taken from the course example programs and the board manual. Click a module to see an example that uses it. In C (SDCC) write pins with an underscore: <code>P2.5</code> becomes <code>P2_5</code>.</p>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>Module</th><th>Chip</th><th>Pins</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>8 LEDs (D1–D8)</td><td>—</td>
+            <td><code>P2.0</code>–<code>P2.7</code></td>
+            <td><strong>Active-low</strong>: <code>CLR P2.0</code> turns D1 on.</td>
+          </tr>
+          <tr>
+            <td><a href="examples.html#Simple_Buttons_with_Output_Loads">Push buttons K1–K4</a></td><td>—</td>
+            <td>K1 <code>P3.1</code> · K2 <code>P3.0</code> · K3 <code>P3.2</code> · K4 <code>P3.3</code></td>
+            <td>Read <strong>0 when pressed</strong>. K3/K4 are also INT0/INT1. K1/K2 share the UART pins.</td>
+          </tr>
+          <tr>
+            <td><a href="examples.html#Matrix_4x4_Keypad_with_Buzzer">4×4 matrix keypad</a></td><td>—</td>
+            <td>Rows <code>P1.7</code>–<code>P1.4</code> · Columns <code>P1.3</code>–<code>P1.0</code></td>
+            <td>Drive one row low at a time, then read the columns.</td>
+          </tr>
+          <tr>
+            <td><a href="examples.html#Simple_Seven_Segment_Display">8-digit 7-segment display</a></td><td>74HC245, 74HC138</td>
+            <td>Segments <code>P0</code> · Digit select <code>P2.2</code>–<code>P2.4</code></td>
+            <td>Common cathode (1 = segment on). Digit <em>n</em> → <code>P2 = n × 4</code>. Multiplex ~1&nbsp;ms per digit.</td>
+          </tr>
+          <tr>
+            <td><a href="examples.html#LCD_Welcom">LCD1602 character LCD</a></td><td>—</td>
+            <td>Data <code>P0</code> · RS <code>P2.6</code> · R/W <code>P2.5</code> · E <code>P2.7</code></td>
+            <td>Shares P0 with the 7-segment display. Adjust contrast with the potentiometer.</td>
+          </tr>
+          <tr>
+            <td><a href="examples.html#Matrix_4x4_Keypad_with_Buzzer">Passive buzzer</a></td><td>PNP transistor</td>
+            <td><code>P2.5</code></td>
+            <td>Toggle the pin at an audio frequency to make a tone. Shares the pin with LCD R/W and LED D6, which glows while a tone plays.</td>
+          </tr>
+          <tr>
+            <td><a href="examples.html#LED_8x8_Matrix">8×8 LED matrix</a></td><td>74HC595</td>
+            <td>Columns <code>P0</code> (active-low) · Rows via 595: SER <code>P3.4</code>, RCLK <code>P3.5</code>, SRCLK <code>P3.6</code></td>
+            <td>Rows are shifted in serially, then latched with RCLK.</td>
+          </tr>
+          <tr>
+            <td><a href="examples.html#EEPROM_to_LCD">EEPROM (I²C)</a></td><td>AT24C02</td>
+            <td>SDA <code>P2.0</code> · SCL <code>P2.1</code></td>
+            <td>256 bytes, keeps data without power. Shares pins with LEDs D1/D2.</td>
+          </tr>
+          <tr>
+            <td><a href="examples.html#DS1302_Date_Time_to_LCD">Real-time clock</a></td><td>DS1302</td>
+            <td>I/O <code>P3.4</code> · CE <code>P3.5</code> · SCLK <code>P3.6</code></td>
+            <td>32.768&nbsp;kHz crystal. Values are in BCD.</td>
+          </tr>
+          <tr>
+            <td><a href="examples.html#ADC_Read_to_LCD">12-bit ADC (SPI)</a></td><td>XPT2046</td>
+            <td>DIN <code>P3.4</code> · CS <code>P3.5</code> · DCLK <code>P3.6</code> · DOUT <code>P3.7</code></td>
+            <td>Inputs: AIN0 potentiometer, AIN1 thermistor (NTC), AIN2 light sensor, AIN3 external (J52).</td>
+          </tr>
+          <tr>
+            <td><a href="examples.html#Temperature_Sensor_7_Segment_Display_DS18B20">Temperature sensor (1-Wire)</a></td><td>DS18B20</td>
+            <td>DQ <code>P3.7</code></td>
+            <td>Plug the sensor into its socket with the flat side matching the board marking.</td>
+          </tr>
+          <tr>
+            <td><a href="examples.html#IR_to_7_Segment_Display">IR receiver</a></td><td>IR receiver module</td>
+            <td><code>P3.2</code> (INT0)</td>
+            <td>NEC remote protocol; decode on the falling-edge interrupt. Shares the pin with K3.</td>
+          </tr>
+          <tr>
+            <td><a href="examples.html#Serial_Communication">USB serial (UART)</a></td><td>CH340</td>
+            <td>RXD <code>P3.0</code> · TXD <code>P3.1</code></td>
+            <td>Same link used for programming. 9600 8N1 with <code>TMOD = 20H</code>, <code>TH1 = FDH</code>, <code>SCON = 50H</code>.</td>
+          </tr>
+          <tr>
+            <td>Motor driver</td><td>ULN2003</td>
+            <td>Inputs <code>P1.0</code>–<code>P1.5</code> · Outputs on terminal J47</td>
+            <td>Drives the DC motor (one direction) or a 5-wire stepper. Input high → output sinks current.</td>
+          </tr>
+          <tr>
+            <td>DAC / PWM output</td><td>LM358</td>
+            <td><code>P2.1</code></td>
+            <td>Filtered PWM for an analog output. Shares the pin with EEPROM SCL.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <p><strong>Shared pins.</strong> Several modules use the same pins (P0, P2.0/P2.1, P2.5, P3.0–P3.7). Only use one module on a shared pin at a time, or your outputs will interfere — for example, writing to the LCD also changes the 7-segment display.</p>
+    </div>
+    <div class="callout">
+      <p><strong>Heads-up:</strong> the Mini Project 1 handout labels K1/K2 as P3.0/P3.1, while the example code and board manual use K1 = <code>P3.1</code>, K2 = <code>P3.0</code>. If a button doesn't respond, try the other pin. The board manual lists the buzzer on P1.5, but it was confirmed on this board to be on <code>P2.5</code>.</p>
+    </div>
+
+    <h2>Board layout</h2>
+    <figure class="panel" style="margin:0; max-width:640px">
+      <img src="assets/img/setup/board-annotated.jpg" alt="Development board with the P2 header, LEDs on P2, power button, USB input and push buttons highlighted" width="580" height="504" loading="lazy">
+      <figcaption>USB and power on the left, LEDs and matrix keypad on the right, 7-segment displays along the top.</figcaption>
+    </figure>
+    <p>For schematics and a description of every module, see chapter 2 and the “hardware design” section of each chapter in the <a href="references.html#manual">board manual</a>.</p>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <a class="brand" href="index.html"><span class="brand-mark">8051</span> EE 390</a>
+        <p>Course website for the 8051 microcontroller lab on the Puzhong 51 A2 board (STC89C52RC).</p>
+      </div>
+      <nav aria-label="Learn">
+        <h2>Learn</h2>
+        <a href="getting-started.html">Getting Started</a>
+        <a href="lab-kit.html">Lab Kit</a>
+        <a href="wiki.html">Wiki</a>
+        <a href="examples.html">Examples</a>
+      </nav>
+      <nav aria-label="Coursework">
+        <h2>Coursework</h2>
+        <a href="assignments.html">Assignments</a>
+        <a href="projects.html">Projects</a>
+      </nav>
+      <nav aria-label="Resources">
+        <h2>Resources</h2>
+        <a href="references.html">References</a>
+        <a href="https://github.com/EE390/course_website/issues">Report a site problem</a>
+      </nav>
+    </div>
+    <div class="wrap footer-legal">
+      <p>© 2026 EE 390 course staff · Code: <a href="https://github.com/EE390/course_website/blob/main/LICENSE">MIT License</a> · Written content: <a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a> · Third-party manuals and software belong to their owners · <a href="https://github.com/EE390/course_website">Source on GitHub</a></p>
+    </div>
+  </footer>
+  <script src="assets/js/site.js"></script>
+</body>
+</html>

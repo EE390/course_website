@@ -1,0 +1,1208 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>8051 Wiki — EE 390</title>
+  <meta name="description" content="How the STC89C52RC 8051 microcontroller works and how to program it in assembly and C (SDCC): pinout, minimum circuit, memory, I/O, timers, interrupts, serial and programming.">
+  <link rel="canonical" href="https://ee390.github.io/course_website/wiki.html">
+  <meta name="theme-color" content="#0b6e4f">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="EE 390">
+  <meta property="og:title" content="8051 Wiki — EE 390">
+  <meta property="og:description" content="How the STC89C52RC 8051 microcontroller works and how to program it in assembly and C (SDCC): pinout, minimum circuit, memory, I/O, timers, interrupts, serial and programming.">
+  <meta property="og:url" content="https://ee390.github.io/course_website/wiki.html">
+  <meta property="og:image" content="https://ee390.github.io/course_website/assets/img/setup/board-annotated.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+  <link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="index.html"><span class="brand-mark">8051</span> EE 390</a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+      <nav class="site-nav" id="site-nav">
+        <a href="index.html">Home</a>
+        <a href="getting-started.html">Getting Started</a>
+        <a href="lab-kit.html">Lab Kit</a>
+        <a href="wiki.html">Wiki</a>
+        <a href="examples.html">Examples</a>
+        <a href="assignments.html">Assignments</a>
+        <a href="projects.html">Projects</a>
+        <a href="references.html">References</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap" id="main">
+    <header class="page-header">
+      <h1 class="page-title">8051 Wiki</h1>
+      <p class="page-lead">How the microcontroller on your board works and how to program it in <strong>assembly</strong> and <strong>C</strong>: the chip and its minimum circuit, memory, the assembly language, I/O, timers, interrupts, serial communication, C with SDCC, and programming the chip. The chip is the <strong>STC89C52RC</strong>, a modern 8051-compatible part.</p>
+    </header>
+
+    <div class="wiki-layout">
+      <nav class="wiki-toc" aria-label="On this page">
+        <div class="toc-title">On this page</div>
+        <ol>
+          <li class="toc-group">The chip</li>
+          <li><a href="#overview">At a glance</a></li>
+          <li><a href="#inside">Inside the chip</a></li>
+          <li><a href="#pinout">Pinout</a></li>
+          <li><a href="#minimum-circuit">Minimum circuit</a></li>
+          <li><a href="#clock">Clock &amp; timing</a></li>
+          <li><a href="#reset">Reset &amp; start-up</a></li>
+          <li><a href="#memory">Memory</a></li>
+          <li class="toc-group">Assembly</li>
+          <li><a href="#assembly">Assembly essentials</a></li>
+          <li><a href="#flags">Flags &amp; arithmetic</a></li>
+          <li><a href="#stack">Stack &amp; subroutines</a></li>
+          <li class="toc-group">Peripherals</li>
+          <li><a href="#io">I/O ports</a></li>
+          <li><a href="#timers">Timers</a></li>
+          <li><a href="#interrupts">Interrupts</a></li>
+          <li><a href="#communication">Communication</a></li>
+          <li class="toc-group">C</li>
+          <li><a href="#c-intro">C with SDCC</a></li>
+          <li><a href="#c-more">Memory, interrupts &amp; timing</a></li>
+          <li class="toc-group">Tools &amp; reference</li>
+          <li><a href="#programming">Programming the chip</a></li>
+          <li><a href="#mistakes">Common mistakes</a></li>
+          <li><a href="#sfr">SFR reference</a></li>
+        </ol>
+      </nav>
+
+      <div class="wiki-content">
+
+        <!-- ========================================================== -->
+        <section id="overview">
+          <h2>At a glance</h2>
+          <p>A <strong>microcontroller</strong> is a whole small computer on one chip: a CPU, memory for the program (flash), memory for data (RAM), and peripherals such as timers, a serial port and I/O pins. The <strong>8051</strong> architecture was introduced by Intel in 1980 and is still made today by many companies. STC's STC89C52RC runs the same instruction set, so everything you learn about the 8051 applies to it.</p>
+          <div class="table-scroll">
+            <table>
+              <tbody>
+                <tr><th scope="row">CPU</th><td>8-bit 8051 core, standard 8051 instruction set</td></tr>
+                <tr><th scope="row">Program memory</th><td>8&nbsp;KB flash (<code>0000H</code>–<code>1FFFH</code>), rewritable over the serial port (ISP)</td></tr>
+                <tr><th scope="row">Data memory</th><td>512&nbsp;B RAM: 256&nbsp;B standard internal RAM + 256&nbsp;B auxiliary RAM</td></tr>
+                <tr><th scope="row">Non-volatile data</th><td>Internal EEPROM area written through IAP: 6&nbsp;KB as reported by the course board's chip (some datasheet tables list 4&nbsp;KB). The board also has a separate AT24C02 chip.</td></tr>
+                <tr><th scope="row">Peripherals</th><td>3 × 16-bit timer/counters (T0, T1, T2), 1 × UART, watchdog timer</td></tr>
+                <tr><th scope="row">Interrupts</th><td>8 sources, 4 priority levels (6 usable on the 40-pin package)</td></tr>
+                <tr><th scope="row">I/O</th><td>32 pins in four 8-bit ports P0–P3 (40-pin DIP package)</td></tr>
+                <tr><th scope="row">Supply</th><td>3.3–5.5&nbsp;V (the board uses 5&nbsp;V from USB)</td></tr>
+                <tr><th scope="row">Clock</th><td>External crystal, up to 48&nbsp;MHz in 12T mode. The board uses <strong>11.0592&nbsp;MHz</strong></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ========================================================== -->
+        <section id="inside">
+          <h2>Inside the chip</h2>
+          <p>Every block sits on a shared internal <strong>bus</strong>. The CPU fetches an instruction from flash, decodes it, and reads or writes RAM or a peripheral. Peripherals are controlled through <strong>special function registers (SFRs)</strong>: memory addresses that are really control knobs. Writing <code>TMOD</code> configures the timers, and writing <code>P2</code> sets the pins of port 2.</p>
+          <figure class="diagram">
+            <svg viewBox="0 0 720 290" role="img" aria-labelledby="blk-title">
+              <title id="blk-title">Block diagram: oscillator, CPU, flash and RAM above an internal bus; timers, interrupts, UART, I/O ports and watchdog below it</title>
+              <rect class="dg-soft" x="40" y="136" width="640" height="24" rx="4"/>
+              <text class="dg-accent-text" x="360" y="152" text-anchor="middle">internal bus (address · data · control)</text>
+              <g>
+                <rect class="dg-box" x="40" y="30" width="130" height="76" rx="6"/>
+                <text class="dg-strong" x="105" y="60" text-anchor="middle">Oscillator</text>
+                <text class="dg-small" x="105" y="78" text-anchor="middle">XTAL1 / XTAL2</text>
+                <text class="dg-small" x="105" y="93" text-anchor="middle">clock for everything</text>
+                <rect class="dg-box" x="210" y="30" width="130" height="76" rx="6"/>
+                <text class="dg-strong" x="275" y="60" text-anchor="middle">CPU</text>
+                <text class="dg-small" x="275" y="78" text-anchor="middle">ALU, A, B, PSW</text>
+                <text class="dg-small" x="275" y="93" text-anchor="middle">PC, SP, DPTR</text>
+                <rect class="dg-box" x="380" y="30" width="130" height="76" rx="6"/>
+                <text class="dg-strong" x="445" y="60" text-anchor="middle">Flash 8 KB</text>
+                <text class="dg-small" x="445" y="78" text-anchor="middle">your program</text>
+                <text class="dg-small" x="445" y="93" text-anchor="middle">+ ISP boot code</text>
+                <rect class="dg-box" x="550" y="30" width="130" height="76" rx="6"/>
+                <text class="dg-strong" x="615" y="60" text-anchor="middle">RAM 512 B</text>
+                <text class="dg-small" x="615" y="78" text-anchor="middle">registers, stack,</text>
+                <text class="dg-small" x="615" y="93" text-anchor="middle">variables, SFRs</text>
+                <path class="dg-wire" d="M105 106V136M275 106V136M445 106V136M615 106V136"/>
+                <path class="dg-thin" d="M170 68H210"/>
+              </g>
+              <g>
+                <rect class="dg-box" x="40" y="190" width="116" height="76" rx="6"/>
+                <text class="dg-strong" x="98" y="220" text-anchor="middle">Timers</text>
+                <text class="dg-small" x="98" y="238" text-anchor="middle">T0 · T1 · T2</text>
+                <text class="dg-small" x="98" y="253" text-anchor="middle">TMOD, TCON</text>
+                <rect class="dg-box" x="171" y="190" width="116" height="76" rx="6"/>
+                <text class="dg-strong" x="229" y="220" text-anchor="middle">Interrupts</text>
+                <text class="dg-small" x="229" y="238" text-anchor="middle">8 sources</text>
+                <text class="dg-small" x="229" y="253" text-anchor="middle">IE, IP</text>
+                <rect class="dg-box" x="302" y="190" width="116" height="76" rx="6"/>
+                <text class="dg-strong" x="360" y="220" text-anchor="middle">UART</text>
+                <text class="dg-small" x="360" y="238" text-anchor="middle">RXD P3.0 · TXD P3.1</text>
+                <text class="dg-small" x="360" y="253" text-anchor="middle">SCON, SBUF</text>
+                <rect class="dg-box" x="433" y="190" width="116" height="76" rx="6"/>
+                <text class="dg-strong" x="491" y="220" text-anchor="middle">I/O ports</text>
+                <text class="dg-small" x="491" y="238" text-anchor="middle">P0 · P1 · P2 · P3</text>
+                <text class="dg-small" x="491" y="253" text-anchor="middle">32 pins</text>
+                <rect class="dg-box" x="564" y="190" width="116" height="76" rx="6"/>
+                <text class="dg-strong" x="622" y="220" text-anchor="middle">Watchdog</text>
+                <text class="dg-small" x="622" y="238" text-anchor="middle">+ EEPROM (IAP)</text>
+                <text class="dg-small" x="622" y="253" text-anchor="middle">WDT_CONTR, ISP_*</text>
+                <path class="dg-wire" d="M98 160V190M229 160V190M360 160V190M491 160V190M622 160V190"/>
+              </g>
+            </svg>
+            <figcaption>The 8051 is a <strong>Harvard</strong> architecture: program memory (flash) and data memory (RAM) are separate address spaces, each starting at 0000H.</figcaption>
+          </figure>
+          <h3>The CPU registers you use most</h3>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Register</th><th>Size</th><th>What it's for</th></tr></thead>
+              <tbody>
+                <tr><td><code>A</code> (ACC)</td><td>8-bit</td><td>Accumulator: the result of most arithmetic and logic goes here.</td></tr>
+                <tr><td><code>B</code></td><td>8-bit</td><td>Used by <code>MUL AB</code> and <code>DIV AB</code>; otherwise a spare register.</td></tr>
+                <tr><td><code>R0</code>–<code>R7</code></td><td>8-bit</td><td>General-purpose working registers (a "register bank" in RAM). <code>R0</code>/<code>R1</code> can also be used as pointers (<code>@R0</code>).</td></tr>
+                <tr><td><code>PSW</code></td><td>8-bit</td><td>Flags: carry <code>CY</code>, auxiliary carry <code>AC</code>, overflow <code>OV</code>, parity <code>P</code>, and the bank select bits <code>RS1</code>/<code>RS0</code>.</td></tr>
+                <tr><td><code>DPTR</code></td><td>16-bit</td><td>Data pointer: points into flash for lookup tables (<code>MOVC A,@A+DPTR</code>) or into auxiliary/external RAM (<code>MOVX</code>).</td></tr>
+                <tr><td><code>SP</code></td><td>8-bit</td><td>Stack pointer: <code>LCALL</code>, <code>PUSH</code> and interrupts save data at the address it points to.</td></tr>
+                <tr><td><code>PC</code></td><td>16-bit</td><td>Program counter: address of the next instruction. Not directly accessible; changed by jumps, calls and returns.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ========================================================== -->
+        <section id="pinout">
+          <h2>Pinout</h2>
+          <p>The board uses the 40-pin DIP package, sitting in the green lever (ZIF) socket. Pin 1 is next to the notch. Most pins have a normal I/O function plus an <em>alternate</em> function that takes over when you enable the matching peripheral.</p>
+          <figure class="diagram">
+            <svg viewBox="0 0 620 500" role="img" aria-labelledby="pin-title">
+            <title id="pin-title">STC89C52RC PDIP-40 pinout</title>
+            <path class="dg-box" d="M220 20H298A12 12 0 0 0 322 20H400V480H220Z"/>
+            <text class="dg-strong" x="310" y="236" text-anchor="middle">STC89C52RC</text>
+            <text class="dg-small" x="310" y="254" text-anchor="middle">PDIP-40 (top view)</text>
+            <circle class="dg-thin" cx="252" cy="36" r="4"/>
+            <path class="dg-wire" d="M196 41H220"/>
+            <text class="dg-small" x="228" y="45">1</text>
+            <text class="dg-mono" x="190" y="45" text-anchor="end"><tspan class="dg-small">T2 </tspan>P1.0</text>
+            <path class="dg-wire" d="M196 63H220"/>
+            <text class="dg-small" x="228" y="67">2</text>
+            <text class="dg-mono" x="190" y="67" text-anchor="end"><tspan class="dg-small">T2EX </tspan>P1.1</text>
+            <path class="dg-wire" d="M196 85H220"/>
+            <text class="dg-small" x="228" y="89">3</text>
+            <text class="dg-mono" x="190" y="89" text-anchor="end">P1.2</text>
+            <path class="dg-wire" d="M196 107H220"/>
+            <text class="dg-small" x="228" y="111">4</text>
+            <text class="dg-mono" x="190" y="111" text-anchor="end">P1.3</text>
+            <path class="dg-wire" d="M196 129H220"/>
+            <text class="dg-small" x="228" y="133">5</text>
+            <text class="dg-mono" x="190" y="133" text-anchor="end">P1.4</text>
+            <path class="dg-wire" d="M196 151H220"/>
+            <text class="dg-small" x="228" y="155">6</text>
+            <text class="dg-mono" x="190" y="155" text-anchor="end">P1.5</text>
+            <path class="dg-wire" d="M196 173H220"/>
+            <text class="dg-small" x="228" y="177">7</text>
+            <text class="dg-mono" x="190" y="177" text-anchor="end">P1.6</text>
+            <path class="dg-wire" d="M196 195H220"/>
+            <text class="dg-small" x="228" y="199">8</text>
+            <text class="dg-mono" x="190" y="199" text-anchor="end">P1.7</text>
+            <path class="dg-wire" d="M196 217H220"/>
+            <text class="dg-small" x="228" y="221">9</text>
+            <text class="dg-accent-text" x="190" y="221" text-anchor="end">RST</text>
+            <path class="dg-wire" d="M196 239H220"/>
+            <text class="dg-small" x="228" y="243">10</text>
+            <text class="dg-mono" x="190" y="243" text-anchor="end"><tspan class="dg-small">RXD </tspan>P3.0</text>
+            <path class="dg-wire" d="M196 261H220"/>
+            <text class="dg-small" x="228" y="265">11</text>
+            <text class="dg-mono" x="190" y="265" text-anchor="end"><tspan class="dg-small">TXD </tspan>P3.1</text>
+            <path class="dg-wire" d="M196 283H220"/>
+            <text class="dg-small" x="228" y="287">12</text>
+            <text class="dg-mono" x="190" y="287" text-anchor="end"><tspan class="dg-small">INT0 </tspan>P3.2</text>
+            <path class="dg-wire" d="M196 305H220"/>
+            <text class="dg-small" x="228" y="309">13</text>
+            <text class="dg-mono" x="190" y="309" text-anchor="end"><tspan class="dg-small">INT1 </tspan>P3.3</text>
+            <path class="dg-wire" d="M196 327H220"/>
+            <text class="dg-small" x="228" y="331">14</text>
+            <text class="dg-mono" x="190" y="331" text-anchor="end"><tspan class="dg-small">T0 </tspan>P3.4</text>
+            <path class="dg-wire" d="M196 349H220"/>
+            <text class="dg-small" x="228" y="353">15</text>
+            <text class="dg-mono" x="190" y="353" text-anchor="end"><tspan class="dg-small">T1 </tspan>P3.5</text>
+            <path class="dg-wire" d="M196 371H220"/>
+            <text class="dg-small" x="228" y="375">16</text>
+            <text class="dg-mono" x="190" y="375" text-anchor="end"><tspan class="dg-small">WR </tspan>P3.6</text>
+            <path class="dg-wire" d="M196 393H220"/>
+            <text class="dg-small" x="228" y="397">17</text>
+            <text class="dg-mono" x="190" y="397" text-anchor="end"><tspan class="dg-small">RD </tspan>P3.7</text>
+            <path class="dg-wire" d="M196 415H220"/>
+            <text class="dg-small" x="228" y="419">18</text>
+            <text class="dg-accent-text" x="190" y="419" text-anchor="end">XTAL2</text>
+            <path class="dg-wire" d="M196 437H220"/>
+            <text class="dg-small" x="228" y="441">19</text>
+            <text class="dg-accent-text" x="190" y="441" text-anchor="end">XTAL1</text>
+            <path class="dg-wire" d="M196 459H220"/>
+            <text class="dg-small" x="228" y="463">20</text>
+            <text class="dg-accent-text" x="190" y="463" text-anchor="end">GND</text>
+            <path class="dg-wire" d="M400 459H424"/>
+            <text class="dg-small" x="392" y="463" text-anchor="end">21</text>
+            <text class="dg-mono" x="430" y="463" text-anchor="start">P2.0</text>
+            <path class="dg-wire" d="M400 437H424"/>
+            <text class="dg-small" x="392" y="441" text-anchor="end">22</text>
+            <text class="dg-mono" x="430" y="441" text-anchor="start">P2.1</text>
+            <path class="dg-wire" d="M400 415H424"/>
+            <text class="dg-small" x="392" y="419" text-anchor="end">23</text>
+            <text class="dg-mono" x="430" y="419" text-anchor="start">P2.2</text>
+            <path class="dg-wire" d="M400 393H424"/>
+            <text class="dg-small" x="392" y="397" text-anchor="end">24</text>
+            <text class="dg-mono" x="430" y="397" text-anchor="start">P2.3</text>
+            <path class="dg-wire" d="M400 371H424"/>
+            <text class="dg-small" x="392" y="375" text-anchor="end">25</text>
+            <text class="dg-mono" x="430" y="375" text-anchor="start">P2.4</text>
+            <path class="dg-wire" d="M400 349H424"/>
+            <text class="dg-small" x="392" y="353" text-anchor="end">26</text>
+            <text class="dg-mono" x="430" y="353" text-anchor="start">P2.5</text>
+            <path class="dg-wire" d="M400 327H424"/>
+            <text class="dg-small" x="392" y="331" text-anchor="end">27</text>
+            <text class="dg-mono" x="430" y="331" text-anchor="start">P2.6</text>
+            <path class="dg-wire" d="M400 305H424"/>
+            <text class="dg-small" x="392" y="309" text-anchor="end">28</text>
+            <text class="dg-mono" x="430" y="309" text-anchor="start">P2.7</text>
+            <path class="dg-wire" d="M400 283H424"/>
+            <text class="dg-small" x="392" y="287" text-anchor="end">29</text>
+            <text class="dg-accent-text" x="430" y="287" text-anchor="start">PSEN</text>
+            <path class="dg-wire" d="M400 261H424"/>
+            <text class="dg-small" x="392" y="265" text-anchor="end">30</text>
+            <text class="dg-accent-text" x="430" y="265" text-anchor="start">ALE</text>
+            <path class="dg-wire" d="M400 239H424"/>
+            <text class="dg-small" x="392" y="243" text-anchor="end">31</text>
+            <text class="dg-accent-text" x="430" y="243" text-anchor="start">EA</text>
+            <path class="dg-wire" d="M400 217H424"/>
+            <text class="dg-small" x="392" y="221" text-anchor="end">32</text>
+            <text class="dg-mono" x="430" y="221" text-anchor="start">P0.7</text>
+            <path class="dg-wire" d="M400 195H424"/>
+            <text class="dg-small" x="392" y="199" text-anchor="end">33</text>
+            <text class="dg-mono" x="430" y="199" text-anchor="start">P0.6</text>
+            <path class="dg-wire" d="M400 173H424"/>
+            <text class="dg-small" x="392" y="177" text-anchor="end">34</text>
+            <text class="dg-mono" x="430" y="177" text-anchor="start">P0.5</text>
+            <path class="dg-wire" d="M400 151H424"/>
+            <text class="dg-small" x="392" y="155" text-anchor="end">35</text>
+            <text class="dg-mono" x="430" y="155" text-anchor="start">P0.4</text>
+            <path class="dg-wire" d="M400 129H424"/>
+            <text class="dg-small" x="392" y="133" text-anchor="end">36</text>
+            <text class="dg-mono" x="430" y="133" text-anchor="start">P0.3</text>
+            <path class="dg-wire" d="M400 107H424"/>
+            <text class="dg-small" x="392" y="111" text-anchor="end">37</text>
+            <text class="dg-mono" x="430" y="111" text-anchor="start">P0.2</text>
+            <path class="dg-wire" d="M400 85H424"/>
+            <text class="dg-small" x="392" y="89" text-anchor="end">38</text>
+            <text class="dg-mono" x="430" y="89" text-anchor="start">P0.1</text>
+            <path class="dg-wire" d="M400 63H424"/>
+            <text class="dg-small" x="392" y="67" text-anchor="end">39</text>
+            <text class="dg-mono" x="430" y="67" text-anchor="start">P0.0</text>
+            <path class="dg-wire" d="M400 41H424"/>
+            <text class="dg-small" x="392" y="45" text-anchor="end">40</text>
+            <text class="dg-accent-text" x="430" y="45" text-anchor="start">VCC</text>
+            </svg>
+            <figcaption>Pins in green are power, clock and control pins. Alternate functions are shown in grey.</figcaption>
+          </figure>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Pin(s)</th><th>Name</th><th>Function</th></tr></thead>
+              <tbody>
+                <tr><td>40, 20</td><td>VCC, GND</td><td>Power: 5&nbsp;V and ground.</td></tr>
+                <tr><td>19, 18</td><td>XTAL1, XTAL2</td><td>Crystal oscillator input and output.</td></tr>
+                <tr><td>9</td><td>RST</td><td>Reset: <strong>active HIGH</strong>. Holding it high for at least 2 machine cycles resets the chip.</td></tr>
+                <tr><td>31</td><td>EA</td><td>External Access. Tie to VCC so the chip runs the program in its <strong>internal</strong> flash (it also has an internal pull-up).</td></tr>
+                <tr><td>30, 29</td><td>ALE, PSEN</td><td>Only used with external memory chips. Leave unconnected.</td></tr>
+                <tr><td>39–32</td><td>P0.0–P0.7</td><td>Port 0. <strong>Open-drain</strong>: needs pull-up resistors to output a HIGH (the board has them). Also the low address/data bus for external memory.</td></tr>
+                <tr><td>1–8</td><td>P1.0–P1.7</td><td>Port 1: general I/O. P1.0/P1.1 are also Timer 2 inputs.</td></tr>
+                <tr><td>21–28</td><td>P2.0–P2.7</td><td>Port 2: general I/O. Also the high address byte for external memory.</td></tr>
+                <tr><td>10–17</td><td>P3.0–P3.7</td><td>Port 3: general I/O with alternate functions: <code>RXD</code>, <code>TXD</code>, <code>INT0</code>, <code>INT1</code>, <code>T0</code>, <code>T1</code>, <code>WR</code>, <code>RD</code>.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ========================================================== -->
+        <section id="minimum-circuit">
+          <h2>The minimum circuit</h2>
+          <p>A bare microcontroller does nothing on its own. The <strong>minimum system</strong> is the smallest circuit that makes it run your program. It has <strong>power</strong>, a <strong>clock</strong>, a <strong>reset</strong> and the <strong>EA</strong> pin tied high. To load programs you add a fifth part, the <strong>download circuit</strong>. Your development board contains all of these, plus the peripherals.</p>
+          <figure class="diagram">
+            <svg viewBox="0 0 760 430" role="img" aria-labelledby="min-title">
+              <title id="min-title">Schematic of the STC89C52RC minimum circuit: crystal with two capacitors, reset circuit, EA tied to 5 V, decoupling capacitor, and CH340 USB-to-UART on P3.0 and P3.1</title>
+
+              <!-- MCU -->
+              <rect class="dg-box" x="300" y="60" width="170" height="320" rx="6"/>
+              <text class="dg-strong" x="385" y="204" text-anchor="middle">STC89C52RC</text>
+              <path class="dg-wire" d="M280 110H300M280 170H300M280 300H300M470 90H490M470 140H490M470 230H490M470 270H490M470 350H490"/>
+              <text class="dg-mono" x="308" y="114">19 XTAL1</text>
+              <text class="dg-mono" x="308" y="174">18 XTAL2</text>
+              <text class="dg-mono" x="308" y="304">9 RST</text>
+              <text class="dg-mono" x="462" y="94" text-anchor="end">VCC 40</text>
+              <text class="dg-mono" x="462" y="144" text-anchor="end">EA 31</text>
+              <text class="dg-mono" x="462" y="234" text-anchor="end">RXD P3.0 10</text>
+              <text class="dg-mono" x="462" y="274" text-anchor="end">TXD P3.1 11</text>
+              <text class="dg-mono" x="462" y="354" text-anchor="end">GND 20</text>
+
+              <!-- Clock: crystal + 2 caps -->
+              <path class="dg-wire" d="M280 110H90M280 170H150"/>
+              <circle class="dg-dot" cx="210" cy="110" r="3"/>
+              <circle class="dg-dot" cx="210" cy="170" r="3"/>
+              <path class="dg-wire" d="M210 110V126M198 126H222M198 154H222M210 154V170"/>
+              <rect class="dg-box" x="203" y="131" width="14" height="18"/>
+              <text class="dg-text" x="194" y="138" text-anchor="end">Y1</text>
+              <text class="dg-small" x="194" y="153" text-anchor="end">11.0592 MHz</text>
+              <!-- C1 -->
+              <path class="dg-wire" d="M90 110V190M78 190H102M78 198H102M90 198V215M78 215H102M83 220H97M88 225H92"/>
+              <text class="dg-text" x="72" y="192" text-anchor="end">C1</text>
+              <text class="dg-small" x="72" y="206" text-anchor="end">33 pF</text>
+              <!-- C2 -->
+              <path class="dg-wire" d="M150 170V250M138 250H162M138 258H162M150 258V275M138 275H162M143 280H157M148 285H152"/>
+              <text class="dg-text" x="132" y="252" text-anchor="end">C2</text>
+              <text class="dg-small" x="132" y="266" text-anchor="end">33 pF</text>
+
+              <!-- Reset: C3 to +5V, R1 to GND, SW1 across C3 -->
+              <path class="dg-wire" d="M280 300H200"/>
+              <circle class="dg-dot" cx="240" cy="300" r="3"/>
+              <path class="dg-wire" d="M240 300V270M228 270H252M228 262H252M240 262V236"/>
+              <path class="dg-wire" d="M200 236H250"/>
+              <text class="dg-text" x="225" y="228" text-anchor="middle">+5 V</text>
+              <circle class="dg-dot" cx="240" cy="236" r="3"/>
+              <text class="dg-text" x="258" y="262">C3</text>
+              <text class="dg-small" x="258" y="276">10 µF</text>
+              <path class="dg-wire" d="M240 300V315M240 349V370M228 370H252M233 375H247M238 380H242"/>
+              <rect class="dg-box" x="233" y="315" width="14" height="34"/>
+              <text class="dg-text" x="254" y="332">R1</text>
+              <text class="dg-small" x="254" y="346">10 kΩ</text>
+              <path class="dg-wire" d="M200 300V284M200 252V236"/>
+              <circle class="dg-box" cx="200" cy="281" r="3"/>
+              <circle class="dg-box" cx="200" cy="255" r="3"/>
+              <path class="dg-wire" d="M190 258V278M182 268H190"/>
+              <text class="dg-text" x="200" y="322" text-anchor="middle">SW1</text>
+
+              <!-- Power: VCC, EA, decoupling -->
+              <path class="dg-wire" d="M490 90H510V40H700M490 140H530V40"/>
+              <circle class="dg-dot" cx="530" cy="40" r="3"/>
+              <circle class="dg-dot" cx="600" cy="40" r="3"/>
+              <text class="dg-text" x="700" y="32" text-anchor="end">+5 V (from USB)</text>
+              <path class="dg-wire" d="M600 40V70M588 70H612M588 78H612M600 78V95M588 95H612M593 100H607M598 105H602"/>
+              <text class="dg-text" x="618" y="74">C4</text>
+              <text class="dg-small" x="618" y="88">100 nF</text>
+              <path class="dg-wire" d="M490 350H520V370M508 370H532M513 375H527M518 380H522"/>
+
+              <!-- Download: CH340 -->
+              <path class="dg-wire" d="M490 230H600M490 270H600"/>
+              <text class="dg-small" x="545" y="223" text-anchor="middle">PC → MCU</text>
+              <text class="dg-small" x="545" y="263" text-anchor="middle">MCU → PC</text>
+              <rect class="dg-soft" x="600" y="200" width="120" height="100" rx="6"/>
+              <text class="dg-mono" x="606" y="234">TXD</text>
+              <text class="dg-mono" x="606" y="274">RXD</text>
+              <text class="dg-strong" x="675" y="246" text-anchor="middle">CH340</text>
+              <text class="dg-small" x="675" y="262" text-anchor="middle">USB↔UART</text>
+              <path class="dg-wire" d="M660 300V330"/>
+              <text class="dg-text" x="660" y="346" text-anchor="middle">USB to PC</text>
+            </svg>
+            <figcaption>Generic 8051 minimum circuit. Component values match the board, which uses 33&nbsp;pF crystal capacitors. The board's reset circuit adds a transistor so the socket also suits other chips; the result at the RST pin is the same.</figcaption>
+          </figure>
+
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Part</th><th>Parts</th><th>Why it's needed</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Power</strong></td><td>5&nbsp;V to pin 40, GND to pin 20, 100&nbsp;nF capacitor (C4) right next to the chip</td><td>The chip runs on 3.3–5.5&nbsp;V. The small capacitor supplies the fast current spikes when the logic switches, keeping the supply clean.</td></tr>
+                <tr><td><strong>Clock</strong></td><td>11.0592&nbsp;MHz crystal between pins 18 and 19, two 33&nbsp;pF capacitors (10–33&nbsp;pF) to GND</td><td>The crystal and the chip's internal amplifier form an oscillator: the "heartbeat" that steps the CPU through instructions and drives the timers. The capacitors let it start and run stably.</td></tr>
+                <tr><td><strong>Reset</strong></td><td>10&nbsp;µF capacitor from 5&nbsp;V to RST, 10&nbsp;kΩ resistor from RST to GND, push button across the capacitor</td><td>At power-on the uncharged capacitor holds RST high briefly, so the chip starts from a known state. Pressing the button pulls RST high again to restart the program.</td></tr>
+                <tr><td><strong>EA</strong></td><td>Pin 31 to 5&nbsp;V</td><td>Tells the CPU to fetch code from its internal flash instead of an external memory chip.</td></tr>
+                <tr><td><strong>Download</strong></td><td>USB-to-serial chip (CH340) on P3.0/P3.1, sharing GND</td><td>A PC has no 8051 serial pins, so the CH340 turns USB into the chip's TTL-level UART. It is used both for programming and for talking to your program.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Build it on a breadboard</h3>
+          <p>You can run the STC89C52RC without the development board. You need everything in the table above, plus a USB-to-TTL serial adapter (CH340 or similar) set to <strong>5&nbsp;V</strong>.</p>
+          <ol>
+            <li>Place the chip, wire VCC (40) and GND (20), and put the 100&nbsp;nF capacitor across them as close as you can.</li>
+            <li>Add the crystal and its two capacitors on pins 18/19, keeping the wires short.</li>
+            <li>Add the reset capacitor, resistor and button on pin 9, and tie EA (31) to 5&nbsp;V.</li>
+            <li>Connect the adapter: <strong>adapter TXD → P3.0 (pin 10)</strong>, <strong>adapter RXD → P3.1 (pin 11)</strong>, GND → GND. Transmit always goes to receive.</li>
+            <li>Power the chip through a switch you can toggle, because programming needs a power cycle (see <a href="#programming">Programming the chip</a>).</li>
+            <li>Test with an LED and a 1&nbsp;kΩ resistor from 5&nbsp;V to P1.0 and the program <code>CLR P1.0</code> followed by <code>SJMP $</code>.</li>
+          </ol>
+          <div class="callout"><p><strong>Tip:</strong> if the download never starts, the chip may still be getting power through the adapter's TXD line even with VCC switched off, so it never truly powers down. A 1&nbsp;kΩ resistor in series with that line usually fixes it.</p></div>
+        </section>
+
+        <!-- ========================================================== -->
+        <section id="clock">
+          <h2>Clock &amp; timing</h2>
+          <p>In the default <strong>12T mode</strong> the CPU divides the crystal frequency by 12. One <strong>machine cycle</strong> is 12 oscillator periods, and the timers count once per machine cycle.</p>
+          <div class="formula">machine cycle = 12 / 11 059 200 Hz ≈ 1.085 µs &nbsp;·&nbsp; timer counts per second = 11 059 200 / 12 = 921 600</div>
+          <ul>
+            <li>Each instruction takes <strong>1, 2 or 4 machine cycles</strong>. For example <code>MOV A,R0</code> takes 1, <code>DJNZ</code> and <code>LCALL</code> take 2, and <code>MUL AB</code>/<code>DIV AB</code> take 4. That is how software delay loops can be timed.</li>
+            <li><strong>Why 11.0592&nbsp;MHz and not 12&nbsp;MHz?</strong> It divides exactly into the standard serial baud rates. At 12&nbsp;MHz the nearest rates you can make are 8&nbsp;929 or 10&nbsp;417 baud, 7–8.5% off, which is too far for reliable serial communication.</li>
+            <li><strong>6T mode</strong> (the STC-ISP option “Enable 6T (double-speed) mode”) makes the CPU and timers twice as fast. Leave it <strong>unchecked</strong>: all course timing values assume 12T.</li>
+          </ul>
+          <p><strong>Example, a 1&nbsp;ms delay with Timer 0:</strong> 1&nbsp;ms × 921&nbsp;600 = 921.6 → 922 counts. Mode 1 overflows at 65&nbsp;536, so load 65&nbsp;536 − 922 = 64&nbsp;614 = <code>FC66H</code>. The course examples use <code>FC67H</code>, which is one count less and still 1&nbsp;ms to within 0.1%.</p>
+
+          <h3>Timing a software delay loop</h3>
+          <p>A delay loop wastes time by counting down registers. Its length is the number of machine cycles it executes (see the <a href="#assembly">instruction table</a>):</p>
+<pre><code>DELAY:  MOV  R6,#200       ; 1 cycle
+OUTER:  MOV  R7,#250       ; 1 cycle     INNER:  DJNZ R7,INNER      ; 2 cycles     > outer loop: runs 200 times
+        DJNZ R6,OUTER      ; 2 cycles    /  (inner DJNZ runs 250 times each)
+        RET                ; 2 cycles</code></pre>
+          <div class="formula">cycles = 1 + 200 × (1 + 2×250 + 2) + 2 = 100 603 ≈ 109 ms</div>
+          <p>Software delays are easy but imprecise. Interrupts that run during the loop make it longer, 6T mode halves it, and the CPU can do nothing else while it runs. Use a <a href="#timers">timer</a> when the timing matters.</p>
+        </section>
+
+        <!-- ========================================================== -->
+        <section id="reset">
+          <h2>Reset &amp; start-up</h2>
+          <p>When RST goes high (power-on or the reset button), the chip loads fixed values into its registers. When RST goes low again it starts running at address <code>0000H</code>. That is why every program starts with <code>ORG 0000H</code>.</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Register</th><th>Value after reset</th><th>What it means for you</th></tr></thead>
+              <tbody>
+                <tr><td><code>PC</code></td><td><code>0000H</code></td><td>The first instruction is fetched from address 0000H.</td></tr>
+                <tr><td><code>P0</code>–<code>P3</code></td><td><code>FFH</code></td><td>All pins start HIGH, so they work as inputs, and active-low LEDs start off.</td></tr>
+                <tr><td><code>SP</code></td><td><code>07H</code></td><td>The first <code>PUSH</code>/<code>LCALL</code> writes to 08H, on top of register bank 1. Programs that use banks 1–3 or a lot of stack should move it, e.g. <code>MOV SP,#5FH</code>.</td></tr>
+                <tr><td><code>A</code>, <code>B</code>, <code>PSW</code>, <code>DPTR</code></td><td><code>00H</code></td><td>Register bank 0 selected, carry clear.</td></tr>
+                <tr><td><code>TMOD</code>, <code>TCON</code>, <code>SCON</code>, <code>IE</code></td><td><code>00H</code></td><td>Timers stopped, serial port off, all interrupts disabled until you enable them.</td></tr>
+                <tr><td>RAM 00H–7FH</td><td>unchanged / random</td><td>A reset keeps RAM, but after power-on it holds garbage. <strong>Always initialise variables.</strong></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>On the STC chip a small <strong>ISP boot program</strong> runs before your code after a power-on. It is what makes serial programming possible (see <a href="#programming">Programming the chip</a>). If no PC is trying to program the chip, it jumps to your program within a fraction of a second, so you won't notice it.</p>
+        </section>
+
+        <!-- ========================================================== -->
+        <section id="memory">
+          <h2>Memory</h2>
+          <p>Because the 8051 is a Harvard architecture, <strong>code</strong> and <strong>data</strong> live in separate spaces. The same address, e.g. 0030H, means different memory depending on the instruction: <code>MOVC</code> reads flash, <code>MOV</code> reads RAM, and <code>MOVX</code> reads auxiliary or external RAM.</p>
+          <div class="memmap">
+            <div class="memcol">
+              <h4>Program memory: flash 8 KB</h4>
+              <div class="memstack">
+                <div class="memseg hl"><span>Reset vector (<code>LJMP MAIN</code>)</span><code>0000H</code></div>
+                <div class="memseg hl"><span>Interrupt vectors</span><code>0003H–002BH</code></div>
+                <div class="memseg" style="min-height:120px"><span>Your program &amp; <code>DB</code> tables</span><code>0030H…</code></div>
+                <div class="memseg"><span>(end of flash)</span><code>1FFFH</code></div>
+              </div>
+              <p class="memnote">Read by the CPU when fetching instructions and by <code>MOVC</code>. Can't be written while the program runs (except the EEPROM area via IAP).</p>
+            </div>
+            <div class="memcol">
+              <h4>Internal RAM: 00H–7FH</h4>
+              <div class="memstack">
+                <div class="memseg hl"><span>Register bank 0 (<code>R0</code>–<code>R7</code>)</span><code>00H–07H</code></div>
+                <div class="memseg"><span>Banks 1–3 / stack</span><code>08H–1FH</code></div>
+                <div class="memseg hl"><span>Bit-addressable (<code>SETB 20H.0</code>)</span><code>20H–2FH</code></div>
+                <div class="memseg" style="min-height:90px"><span>General purpose: variables, stack</span><code>30H–7FH</code></div>
+              </div>
+              <p class="memnote">Accessed directly (<code>MOV 30H,A</code>) or through a pointer (<code>MOV @R0,A</code>).</p>
+            </div>
+            <div class="memcol">
+              <h4>Upper 80H–FFH and auxiliary RAM</h4>
+              <div class="memstack">
+                <div class="memseg hl"><span>SFRs: <strong>direct</strong> addressing</span><code>80H–FFH</code></div>
+                <div class="memseg"><span>Upper RAM: <strong>indirect</strong> (<code>@R0</code>) only</span><code>80H–FFH</code></div>
+                <div class="memseg"><span>Auxiliary RAM 256 B via <code>MOVX @DPTR</code></span><code>0000H–00FFH</code></div>
+              </div>
+              <p class="memnote">SFRs and upper RAM share addresses 80H–FFH. <code>MOV 90H,A</code> writes port P1, while <code>MOV R0,#90H</code> then <code>MOV @R0,A</code> writes RAM.</p>
+            </div>
+          </div>
+          <h3>Interrupt vectors</h3>
+          <p>Each interrupt jumps to a fixed flash address only 8 bytes apart, so you normally put an <code>LJMP</code> to the real routine there.</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Address</th><th>Source</th><th>Flag</th><th>Enable bit</th></tr></thead>
+              <tbody>
+                <tr><td><code>0000H</code></td><td>Reset</td><td>—</td><td>—</td></tr>
+                <tr><td><code>0003H</code></td><td>External interrupt 0 (P3.2)</td><td><code>IE0</code></td><td><code>EX0</code></td></tr>
+                <tr><td><code>000BH</code></td><td>Timer 0 overflow</td><td><code>TF0</code></td><td><code>ET0</code></td></tr>
+                <tr><td><code>0013H</code></td><td>External interrupt 1 (P3.3)</td><td><code>IE1</code></td><td><code>EX1</code></td></tr>
+                <tr><td><code>001BH</code></td><td>Timer 1 overflow</td><td><code>TF1</code></td><td><code>ET1</code></td></tr>
+                <tr><td><code>0023H</code></td><td>Serial port (UART)</td><td><code>RI</code>, <code>TI</code></td><td><code>ES</code></td></tr>
+                <tr><td><code>002BH</code></td><td>Timer 2</td><td><code>TF2</code>, <code>EXF2</code></td><td><code>ET2</code></td></tr>
+                <tr><td><code>0033H</code>, <code>003BH</code></td><td>External interrupts 2 and 3</td><td colspan="2">44-pin packages only, not on the board's DIP-40</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ========================================================== -->
+        <section id="assembly">
+          <h2>Assembly essentials</h2>
+          <p>Each line of an assembly program has up to four fields. The assembler (MIDE-51) turns every instruction into 1–3 bytes of machine code.</p>
+<pre><code>LABEL:  MNEMONIC  operand1,operand2   ; comment
+LOOP:   MOV       A,#25H              ; load 25H into A</code></pre>
+
+          <h3>Numbers and directives</h3>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Write</th><th>Meaning</th></tr></thead>
+              <tbody>
+                <tr><td><code>25</code> or <code>25D</code></td><td>Decimal 25</td></tr>
+                <tr><td><code>0FFH</code></td><td>Hexadecimal FF. A hex number must <strong>start with a digit</strong>: <code>FFH</code> would be read as a label.</td></tr>
+                <tr><td><code>10100101B</code></td><td>Binary</td></tr>
+                <tr><td><code>'A'</code></td><td>ASCII code of the character (41H)</td></tr>
+                <tr><td><code>$</code></td><td>Address of the current instruction. <code>SJMP $</code> loops forever.</td></tr>
+                <tr><td><code>ORG 0030H</code></td><td>Place the following code or data at this address</td></tr>
+                <tr><td><code>LED EQU P2.0</code></td><td>Give a name to a number, address or bit. It uses no memory.</td></tr>
+                <tr><td><code>DB 3FH,06H,'Hi',0</code></td><td>Store bytes in program memory (tables, strings)</td></tr>
+                <tr><td><code>DW 1234H</code></td><td>Store a 16-bit word (high byte first)</td></tr>
+                <tr><td><code>END</code></td><td>End of the source file. Anything after it is ignored.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Addressing modes</h3>
+          <p>The addressing mode is how an instruction finds its data. The same mnemonic does very different things depending on the operand, and the <code>#</code> matters most.</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Mode</th><th>Example</th><th>What it does</th></tr></thead>
+              <tbody>
+                <tr><td>Immediate</td><td><code>MOV A,#30H</code></td><td>A ← the number 30H</td></tr>
+                <tr><td>Register</td><td><code>MOV A,R3</code></td><td>A ← contents of R3</td></tr>
+                <tr><td>Direct</td><td><code>MOV A,30H</code><br><code>MOV A,P1</code></td><td>A ← contents of RAM address 30H, or of an SFR (here the port P1 pins)</td></tr>
+                <tr><td>Register indirect</td><td><code>MOV A,@R0</code></td><td>A ← contents of the RAM address held in R0. Only R0 and R1 can be pointers.</td></tr>
+                <tr><td>Indexed</td><td><code>MOVC A,@A+DPTR</code></td><td>A ← byte in <strong>program memory</strong> at DPTR + A. Used for lookup tables.</td></tr>
+                <tr><td>Bit</td><td><code>SETB P1.0</code>, <code>JB 20H.3,L</code></td><td>Work on a single bit of a bit-addressable SFR or of RAM 20H–2FH</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Jumps and calls</h3>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Instruction</th><th>Target range</th><th>Size</th></tr></thead>
+              <tbody>
+                <tr><td><code>SJMP</code>, and all conditional jumps: <code>JZ JNZ JC JNC JB JNB CJNE DJNZ</code></td><td>Relative: −128 to +127 bytes from the <em>next</em> instruction</td><td>2–3 bytes</td></tr>
+                <tr><td><code>AJMP</code>, <code>ACALL</code></td><td>Anywhere in the same 2&nbsp;KB block (11-bit address)</td><td>2 bytes</td></tr>
+                <tr><td><code>LJMP</code>, <code>LCALL</code></td><td>Anywhere in 64&nbsp;KB (16-bit address)</td><td>3 bytes</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>If the assembler reports <em>“target out of range”</em>, the label is too far away for a relative jump. Use <code>LJMP</code>, or jump over it with an inverted condition, e.g. <code>JNB P3.1,SKIP</code> · <code>LJMP FAR_AWAY</code> · <code>SKIP:</code>.</p>
+
+          <h3>Common instructions</h3>
+          <p class="section-note">Bytes = size in program memory. Cycles = execution time in machine cycles (1 cycle ≈ 1.085&nbsp;µs on the board).</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Instruction</th><th>Bytes</th><th>Cycles</th><th>Effect</th></tr></thead>
+              <tbody>
+                <tr><td><code>MOV A,Rn</code> · <code>MOV Rn,A</code> · <code>MOV A,@Ri</code></td><td>1</td><td>1</td><td>Copy between A and a register or pointed-to RAM</td></tr>
+                <tr><td><code>MOV A,#n</code> · <code>MOV Rn,#n</code> · <code>MOV A,direct</code></td><td>2</td><td>1</td><td>Load a constant, or read RAM or an SFR</td></tr>
+                <tr><td><code>MOV direct,#n</code> · <code>MOV direct,direct</code></td><td>3</td><td>2</td><td>Write a constant or copy between addresses</td></tr>
+                <tr><td><code>MOV DPTR,#nnnn</code></td><td>3</td><td>2</td><td>Load the 16-bit data pointer</td></tr>
+                <tr><td><code>MOVC A,@A+DPTR</code> · <code>MOVX A,@DPTR</code></td><td>1</td><td>2</td><td>Read a table in flash · read auxiliary RAM</td></tr>
+                <tr><td><code>ADD A,#n</code> · <code>ADC A,#n</code> · <code>SUBB A,#n</code></td><td>2</td><td>1</td><td>Add · add with carry · subtract with borrow</td></tr>
+                <tr><td><code>INC A</code> · <code>DEC A</code> · <code>INC Rn</code></td><td>1</td><td>1</td><td>Add or subtract 1 (carry not affected)</td></tr>
+                <tr><td><code>INC DPTR</code></td><td>1</td><td>2</td><td>Next table entry</td></tr>
+                <tr><td><code>MUL AB</code> · <code>DIV AB</code></td><td>1</td><td>4</td><td>Unsigned 8-bit multiply and divide</td></tr>
+                <tr><td><code>ANL A,#n</code> · <code>ORL A,#n</code> · <code>XRL A,#n</code></td><td>2</td><td>1</td><td>Bitwise AND (clear bits) · OR (set bits) · XOR (toggle bits)</td></tr>
+                <tr><td><code>CLR A</code> · <code>CPL A</code> · <code>RL A</code> · <code>RR A</code> · <code>SWAP A</code></td><td>1</td><td>1</td><td>Clear · invert · rotate left/right · swap the two nibbles</td></tr>
+                <tr><td><code>SETB bit</code> · <code>CLR bit</code> · <code>CPL bit</code></td><td>2</td><td>1</td><td>Set, clear or toggle one bit (a pin, a flag)</td></tr>
+                <tr><td><code>JZ</code> · <code>JNZ</code> · <code>JC</code> · <code>JNC</code> · <code>SJMP</code></td><td>2</td><td>2</td><td>Jump if A = 0 · A ≠ 0 · carry set · carry clear · always</td></tr>
+                <tr><td><code>JB bit,rel</code> · <code>JNB bit,rel</code></td><td>3</td><td>2</td><td>Jump if a bit is 1 · is 0 (e.g. test a button)</td></tr>
+                <tr><td><code>CJNE A,#n,rel</code></td><td>3</td><td>2</td><td>Jump if A ≠ n. Also sets the carry flag to compare (see <a href="#flags">flags</a>).</td></tr>
+                <tr><td><code>DJNZ Rn,rel</code></td><td>2</td><td>2</td><td>Decrement Rn, jump if not zero: the standard loop counter</td></tr>
+                <tr><td><code>LJMP</code> · <code>LCALL</code></td><td>3</td><td>2</td><td>Long jump · call a subroutine</td></tr>
+                <tr><td><code>RET</code> · <code>RETI</code></td><td>1</td><td>2</td><td>Return from subroutine · from interrupt</td></tr>
+                <tr><td><code>PUSH direct</code> · <code>POP direct</code></td><td>2</td><td>2</td><td>Save or restore a byte on the <a href="#stack">stack</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ========================================================== -->
+        <section id="flags">
+          <h2>Flags &amp; arithmetic</h2>
+          <p>The <strong>program status word</strong> <code>PSW</code> (D0H) holds the flags set by arithmetic, and selects the register bank.</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Bit</th><th>Flag</th><th>Meaning</th></tr></thead>
+              <tbody>
+                <tr><td>7</td><td><code>CY</code> (<code>C</code>)</td><td>Carry out of bit 7 after an add, or borrow after a subtract. Also the 1-bit “accumulator” for bit operations.</td></tr>
+                <tr><td>6</td><td><code>AC</code></td><td>Auxiliary carry out of bit 3. Used by <code>DA A</code> for BCD.</td></tr>
+                <tr><td>5</td><td><code>F0</code></td><td>Free flag for your own use</td></tr>
+                <tr><td>4–3</td><td><code>RS1 RS0</code></td><td>Register bank select: 00 = bank 0 (00H–07H), 01 = bank 1 (08H–0FH), 10 = bank 2 (10H–17H), 11 = bank 3 (18H–1FH)</td></tr>
+                <tr><td>2</td><td><code>OV</code></td><td>Signed overflow: the result doesn't fit in −128…+127</td></tr>
+                <tr><td>0</td><td><code>P</code></td><td>Parity of A: 1 if A contains an odd number of 1s</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <ul>
+            <li><strong>Change the flags:</strong> <code>ADD</code>, <code>ADC</code>, <code>SUBB</code> (CY, AC, OV); <code>MUL</code> and <code>DIV</code> (CY cleared, OV); <code>CJNE</code>, <code>RLC</code>, <code>RRC</code>, <code>DA A</code> (CY); and <code>SETB C</code>, <code>CLR C</code>, <code>CPL C</code>.</li>
+            <li><strong>Do not change the carry:</strong> <code>INC</code>, <code>DEC</code>, <code>MOV</code>, <code>ANL</code>/<code>ORL</code>/<code>XRL</code> on A, <code>RL</code>/<code>RR</code>. The <code>P</code> flag always follows A.</li>
+            <li><strong><code>SUBB</code> always subtracts the carry too.</strong> Do <code>CLR C</code> before a single-byte subtraction.</li>
+            <li><strong>Multi-byte numbers:</strong> add the low bytes with <code>ADD</code>, then the high bytes with <code>ADC</code> so the carry is included.</li>
+            <li><strong><code>MUL AB</code></strong> puts the 16-bit product in <code>B</code> (high) and <code>A</code> (low); OV = 1 if it's larger than 255. <strong><code>DIV AB</code></strong> puts the quotient in A and the remainder in B; OV = 1 on division by zero.</li>
+            <li><strong>Signed numbers</strong> use two's complement (−1 = FFH). Check <code>OV</code>, not <code>CY</code>, for signed overflow.</li>
+          </ul>
+
+          <h3>Comparing numbers with CJNE</h3>
+          <p>There is no “compare” instruction. <code>CJNE</code> jumps if the values differ, and sets <strong>CY = 1 if A is less than</strong> the other value (unsigned):</p>
+<pre><code>        CJNE A,#50,NOT_EQUAL   ; A = 50?
+        SJMP IS_EQUAL          ; yes
+NOT_EQUAL:
+        JC   IS_LESS           ; CY = 1 → A &lt; 50
+        ...                    ; otherwise A &gt; 50</code></pre>
+          <p><strong>Converting a value for a display:</strong> <code>MOV B,#10</code> then <code>DIV AB</code> splits A into tens (A) and ones (B). Adding <code>30H</code> turns a digit 0–9 into its ASCII character for the LCD or serial port.</p>
+        </section>
+
+        <!-- ========================================================== -->
+        <section id="stack">
+          <h2>Stack &amp; subroutines</h2>
+          <p>The <strong>stack</strong> is an area of internal RAM that grows <strong>upwards</strong>. <code>SP</code> points to the last byte stored:</p>
+          <ul>
+            <li><code>PUSH x</code>: SP ← SP + 1, then the byte is stored at SP. <code>POP x</code>: the byte at SP is read, then SP ← SP − 1.</li>
+            <li><code>LCALL</code>/<code>ACALL</code> push the <strong>return address</strong> (2 bytes, low byte first) and jump. <code>RET</code> pops it back into PC. An interrupt does the same, and <code>RETI</code> returns from it.</li>
+            <li>Every nested call uses 2 more bytes, and so does every interrupt, on top of anything pushed.</li>
+          </ul>
+          <div class="callout"><p><strong>Move the stack at the start of every program.</strong> After reset <code>SP = 07H</code>, so the stack grows into register banks 1–3 and your variables. <code>MOV SP,#5FH</code> gives the stack 60H–7FH (32 bytes) and leaves 30H–5FH free for variables.</p></div>
+
+          <h3>Writing a subroutine</h3>
+<pre><code>; SHOW_DIGIT: display the digit in A on the 7-segment display.
+; Input: A = 0..9   Changes: nothing (saves what it uses)
+SHOW_DIGIT:
+        PUSH ACC               ; PUSH/POP need a direct address: ACC, not A
+        PUSH DPH
+        PUSH DPL
+        MOV  DPTR,#SEG_TABLE
+        MOVC A,@A+DPTR         ; digit → segment pattern
+        MOV  P0,A
+        POP  DPL               ; restore in the REVERSE order
+        POP  DPH
+        POP  ACC
+        RET</code></pre>
+          <ul>
+            <li><strong>Document</strong> each subroutine's inputs, outputs and which registers it changes. A common convention is to pass values in <code>A</code> or <code>R7</code> and return results in <code>A</code>.</li>
+            <li>To save <code>R0</code>–<code>R7</code>, push their RAM address (bank 0: <code>R0</code> = <code>00H</code> … <code>R7</code> = <code>07H</code>), e.g. <code>PUSH 07H</code>.</li>
+            <li>Every <code>PUSH</code> needs a matching <code>POP</code> before <code>RET</code>. Otherwise <code>RET</code> pops the wrong bytes and the program jumps to a random address.</li>
+            <li>An ISR can switch to its own register bank instead of saving R0–R7: <code>PUSH PSW</code>, <code>MOV PSW,#08H</code> (bank 1), and <code>POP PSW</code> before <code>RETI</code>.</li>
+          </ul>
+        </section>
+
+        <!-- ========================================================== -->
+        <section id="io">
+          <h2>I/O ports</h2>
+          <p>Each port is an SFR (<code>P0</code>=80H, <code>P1</code>=90H, <code>P2</code>=A0H, <code>P3</code>=B0H) and each bit is one pin. Write the whole port (<code>MOV P2,#0FEH</code>) or one bit (<code>CLR P2.0</code>), and read the same way (<code>MOV A,P3</code>, <code>JB P3.1,label</code>).</p>
+          <h3>How a pin works: “quasi-bidirectional”</h3>
+          <p>P1, P2 and P3 have no direction register. Each pin has a <strong>strong transistor to GND</strong> and a <strong>weak pull-up to VCC</strong>:</p>
+          <ul>
+            <li><strong>Write 0:</strong> the strong transistor pulls the pin LOW and can <strong>sink</strong> several mA, enough for an LED.</li>
+            <li><strong>Write 1:</strong> only the weak pull-up holds the pin HIGH. It can <strong>source</strong> very little current, but anything outside can easily pull it LOW.</li>
+            <li><strong>To use a pin as an input, write 1 to it first</strong> (it already is 1 after reset), then read it. A pressed button shorts the pin to GND, so it reads 0.</li>
+          </ul>
+          <div class="callout"><p><strong>That's why the board's LEDs are active-low:</strong> each LED goes from 5&nbsp;V through a resistor to the pin, so the pin <em>sinks</em> the current when you write 0. Driving an LED from the weak HIGH level would barely light it.</p></div>
+          <p><strong>Port 0 is different:</strong> it is <strong>open-drain</strong>, with no pull-up at all. It can only pull LOW, so writing 1 leaves the pin floating unless there is an external pull-up resistor. The board has pull-ups on P0, but a breadboard circuit needs them too (about 10&nbsp;kΩ).</p>
+          <p>For which board module is on which pin, see the <a href="lab-kit.html#pins">pin map</a>.</p>
+        </section>
+
+        <!-- ========================================================== -->
+        <section id="timers">
+          <h2>Timers</h2>
+          <p>A timer is a 16-bit counter (<code>THx:TLx</code>) that counts up once per machine cycle. When it rolls over from <code>FFFFH</code> to <code>0000H</code> it sets its overflow flag <code>TFx</code>, and can trigger an interrupt. As a <strong>counter</strong> (C/T = 1) it counts pulses on pin T0 (P3.4) or T1 (P3.5) instead.</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th><code>TMOD</code> mode (M1 M0)</th><th>Behaviour</th><th>Typical use</th></tr></thead>
+              <tbody>
+                <tr><td>0 (00)</td><td>13-bit counter</td><td>Rarely used today</td></tr>
+                <tr><td><strong>1 (01)</strong></td><td>16-bit counter, you reload TH/TL yourself</td><td>Delays, tone generation</td></tr>
+                <tr><td><strong>2 (10)</strong></td><td>8-bit counter, TL reloads automatically from TH</td><td>Serial baud rate (Timer 1)</td></tr>
+                <tr><td>3 (11)</td><td>Timer 0 split into two 8-bit timers</td><td>Special cases</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h3>Control registers</h3>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Register</th><th>7</th><th>6</th><th>5</th><th>4</th><th>3</th><th>2</th><th>1</th><th>0</th></tr></thead>
+              <tbody>
+                <tr><td><code>TMOD</code> (89H)</td><td>GATE</td><td>C/T</td><td>M1</td><td>M0</td><td>GATE</td><td>C/T</td><td>M1</td><td>M0</td></tr>
+                <tr><td></td><td colspan="4"><em>Timer 1</em></td><td colspan="4"><em>Timer 0</em></td></tr>
+                <tr><td><code>TCON</code> (88H)</td><td>TF1</td><td>TR1</td><td>TF0</td><td>TR0</td><td>IE1</td><td>IT1</td><td>IE0</td><td>IT0</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <ul>
+            <li><strong>Mode bits:</strong> <code>TMOD = 01H</code> puts Timer 0 in mode 1, <code>10H</code> Timer 1 in mode 1, <code>11H</code> both, <code>21H</code> Timer 1 in mode 2 and Timer 0 in mode 1. <code>TMOD</code> is not bit-addressable, so write the whole byte once at start-up.</li>
+            <li><strong>C/T:</strong> 0 = timer (counts machine cycles). 1 = counter (counts falling edges on pin T0/P3.4 or T1/P3.5, e.g. to count pulses from a sensor).</li>
+            <li><strong>GATE:</strong> 0 = the timer runs whenever <code>TRx</code> = 1. 1 = it runs only while <code>TRx</code> = 1 <em>and</em> the INTx pin is HIGH, which measures how long a pulse lasts.</li>
+            <li><strong>TRx</strong> starts (1) and stops (0) the timer. <strong>TFx</strong> is set on overflow and must be cleared by you, unless its interrupt is used.</li>
+          </ul>
+
+          <h3>Delays with a timer</h3>
+          <div class="formula">reload = 65536 − (delay in seconds × 921600)</div>
+          <p>In mode 1 the longest single delay is 65&nbsp;536 counts ≈ <strong>71&nbsp;ms</strong>. For longer delays, repeat a shorter one in a loop. The standard polled pattern (Timer 0 in mode 1, set once with <code>MOV TMOD,#01H</code>):</p>
+<pre><code>DELAY_1MS:
+        MOV  TH0,#0FCH     ; FC67H = 64615 → 921 counts ≈ 1 ms
+        MOV  TL0,#67H
+        SETB TR0           ; start Timer 0
+        JNB  TF0,$         ; wait here until it overflows
+        CLR  TR0           ; stop it
+        CLR  TF0           ; clear the flag for next time
+        RET</code></pre>
+          <p>Polling blocks the program while it waits. With the <a href="#interrupts">timer interrupt</a> the main program keeps running and the ISR handles each overflow. In <strong>mode 2</strong> the timer reloads itself from <code>THx</code>, which gives perfectly regular overflows up to 256 counts (≈ 278&nbsp;µs) apart. That is why it's used for baud rates.</p>
+          <p>See Timer 0 generating tones and Timer 1 as a 5&nbsp;ms time base in the <a href="projects/bird-song.html">Bird Song Synthesizer</a> project.</p>
+        </section>
+
+        <!-- ========================================================== -->
+        <section id="interrupts">
+          <h2>Interrupts</h2>
+          <p>An interrupt lets hardware pause your main program to run a short routine, the <strong>interrupt service routine (ISR)</strong>, then resume exactly where it left off. You don't need to keep checking flags in a loop.</p>
+          <ol>
+            <li>Enable the source and the global switch in <code>IE</code>, e.g. <code>SETB ET0</code> and <code>SETB EA</code>, or <code>MOV IE,#82H</code>.</li>
+            <li>When the event happens its flag is set. The CPU finishes the current instruction, <strong>pushes the PC</strong> onto the stack and jumps to the vector address.</li>
+            <li>For timer and edge-triggered external interrupts the flag is <strong>cleared automatically</strong>. For the serial port you must clear <code>RI</code>/<code>TI</code> yourself.</li>
+            <li>The ISR ends with <strong><code>RETI</code></strong> (not <code>RET</code>), which pops the PC and re-enables interrupts of that priority level.</li>
+          </ol>
+          <div class="callout"><p><strong>ISR rules:</strong> keep it short. If you change <code>A</code>, <code>PSW</code> or <code>R0</code>–<code>R7</code>, save them with <code>PUSH</code>/<code>POP</code>, because the main program was using them. Put <code>LJMP</code> at the vector, because there are only 8 bytes before the next one.</p></div>
+          <h3>Program layout with an interrupt</h3>
+<pre><code>        ORG  0000H
+        LJMP MAIN              ; skip over the vector table
+        ORG  000BH             ; Timer 0 vector
+        LJMP T0_ISR
+
+        ORG  0030H             ; main program starts after the vectors
+MAIN:   MOV  SP,#5FH
+        MOV  TMOD,#01H         ; Timer 0, mode 1
+        MOV  TH0,#...          ; first reload value
+        MOV  TL0,#...
+        SETB ET0               ; enable the Timer 0 interrupt
+        SETB EA                ; enable interrupts globally
+        SETB TR0               ; start the timer
+LOOP:   ...                    ; the main program keeps running
+        SJMP LOOP
+
+T0_ISR: PUSH ACC               ; save everything the ISR changes
+        PUSH PSW
+        ...                    ; reload TH0/TL0 (mode 1), do the work
+        POP  PSW
+        POP  ACC
+        RETI</code></pre>
+
+          <h3>Enable, trigger and priority</h3>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Register</th><th>7</th><th>6</th><th>5</th><th>4</th><th>3</th><th>2</th><th>1</th><th>0</th></tr></thead>
+              <tbody>
+                <tr><td><code>IE</code> (A8H)</td><td>EA</td><td>—</td><td>ET2</td><td>ES</td><td>ET1</td><td>EX1</td><td>ET0</td><td>EX0</td></tr>
+                <tr><td><code>IP</code> (B8H)</td><td>—</td><td>—</td><td>PT2</td><td>PS</td><td>PT1</td><td>PX1</td><td>PT0</td><td>PX0</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <ul>
+            <li><strong>External interrupts</strong> (INT0 = P3.2, INT1 = P3.3) are set by <code>IT0</code>/<code>IT1</code> in <code>TCON</code>. <code>IT0 = 1</code> means <strong>falling-edge</strong> triggered: one interrupt per high-to-low change. <code>IT0 = 0</code> means <strong>low-level</strong> triggered: it keeps interrupting for as long as the pin stays LOW, which is rarely what you want for a button.</li>
+            <li><strong>Priority:</strong> setting a bit in <code>IP</code> makes that source high priority. A high-priority interrupt can interrupt a low-priority ISR, but not the other way round.</li>
+            <li><strong>Same priority:</strong> if two interrupts are pending at once they are served in the order INT0 → Timer 0 → INT1 → Timer 1 → Serial → Timer 2.</li>
+          </ul>
+          <p>Examples: <a href="examples.html#Matrix_4x4_Keypad_with_Buzzer">Timer 0 interrupt</a>, <a href="examples.html#IR_to_7_Segment_Display">external interrupt 0</a>.</p>
+        </section>
+
+        <!-- ========================================================== -->
+        <section id="communication">
+          <h2>Communicating with the chip</h2>
+          <h3>Serial port (UART) ↔ your PC</h3>
+          <p>The UART sends bytes one bit at a time on <strong>TXD (P3.1)</strong> and receives on <strong>RXD (P3.0)</strong>. On the board these pins go to the CH340 chip, which appears on your PC as a <strong>COM port</strong>. That is the same USB cable you program with.</p>
+          <figure class="diagram">
+            <svg viewBox="0 0 730 150" role="img" aria-labelledby="uart-title">
+            <title id="uart-title">UART frame for the character A: start bit, data bits 1 0 0 0 0 0 1 0 LSB first, stop bit</title>
+            <text class="dg-small" x="18" y="44" text-anchor="end">1</text>
+            <text class="dg-small" x="18" y="94" text-anchor="end">0</text>
+            <text class="dg-small" x="50.0" y="122" text-anchor="middle">idle</text>
+            <path class="dg-thin" stroke-dasharray="3 3" d="M76 28V104"/>
+            <text class="dg-accent-text" x="102.0" y="122" text-anchor="middle">start</text>
+            <path class="dg-thin" stroke-dasharray="3 3" d="M128 28V104"/>
+            <text class="dg-small" x="154.0" y="122" text-anchor="middle">D0</text>
+            <text class="dg-mono" x="154.0" y="22" text-anchor="middle">1</text>
+            <path class="dg-thin" stroke-dasharray="3 3" d="M180 28V104"/>
+            <text class="dg-small" x="206.0" y="122" text-anchor="middle">D1</text>
+            <text class="dg-mono" x="206.0" y="22" text-anchor="middle">0</text>
+            <path class="dg-thin" stroke-dasharray="3 3" d="M232 28V104"/>
+            <text class="dg-small" x="258.0" y="122" text-anchor="middle">D2</text>
+            <text class="dg-mono" x="258.0" y="22" text-anchor="middle">0</text>
+            <path class="dg-thin" stroke-dasharray="3 3" d="M284 28V104"/>
+            <text class="dg-small" x="310.0" y="122" text-anchor="middle">D3</text>
+            <text class="dg-mono" x="310.0" y="22" text-anchor="middle">0</text>
+            <path class="dg-thin" stroke-dasharray="3 3" d="M336 28V104"/>
+            <text class="dg-small" x="362.0" y="122" text-anchor="middle">D4</text>
+            <text class="dg-mono" x="362.0" y="22" text-anchor="middle">0</text>
+            <path class="dg-thin" stroke-dasharray="3 3" d="M388 28V104"/>
+            <text class="dg-small" x="414.0" y="122" text-anchor="middle">D5</text>
+            <text class="dg-mono" x="414.0" y="22" text-anchor="middle">0</text>
+            <path class="dg-thin" stroke-dasharray="3 3" d="M440 28V104"/>
+            <text class="dg-small" x="466.0" y="122" text-anchor="middle">D6</text>
+            <text class="dg-mono" x="466.0" y="22" text-anchor="middle">1</text>
+            <path class="dg-thin" stroke-dasharray="3 3" d="M492 28V104"/>
+            <text class="dg-small" x="518.0" y="122" text-anchor="middle">D7</text>
+            <text class="dg-mono" x="518.0" y="22" text-anchor="middle">0</text>
+            <path class="dg-thin" stroke-dasharray="3 3" d="M544 28V104"/>
+            <text class="dg-accent-text" x="570.0" y="122" text-anchor="middle">stop</text>
+            <path class="dg-thin" stroke-dasharray="3 3" d="M596 28V104"/>
+            <text class="dg-small" x="622.0" y="122" text-anchor="middle">idle</text>
+            <polyline class="dg-accent" points="24,40 76,40 76,90 128,90 128,40 180,40 180,90 232,90 284,90 336,90 388,90 440,90 440,40 492,40 492,90 544,90 544,40 596,40 648,40"/>
+            <text class="dg-small" x="336" y="142" text-anchor="middle">'A' = 41H = 0100 0001B, sent D0 first</text>
+            </svg>
+            <figcaption>Sending the character <code>'A'</code> (41H) at 9600 baud, 8N1: the line idles HIGH, a LOW <strong>start</strong> bit, 8 data bits <strong>least-significant bit first</strong>, then a HIGH <strong>stop</strong> bit. Each bit lasts 1/9600&nbsp;s ≈ 104&nbsp;µs.</figcaption>
+          </figure>
+<pre><code>        MOV TMOD,#20H   ; Timer 1, mode 2 (8-bit auto-reload) = baud rate generator
+        MOV TH1,#0FDH   ; 9600 baud at 11.0592 MHz
+        MOV SCON,#50H   ; UART mode 1 (8N1), receiver enabled (REN = 1)
+        SETB TR1        ; start the baud rate timer
+
+        MOV SBUF,#'A'   ; send a byte ...
+        JNB TI,$        ; ... wait until it has gone out
+        CLR TI
+
+        JNB RI,$        ; wait for a byte from the PC
+        MOV A,SBUF      ; read it
+        CLR RI</code></pre>
+          <div class="formula">baud = 2<sup>SMOD</sup> × f<sub>osc</sub> / (384 × (256 − TH1)) &nbsp;→&nbsp; 11 059 200 / (384 × 3) = 9600 with TH1 = FDH</div>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Baud rate</th><th><code>TH1</code> (Timer 1 mode 2)</th><th><code>SMOD</code> (PCON.7)</th></tr></thead>
+              <tbody>
+                <tr><td>1200</td><td><code>E8H</code></td><td>0</td></tr>
+                <tr><td>2400</td><td><code>F4H</code></td><td>0</td></tr>
+                <tr><td>4800</td><td><code>FAH</code></td><td>0</td></tr>
+                <tr><td><strong>9600</strong></td><td><code>FDH</code></td><td>0</td></tr>
+                <tr><td>19200</td><td><code>FDH</code></td><td>1 (<code>ORL PCON,#80H</code>)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><code>SCON</code> (98H) = <code>SM0 SM1 SM2 REN TB8 RB8 TI RI</code>. <code>SM0 SM1</code> choose the mode:</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Mode</th><th>SM0 SM1</th><th>Frame</th><th>Baud rate</th></tr></thead>
+              <tbody>
+                <tr><td>0</td><td>0 0</td><td>8-bit shift register (data on RXD, clock on TXD)</td><td>f<sub>osc</sub>/12, fixed</td></tr>
+                <tr><td><strong>1</strong></td><td>0 1</td><td><strong>Start + 8 data + stop</strong>: normal serial, used in this course</td><td>Set by Timer 1</td></tr>
+                <tr><td>2</td><td>1 0</td><td>Start + 9 data + stop</td><td>f<sub>osc</sub>/64 or /32, fixed</td></tr>
+                <tr><td>3</td><td>1 1</td><td>Start + 9 data + stop</td><td>Set by Timer 1</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><code>REN</code> = 1 enables the receiver. <code>TI</code> is set when a byte has finished sending and <code>RI</code> when a byte has arrived. Both must be cleared by your program, even when the serial interrupt (<code>ES</code>) is used.</p>
+          <p><strong>On the PC side</strong>, open any serial terminal on the board's COM port at <strong>9600 baud, 8 data bits, no parity, 1 stop bit</strong>. STC-ISP has one built in: the <em>USB-CDC/UART Helper</em> tab (check <em>TXT-Mode</em> to see text). Close the terminal before you program the board, because only one program can use the COM port at a time. Full example: <a href="examples.html#Serial_Communication">Serial Terminal: Read/Write RAM</a>.</p>
+
+          <h3>Talking to other chips on the board</h3>
+          <p>The 8051 has only one hardware serial port, so the board's other chips are driven by <strong>bit-banging</strong>: toggling ordinary I/O pins in the exact pattern the protocol requires.</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Method</th><th>Wires</th><th>On the board</th><th>Example</th></tr></thead>
+              <tbody>
+                <tr><td>Parallel</td><td>8 data + control</td><td>LCD1602 (P0 + P2.5–P2.7)</td><td><a href="examples.html#LCD_Welcom">LCD Welcome</a></td></tr>
+                <tr><td>Shift register</td><td>data, clock, latch</td><td>74HC595 → LED matrix rows</td><td><a href="examples.html#LED_8x8_Matrix">LED Matrix</a></td></tr>
+                <tr><td>SPI</td><td>clock, data in, data out, chip select</td><td>XPT2046 ADC</td><td><a href="examples.html#ADC_Read_to_LCD">ADC to LCD</a></td></tr>
+                <tr><td>I²C</td><td>SDA, SCL (shared by many devices)</td><td>AT24C02 EEPROM</td><td><a href="examples.html#EEPROM_to_LCD">EEPROM Read/Write</a></td></tr>
+                <tr><td>1-Wire</td><td>one data line, strict timing</td><td>DS18B20 temperature sensor</td><td><a href="examples.html#Temperature_Sensor_7_Segment_Display_DS18B20">Thermometer</a></td></tr>
+                <tr><td>3-wire serial</td><td>CE, clock, I/O</td><td>DS1302 real-time clock</td><td><a href="examples.html#DS1302_Date_Time_to_LCD">RTC to LCD</a></td></tr>
+                <tr><td>Pulse timing (NEC IR)</td><td>one input + interrupt</td><td>IR receiver</td><td><a href="examples.html#IR_to_7_Segment_Display">IR Decoder</a></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ========================================================== -->
+        <section id="c-intro">
+          <h2>C with SDCC</h2>
+          <p>Everything on this page applies to C as well: the same chip, registers, timers and interrupts. In C you write <code>TMOD = 0x01;</code> instead of <code>MOV TMOD,#01H</code>, and the compiler produces the instructions. The course uses <strong>SDCC</strong>, a free 8051 C compiler (see <a href="getting-started.html#first-c">Getting Started</a> for installation).</p>
+          <ol class="flow">
+            <li><strong>.c</strong><span>your source</span></li>
+            <li><strong>sdcc -mmcs51</strong><span>compile + link</span></li>
+            <li><strong>.ihx</strong><span>Intel HEX</span></li>
+            <li><strong>packihx</strong><span>tidy the HEX</span></li>
+            <li class="hl"><strong>.hex</strong><span>open in STC-ISP</span></li>
+          </ol>
+          <p><code>build.bat</code> runs both commands. SDCC also writes useful side files: <code>.rst</code> (your C lines with the assembly generated for each), <code>.mem</code> (how much RAM and flash is used) and <code>.map</code> (where every variable and function ended up).</p>
+
+          <h3>Program layout</h3>
+<pre><code>#include &lt;8052.h&gt;              /* names for all SFRs and bits: P1, TMOD, TR0, P2_5 … */
+
+#define LED   P2_0              /* give pins meaningful names */
+#define K1    P3_1
+
+void main(void)
+{
+    TMOD = 0x01;                /* set up the hardware once */
+
+    for (;;) {                  /* main() must never return */
+        if (!K1)                /* button pressed (reads 0) */
+            LED = 0;            /* LED on (active LOW) */
+        else
+            LED = 1;
+    }
+}</code></pre>
+
+          <h3>Registers and pins</h3>
+          <ul>
+            <li><strong>Whole registers</strong> use their datasheet names: <code>P1 = 0xF0;</code> <code>TH0 = 0xFC;</code> <code>x = SBUF;</code></li>
+            <li><strong>Single bits</strong> use an underscore instead of a dot: <code>P2_5</code> is pin P2.5. Named bits work directly: <code>TR0 = 1;</code> <code>if (TF0)</code> <code>EA = 0;</code></li>
+            <li>To name a pin, use <code>#define BUZZER P2_5</code>. SDCC also lets you declare your own: <code>__sbit __at (0xA5) BUZZER;</code> and <code>__sfr __at (0x90) PORT1;</code>.</li>
+            <li>To change some bits of a port and leave the rest alone, mask them: <code>P2 = (P2 &amp; 0xE3) | (digit &lt;&lt; 2);</code> changes only P2.2–P2.4.</li>
+          </ul>
+
+          <h3>Data types on the 8051</h3>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Type</th><th>Size</th><th>Range</th><th>Use it for</th></tr></thead>
+              <tbody>
+                <tr><td><code>__bit</code></td><td>1 bit</td><td>0 or 1</td><td>Flags. Stored in bit-addressable RAM, very cheap.</td></tr>
+                <tr><td><code>unsigned char</code></td><td>8 bits</td><td>0 … 255</td><td><strong>The default choice</strong>: counters, port values, table entries. It matches the CPU's word size.</td></tr>
+                <tr><td><code>signed char</code></td><td>8 bits</td><td>−128 … 127</td><td>Small signed values. In SDCC plain <code>char</code> is <strong>unsigned</strong>.</td></tr>
+                <tr><td><code>unsigned int</code></td><td>16 bits</td><td>0 … 65535</td><td>Timer reload values, larger counts. About twice the code and time of a <code>char</code>.</td></tr>
+                <tr><td><code>unsigned long</code></td><td>32 bits</td><td>0 … 4 294 967 295</td><td>Only when really needed: slow on an 8-bit CPU.</td></tr>
+                <tr><td><code>float</code></td><td>32 bits</td><td></td><td>Avoid: pulls in a large maths library and is very slow.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Assembly and C side by side</h3>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Task</th><th>Assembly</th><th>C (SDCC)</th></tr></thead>
+              <tbody>
+                <tr><td>Set / clear a pin</td><td><code>SETB P2.0</code> · <code>CLR P2.0</code></td><td><code>P2_0 = 1;</code> · <code>P2_0 = 0;</code></td></tr>
+                <tr><td>Write a port</td><td><code>MOV P1,#0FH</code></td><td><code>P1 = 0x0F;</code></td></tr>
+                <tr><td>Test a button</td><td><code>JB P3.1,NOT_PRESSED</code></td><td><code>if (!P3_1) { … }</code></td></tr>
+                <tr><td>Repeat 10 times</td><td><code>MOV R7,#10</code> … <code>DJNZ R7,LOOP</code></td><td><code>for (i = 0; i &lt; 10; i++) { … }</code></td></tr>
+                <tr><td>Read a table in flash</td><td><code>MOV DPTR,#TABLE</code> · <code>MOVC A,@A+DPTR</code></td><td><code>x = TABLE[i];</code> with <code>const unsigned char TABLE[] = {…};</code></td></tr>
+                <tr><td>Wait for a flag</td><td><code>JNB TF0,$</code></td><td><code>while (!TF0) ;</code></td></tr>
+                <tr><td>Subroutine</td><td><code>LCALL DELAY</code> … <code>RET</code></td><td><code>delay();</code> and <code>void delay(void) { … }</code></td></tr>
+                <tr><td>Timer 0 interrupt</td><td><code>ORG 000BH</code> · <code>LJMP T0_ISR</code> … <code>RETI</code></td><td><code>void t0_isr(void) __interrupt(1) { … }</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Why learn both?</strong> C is faster to write and easier to read and change. Assembly gives exact control over size and timing. For the Bird Song project, the C build uses about 15% more flash (1505 vs 1307 bytes) and each 5&nbsp;ms tick takes slightly longer. The <code>.rst</code> file shows exactly what your C turned into. See the C examples on the <a href="examples.html">Examples</a> page.</p>
+        </section>
+
+        <!-- ========================================================== -->
+        <section id="c-more">
+          <h2>C: memory, interrupts &amp; timing</h2>
+
+          <h3>Where your data goes</h3>
+          <p>SDCC's default <strong>small model</strong> keeps variables in the 256&nbsp;bytes of internal RAM, and the stack uses whatever RAM is left. RAM is the scarcest resource on the chip, so it matters where data ends up:</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Declaration</th><th>Stored in</th><th>Note</th></tr></thead>
+              <tbody>
+                <tr><td><code>unsigned char count;</code> (global)</td><td>Internal RAM</td><td>1 byte of RAM</td></tr>
+                <tr><td><code>const unsigned char TABLE[] = {…};</code></td><td><strong>Flash</strong></td><td>No RAM used. Use this (or <code>__code</code>) for every lookup table.</td></tr>
+                <tr><td><code>unsigned char TABLE[] = {…};</code> (not const)</td><td>RAM <em>and</em> flash</td><td>Copied into RAM at start-up. A 1&nbsp;KB sound table simply won't fit.</td></tr>
+                <tr><td>Local variables</td><td>Fixed RAM locations</td><td>By default SDCC functions are <strong>not reentrant</strong>: locals are not on the stack.</td></tr>
+                <tr><td><code>"text"</code> string literals</td><td>Flash</td><td>Pass them as <code>const char *</code>.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Check the result in the <code>.mem</code> file after every build. It shows the RAM map and the flash size (the STC89C52RC has 8&nbsp;KB).</p>
+
+          <h3>Interrupts in C</h3>
+<pre><code>volatile unsigned char ticks;           /* shared with the ISR */
+
+void timer0_isr(void) __interrupt(1);   /* prototype: REQUIRED in the file with main() */
+
+void timer0_isr(void) __interrupt(1)    /* 1 = Timer 0 */
+{
+    TH0 = 0x4C;                         /* keep it short: reload, count, set a flag */
+    TL0 = 0x00;
+    ticks++;
+}</code></pre>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th><code>__interrupt(n)</code></th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
+              <tbody>
+                <tr><td>Source</td><td>INT0</td><td>Timer 0</td><td>INT1</td><td>Timer 1</td><td>Serial</td><td>Timer 2</td></tr>
+                <tr><td>Vector</td><td>0003H</td><td>000BH</td><td>0013H</td><td>001BH</td><td>0023H</td><td>002BH</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <ul>
+            <li><strong>The prototype must be visible in the file that contains <code>main()</code>.</strong> If it's missing, SDCC doesn't put the <code>LJMP</code> at the vector, and the interrupt silently never runs.</li>
+            <li><strong>Don't call functions from an ISR.</strong> SDCC then saves A, B, DPTR, PSW and R0–R7 on every interrupt: 15 pushes plus 15 pops, which is slow, and the called function isn't reentrant either. A simple ISR that only reads and writes SFRs and globals generates no saving at all, the same code as in assembly.</li>
+            <li><strong>Shared variables</strong> should be <code>volatile</code>, so the compiler re-reads them every time.</li>
+            <li><strong>Multi-byte updates</strong> must not be interrupted halfway. Protect them with <code>EA = 0; … EA = 1;</code> or with <code>__critical { … }</code>.</li>
+          </ul>
+
+          <h3>Timing</h3>
+          <p>Don't time things with empty loops in C: their length depends on the compiler and its options. Use a timer, exactly as in assembly:</p>
+<pre><code>void delay_1ms(void)                    /* Timer 0 in mode 1, set once: TMOD = 0x01 */
+{
+    TH0 = 0xFC;  TL0 = 0x67;            /* 921 counts ≈ 1 ms */
+    TR0 = 1;
+    while (!TF0) ;
+    TR0 = 0;  TF0 = 0;
+}</code></pre>
+
+          <h3>SDCC vs Keil C51</h3>
+          <p>Many books and websites (including the board manual) use the commercial Keil C51 compiler, whose syntax is slightly different. Translate like this:</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th></th><th>Keil C51</th><th>SDCC (this course)</th></tr></thead>
+              <tbody>
+                <tr><td>Header</td><td><code>#include &lt;reg52.h&gt;</code></td><td><code>#include &lt;8052.h&gt;</code></td></tr>
+                <tr><td>Name a pin</td><td><code>sbit LED = P2^0;</code></td><td><code>#define LED P2_0</code></td></tr>
+                <tr><td>Declare an SFR</td><td><code>sfr P1 = 0x90;</code></td><td><code>__sfr __at (0x90) P1;</code></td></tr>
+                <tr><td>Interrupt routine</td><td><code>void isr(void) interrupt 1</code></td><td><code>void isr(void) __interrupt(1)</code></td></tr>
+                <tr><td>Table in flash</td><td><code>unsigned char code T[] = {…};</code></td><td><code>const unsigned char T[] = {…};</code></td></tr>
+                <tr><td>Bit variable</td><td><code>bit flag;</code></td><td><code>__bit flag;</code></td></tr>
+                <tr><td>Register bank</td><td><code>using 1</code></td><td><code>__using(1)</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Common C mistakes on the 8051</h3>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+              <tbody>
+                <tr><td>ISR prototype missing from the file with <code>main()</code></td><td>The interrupt never runs; no error</td><td>Add <code>void isr(void) __interrupt(n);</code> above <code>main()</code></td></tr>
+                <tr><td>Big table without <code>const</code></td><td>RAM overflows: link error, or strange crashes</td><td>Declare tables <code>const</code></td></tr>
+                <tr><td><code>P2.5</code> or <code>sbit</code> in SDCC</td><td>Syntax error</td><td>Use <code>P2_5</code> and <code>#define</code></td></tr>
+                <tr><td><code>main()</code> returns</td><td>The program restarts or hangs</td><td>End <code>main()</code> with <code>for (;;)</code></td></tr>
+                <tr><td><code>int</code> everywhere</td><td>Code is bigger and slower than needed</td><td>Use <code>unsigned char</code> when values fit in 0–255</td></tr>
+                <tr><td>Calling functions from the ISR</td><td>Slow interrupts, and corrupted data if main uses the same function</td><td>Set a flag in the ISR and do the work in <code>main()</code></td></tr>
+                <tr><td>Shared variable not <code>volatile</code></td><td>Main never sees the ISR's change (optimised away)</td><td>Declare it <code>volatile</code></td></tr>
+                <tr><td><code>printf</code> / <code>float</code></td><td>Several KB of flash used up</td><td>Write small helpers (see <a href="examples.html#serial_echo">serial_echo.c</a>)</td></tr>
+                <tr><td>Building in PowerShell with <code>&gt;</code></td><td><code>.hex</code> file with an encoding marker, program won't load or start</td><td>Use Command Prompt and <code>build.bat</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ========================================================== -->
+        <section id="programming">
+          <h2>Programming the chip</h2>
+          <p>Getting your program onto the chip takes two steps. First the <strong>assembler</strong> turns your source into machine code. Then the <strong>programmer</strong> sends that code over the serial port to the boot program inside the chip, which writes it into flash.</p>
+          <ol class="flow">
+            <li><strong>.asm</strong><span>your source code</span></li>
+            <li><strong>MIDE-51</strong><span>assembles it</span></li>
+            <li><strong>.hex</strong><span>machine code (Intel HEX)</span></li>
+            <li><strong>STC-ISP</strong><span>on the PC</span></li>
+            <li><strong>USB → CH340</strong><span>becomes UART</span></li>
+            <li class="hl"><strong>ISP boot program</strong><span>in the chip, on P3.0/P3.1</span></li>
+            <li><strong>Flash</strong><span>runs from 0000H</span></li>
+          </ol>
+
+          <h3>What's in a .hex file</h3>
+          <p>An Intel HEX file is plain text you can open in Notepad. Each line is one record. For the first program in <a href="getting-started.html">Getting Started</a> (<code>CLR P2.0</code>, machine code <code>C2 A0</code>) it looks like this:</p>
+<pre><code>:02 0000 00 C2A0 9C      ← 2 bytes, at address 0000H, type 00 (data), bytes C2 A0, checksum 9C
+:00 0000 01 FF           ← type 01: end of file</code></pre>
+          <p class="section-note">Spaces added for readability; the real file has none. The checksum makes all bytes on the line add up to 00H, so STC-ISP can detect a corrupted file.</p>
+
+          <h3>Why you have to power-cycle the board</h3>
+          <p>STC chips don't need a separate hardware programmer, because a small <strong>ISP (In-System Programming) boot program</strong> is stored in a protected part of the flash. It runs <strong>only right after power-on</strong>:</p>
+          <ol>
+            <li>You click <strong>Download/Program</strong>. STC-ISP starts sending a handshake pattern on the COM port again and again (<em>“Checking target MCU…”</em>).</li>
+            <li>You switch the board <strong>off and on</strong>. The boot program starts and listens on RXD for a moment.</li>
+            <li>It hears the handshake and replies with the chip's model and firmware version. STC-ISP then sends your code, which the boot program writes into flash and verifies.</li>
+            <li>After <em>“Complete!”</em> the chip starts your program at <code>0000H</code>. If no handshake arrives after a power-on, the boot program jumps straight to your program.</li>
+          </ol>
+          <p>Pressing the reset button doesn't work for this: the boot program only listens after a real power-on, which is why it's called a <strong>cold start</strong>. <em>(The board maker's own PZ-ISP tool can trigger this automatically, but the course uses STC-ISP.)</em></p>
+
+          <h3>STC-ISP options worth knowing</h3>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Option</th><th>Recommended</th><th>Why</th></tr></thead>
+              <tbody>
+                <tr><td>MCU Type</td><td><code>STC89C52RC/LE52RC</code></td><td>Must match the chip, or the handshake fails.</td></tr>
+                <tr><td>Enable 6T (double-speed) mode</td><td>Unchecked</td><td>6T doubles every delay and baud rate calculation (see <a href="#clock">Clock &amp; timing</a>).</td></tr>
+                <tr><td>Min / Max Baud</td><td>Leave default</td><td>Speed used only for the download itself. Lower the max if downloads fail on a long cable.</td></tr>
+                <tr><td>USB-CDC/UART Helper tab</td><td>—</td><td>Built-in serial terminal for talking to your program (see <a href="#communication">Communication</a>).</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Step-by-step instructions with screenshots are in <a href="getting-started.html">Getting Started</a>.</p>
+        </section>
+
+        <!-- ========================================================== -->
+        <section id="mistakes">
+          <h2>Common mistakes</h2>
+          <p>Most “my program doesn't work” problems in this course are one of these.</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr></thead>
+              <tbody>
+                <tr><td><code>MOV A,30H</code> when you meant <code>MOV A,#30H</code></td><td>A gets the contents of RAM address 30H, not the number 30H</td><td>Use <code>#</code> for constants</td></tr>
+                <tr><td><code>MOV A,#FFH</code></td><td>Assembler error: <code>FFH</code> is read as a label</td><td>Write hex with a leading digit: <code>#0FFH</code></td></tr>
+                <tr><td>No loop at the end of the program</td><td>The CPU runs into empty flash (FFH bytes) and does random things</td><td>End with <code>SJMP $</code> or loop back to the start</td></tr>
+                <tr><td>Stack left at 07H</td><td>Calls and interrupts overwrite R0–R7 of other banks or your variables</td><td><code>MOV SP,#5FH</code> at the start</td></tr>
+                <tr><td><code>RET</code> at the end of an ISR</td><td>Works once, then no more interrupts of that level</td><td>End every ISR with <code>RETI</code></td></tr>
+                <tr><td>ISR changes A, PSW or R0–R7 without saving them</td><td>The main program's values change at random moments</td><td><code>PUSH</code>/<code>POP</code> them, or switch register bank</td></tr>
+                <tr><td>Interrupt enabled but never fires</td><td>Nothing happens</td><td>Check the source bit (<code>ET0</code>…), <code>EA</code>, <code>TRx</code>, and the <code>LJMP</code> at the right vector</td></tr>
+                <tr><td>Forgetting <code>CLR TF0</code> / <code>CLR RI</code> / <code>CLR TI</code> when polling</td><td>The next wait finishes instantly</td><td>Clear the flag after you've used it</td></tr>
+                <tr><td>Mode 1 timer not reloaded</td><td>The second delay is 71&nbsp;ms long instead of what you set</td><td>Reload <code>THx</code>/<code>TLx</code> before every delay (or use mode 2)</td></tr>
+                <tr><td><code>MOV A,@A+DPTR</code> for a table in flash</td><td>Assembler error: there is no such instruction</td><td>Tables in flash are read with <code>MOVC</code></td></tr>
+                <tr><td><code>SUBB</code> without <code>CLR C</code></td><td>Result is sometimes 1 too small</td><td><code>CLR C</code> before subtracting</td></tr>
+                <tr><td><code>PUSH A</code> or <code>PUSH R0</code></td><td>Assembler error: PUSH/POP need a direct address</td><td><code>PUSH ACC</code>, <code>PUSH 00H</code></td></tr>
+                <tr><td>Reading a pin you wrote 0 to</td><td>It always reads 0</td><td>Write 1 to a pin before using it as an input</td></tr>
+                <tr><td>“Target out of range”</td><td>Assembler error on <code>SJMP</code>/<code>JB</code>/<code>DJNZ</code>…</td><td>Use <code>LJMP</code>, or restructure (see <a href="#assembly">jumps</a>)</td></tr>
+                <tr><td>6T mode checked in STC-ISP</td><td>Every delay and tone is twice as fast, and serial is garbled</td><td>Uncheck it and program again</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ========================================================== -->
+        <section id="sfr">
+          <h2>SFR quick reference</h2>
+          <p class="section-note">Registers you'll use in this course, from the STC89C52RC datasheet. Registers whose address ends in 0H or 8H are bit-addressable (<code>SETB TR0</code> works).</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>SFR</th><th>Address</th><th>Bits (7 → 0)</th><th>Reset</th></tr></thead>
+              <tbody>
+                <tr><td><code>P0</code></td><td>80H</td><td>P0.7 … P0.0</td><td>FFH</td></tr>
+                <tr><td><code>SP</code></td><td>81H</td><td>stack pointer</td><td>07H</td></tr>
+                <tr><td><code>DPL</code> / <code>DPH</code></td><td>82H / 83H</td><td>DPTR low / high</td><td>00H</td></tr>
+                <tr><td><code>PCON</code></td><td>87H</td><td>SMOD SMOD0 — POF GF1 GF0 PD IDL</td><td>00x1 0000B</td></tr>
+                <tr><td><code>TCON</code></td><td>88H</td><td>TF1 TR1 TF0 TR0 IE1 IT1 IE0 IT0</td><td>00H</td></tr>
+                <tr><td><code>TMOD</code></td><td>89H</td><td>GATE C/T M1 M0 (T1) · GATE C/T M1 M0 (T0)</td><td>00H</td></tr>
+                <tr><td><code>TL0</code> / <code>TL1</code></td><td>8AH / 8BH</td><td>timer low bytes</td><td>00H</td></tr>
+                <tr><td><code>TH0</code> / <code>TH1</code></td><td>8CH / 8DH</td><td>timer high bytes</td><td>00H</td></tr>
+                <tr><td><code>P1</code></td><td>90H</td><td>P1.7 … P1.0</td><td>FFH</td></tr>
+                <tr><td><code>SCON</code></td><td>98H</td><td>SM0 SM1 SM2 REN TB8 RB8 TI RI</td><td>00H</td></tr>
+                <tr><td><code>SBUF</code></td><td>99H</td><td>serial data buffer</td><td>xxH</td></tr>
+                <tr><td><code>P2</code></td><td>A0H</td><td>P2.7 … P2.0</td><td>FFH</td></tr>
+                <tr><td><code>IE</code></td><td>A8H</td><td>EA — ET2 ES ET1 EX1 ET0 EX0</td><td>00H</td></tr>
+                <tr><td><code>P3</code></td><td>B0H</td><td>P3.7 … P3.0</td><td>FFH</td></tr>
+                <tr><td><code>IP</code></td><td>B8H</td><td>— — PT2 PS PT1 PX1 PT0 PX0</td><td>xx00 0000B</td></tr>
+                <tr><td><code>PSW</code></td><td>D0H</td><td>CY AC F0 RS1 RS0 OV F1 P</td><td>00H</td></tr>
+                <tr><td><code>ACC</code></td><td>E0H</td><td>accumulator A</td><td>00H</td></tr>
+                <tr><td><code>B</code></td><td>F0H</td><td>B register</td><td>00H</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>For everything else (Timer 2, watchdog, internal EEPROM, power-saving modes) see the <a href="https://www.stcmicro.com/datasheet/STC89C51RC-en.pdf" target="_blank" rel="noopener">STC89C52RC datasheet ↗</a> and chapters 3 and 5 of the <a href="references.html#manual">board manual</a>.</p>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <a class="brand" href="index.html"><span class="brand-mark">8051</span> EE 390</a>
+        <p>Course website for the 8051 microcontroller lab on the Puzhong 51 A2 board (STC89C52RC).</p>
+      </div>
+      <nav aria-label="Learn">
+        <h2>Learn</h2>
+        <a href="getting-started.html">Getting Started</a>
+        <a href="lab-kit.html">Lab Kit</a>
+        <a href="wiki.html">Wiki</a>
+        <a href="examples.html">Examples</a>
+      </nav>
+      <nav aria-label="Coursework">
+        <h2>Coursework</h2>
+        <a href="assignments.html">Assignments</a>
+        <a href="projects.html">Projects</a>
+      </nav>
+      <nav aria-label="Resources">
+        <h2>Resources</h2>
+        <a href="references.html">References</a>
+        <a href="https://github.com/EE390/course_website/issues">Report a site problem</a>
+      </nav>
+    </div>
+    <div class="wrap footer-legal">
+      <p>© 2026 EE 390 course staff · Code: <a href="https://github.com/EE390/course_website/blob/main/LICENSE">MIT License</a> · Written content: <a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a> · Third-party manuals and software belong to their owners · <a href="https://github.com/EE390/course_website">Source on GitHub</a></p>
+    </div>
+  </footer>
+  <script src="assets/js/site.js"></script>
+  <script src="assets/js/wiki.js"></script>
+</body>
+</html>

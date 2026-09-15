@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Getting Started — EE 390</title>
+  <meta name="description" content="Install MIDE-51, SDCC and STC-ISP and program the 8051 development board for the first time, in assembly or C.">
+  <link rel="canonical" href="https://ee390.github.io/course_website/getting-started.html">
+  <meta name="theme-color" content="#0b6e4f">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="EE 390">
+  <meta property="og:title" content="Getting Started — EE 390">
+  <meta property="og:description" content="Install MIDE-51, SDCC and STC-ISP and program the 8051 development board for the first time, in assembly or C.">
+  <meta property="og:url" content="https://ee390.github.io/course_website/getting-started.html">
+  <meta property="og:image" content="https://ee390.github.io/course_website/assets/img/setup/board-annotated.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔌</text></svg>">
+  <link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="index.html"><span class="brand-mark">8051</span> EE 390</a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+      <nav class="site-nav" id="site-nav">
+        <a href="index.html">Home</a>
+        <a href="getting-started.html">Getting Started</a>
+        <a href="lab-kit.html">Lab Kit</a>
+        <a href="wiki.html">Wiki</a>
+        <a href="examples.html">Examples</a>
+        <a href="assignments.html">Assignments</a>
+        <a href="projects.html">Projects</a>
+        <a href="references.html">References</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap" id="main">
+    <header class="page-header">
+      <h1 class="page-title">Getting Started</h1>
+      <p class="page-lead">Install the tools, connect the board and burn your first program, in <strong>assembly</strong>, <strong>C</strong>, or both. By the end of this page the left-most LED on your board will be on.</p>
+    </header>
+
+    <h2>What you need</h2>
+    <div class="grid">
+      <div class="card">
+        <span class="card-icon" aria-hidden="true">🔌</span>
+        <h3>Hardware</h3>
+        <p>Puzhong 51 A2 development board (STC89C52) and its USB cable. Optional: a 5&nbsp;V DC motor.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon" aria-hidden="true">✍️</span>
+        <h3>MIDE-51 <span class="lang-badge lang-asm">ASM</span></h3>
+        <p>Free editor + assembler. Turns your <code>.asm</code> file into a <code>.hex</code> file. You can also use it as the editor for C files.</p>
+        <div class="btn-row"><a class="btn btn-sm" href="http://www.opcube.com/home.html" target="_blank" rel="noopener">Download (opcube.com) ↗</a></div>
+      </div>
+      <div class="card">
+        <span class="card-icon" aria-hidden="true">🧮</span>
+        <h3>SDCC <span class="lang-badge lang-c">C</span></h3>
+        <p>Free C compiler for the 8051. Install <strong>version 4.5</strong> and tick <em>“Add to PATH”</em>. Use it with our <code>build.bat</code> helper.</p>
+        <div class="btn-row">
+          <a class="btn btn-sm" href="https://sdcc.sourceforge.net/" target="_blank" rel="noopener">Download (sdcc.sourceforge.net) ↗</a>
+          <a class="btn btn-sm btn-primary" href="files/c/build.bat" download>build.bat</a>
+        </div>
+      </div>
+      <div class="card">
+        <span class="card-icon" aria-hidden="true">⚡</span>
+        <h3>STC-ISP</h3>
+        <p>Programmer that writes the <code>.hex</code> file onto the microcontroller over USB.</p>
+        <div class="btn-row">
+          <a class="btn btn-sm btn-primary" href="files/stc-isp-v6.91K.exe" download>Download v6.91K (.exe)</a>
+          <a class="btn btn-sm" href="https://www.stcmicro.com/rjxz.html" target="_blank" rel="noopener">Official site ↗</a>
+        </div>
+      </div>
+      <div class="card">
+        <span class="card-icon" aria-hidden="true">🧩</span>
+        <h3>CH340 USB driver</h3>
+        <p>Usually installs automatically. Install it manually if no COM port appears for the board.</p>
+        <div class="btn-row"><a class="btn btn-sm" href="https://www.wch-ic.com/downloads/CH341SER_EXE.html" target="_blank" rel="noopener">Download (wch-ic.com) ↗</a></div>
+      </div>
+    </div>
+
+    <h2>Prefer video?</h2>
+    <p class="section-note">A short walkthrough of programming the board with STC-ISP.</p>
+    <video class="video" controls preload="metadata" src="files/programming-the-board.mp4">
+      Your browser can't play this video. <a href="files/programming-the-board.mp4">Download it instead</a>.
+    </video>
+
+    <h2>Step by step</h2>
+    <ol class="steps">
+      <li>
+        <h3>Connect the board</h3>
+        <p>Plug the board into your computer with the USB cable. Note where the blue <strong>power button</strong> is — you will need it in step 6.</p>
+        <figure>
+          <img src="assets/img/setup/board-annotated.jpg" alt="Development board with the P2 header, LEDs on P2, power button, USB input and push buttons K1 and K2 highlighted" width="580" height="504" loading="lazy">
+          <figcaption>The LEDs are on port P2; the USB input and power button are on the left edge.</figcaption>
+        </figure>
+      </li>
+
+      <li>
+        <h3>Find the board's COM port</h3>
+        <p>Open <strong>Device Manager → Ports (COM &amp; LPT)</strong> and look for <em>USB-SERIAL CH340 (COMx)</em>. Remember the number. If nothing appears, install the CH340 driver above and reconnect.</p>
+      </li>
+
+      <li>
+        <h3 id="first-c">Write and build your first program</h3>
+        <p>The program turns on the LED connected to <code>P2.0</code>. The LEDs are active-low, so writing 0 to the pin turns the LED on. Pick the language you're using:</p>
+        <div class="tabs" data-tabs>
+          <div class="tab-list" role="tablist" aria-label="Language">
+            <button data-tab="asm">Assembly</button>
+            <button data-tab="c">C</button>
+          </div>
+          <div data-panel="asm">
+            <p>In MIDE-51, create a new file, save it as <code>on.asm</code>, and type:</p>
+<pre><code>CLR P2.0
+END</code></pre>
+            <p><strong>Build</strong> the file. MIDE-51 writes <code>on.hex</code> into the same folder as your <code>.asm</code> file.</p>
+          </div>
+          <div data-panel="c">
+            <p>Create a folder with <code>build.bat</code> in it, and save this as <code>on.c</code> in the same folder:</p>
+<pre><code>#include &lt;8052.h&gt;      /* names for the 8051 registers and pins */
+
+void main(void)
+{
+    P2_0 = 0;             /* LED D1 on */
+    while (1)             /* never return from main */
+        ;
+}</code></pre>
+            <p>Open <strong>Command Prompt</strong> in that folder (type <code>cmd</code> in Explorer's address bar) and run:</p>
+<pre><code>build on</code></pre>
+            <p>This runs <code>sdcc -mmcs51 on.c</code> and <code>packihx</code>, and writes <code>on.hex</code>. If it says <em>'sdcc' is not recognized</em>, SDCC is not on your PATH: reinstall it with “Add to PATH” ticked.</p>
+          </div>
+        </div>
+      </li>
+
+      <li>
+        <h3>Open STC-ISP and select the MCU and port</h3>
+        <p>Set <strong>MCU Type</strong> to <code>STC89C52RC/LE52RC</code> (under <em>STC89C52RC Series</em>) and set <strong>Scan Port</strong> to the COM port from step 2.</p>
+        <figure>
+          <img src="assets/img/setup/isp-main-window.png" alt="STC-ISP main window with MCU Type, Scan Port, Open Code File and Download/Program highlighted" width="813" height="595" loading="lazy">
+          <figcaption>The four controls you use: MCU Type, Scan Port, Open Code File, Download/Program.</figcaption>
+        </figure>
+        <figure>
+          <img src="assets/img/setup/isp-mcu-type.png" alt="MCU Type drop-down expanded with STC89C52RC/LE52RC selected" width="323" height="371" loading="lazy">
+          <figcaption>Choose STC89C52RC/LE52RC.</figcaption>
+        </figure>
+      </li>
+
+      <li>
+        <h3>Load the .hex file</h3>
+        <p>Click <strong>Open Code File</strong> and select <code>on.hex</code>. The machine code appears in the <em>Code Buffer</em> tab. For the assembly program it is just <code>C2 A0</code> (<code>CLR P2.0</code>). The C version is longer, because SDCC adds start-up code that sets up the stack and clears RAM before <code>main()</code> runs.</p>
+        <figure>
+          <img src="assets/img/setup/isp-code-buffer.png" alt="Code Buffer tab showing bytes C2 A0 C2 A2" width="465" height="308" loading="lazy">
+        </figure>
+      </li>
+
+      <li>
+        <h3>Program the board (cold start)</h3>
+        <p>Click <strong>Download/Program</strong>. STC-ISP shows <em>Checking target MCU…</em> and waits. <strong>Now switch the board OFF and ON</strong> with the blue power button — programming only starts after a power cycle.</p>
+        <figure>
+          <img src="assets/img/setup/isp-checking.png" alt="STC-ISP log showing Checking target MCU" width="486" height="219" loading="lazy">
+          <figcaption>Waiting for the power cycle.</figcaption>
+        </figure>
+        <figure>
+          <img src="assets/img/setup/isp-complete.png" alt="STC-ISP log showing MCU type STC89C52RC and Complete" width="483" height="211" loading="lazy">
+          <figcaption>“Complete!” means the program is on the chip.</figcaption>
+        </figure>
+      </li>
+
+      <li>
+        <h3>Check the result</h3>
+        <p>The <strong>left-most LED</strong> should now be on. You are ready to write your own programs: try the <a href="examples.html">examples</a> (assembly and C) next, and read the <a href="wiki.html">Wiki</a> to learn how the chip works.</p>
+      </li>
+    </ol>
+
+    <h2>Troubleshooting</h2>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Symptom</th><th>Try this</th></tr></thead>
+        <tbody>
+          <tr><td>Stuck on “Checking target MCU…”</td><td>Power-cycle the board with the blue button <em>after</em> clicking Download/Program. Check that the COM port is correct.</td></tr>
+          <tr><td>No COM port for the board</td><td>Install the CH340 driver, try another USB cable (some cables are charge-only) or another USB port.</td></tr>
+          <tr><td>Programming succeeds but nothing happens</td><td>Make sure you loaded the newest <code>.hex</code> file, and that your code does not fall off the end — add an infinite loop such as <code>HERE: SJMP HERE</code> before <code>END</code>.</td></tr>
+          <tr><td>Wrong or garbled output on the LCD / 7-segment display</td><td>Both share port P0. Check the <a href="lab-kit.html">pin map</a> and the jumper settings described in the board manual.</td></tr>
+          <tr><td><span class="lang-badge lang-c">C</span> <em>'sdcc' is not recognized</em></td><td>SDCC is not installed or not on your PATH. Reinstall SDCC 4.5 and tick “Add to PATH”, then open a <em>new</em> Command Prompt.</td></tr>
+          <tr><td><span class="lang-badge lang-c">C</span> STC-ISP rejects the <code>.hex</code> file, or the program doesn't start</td><td>Build in <strong>Command Prompt</strong> with <code>build.bat</code>. In PowerShell, <code>packihx x.ihx &gt; x.hex</code> adds an invisible encoding marker to the start of the file, which can hide its first line (the reset jump) from programming tools.</td></tr>
+          <tr><td><span class="lang-badge lang-c">C</span> Interrupt routine never runs</td><td>The ISR's prototype, e.g. <code>void timer0_isr(void) __interrupt(1);</code>, must appear in the file that contains <code>main()</code>. Also check <code>ET0</code>/<code>EA</code> and <code>TR0</code>.</td></tr>
+          <tr><td>Serial terminal shows garbage</td><td>Use 9600 baud, 8 data bits, no parity, 1 stop bit (with <code>TH1 = FDH</code> on the 11.0592&nbsp;MHz crystal).</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <a class="brand" href="index.html"><span class="brand-mark">8051</span> EE 390</a>
+        <p>Course website for the 8051 microcontroller lab on the Puzhong 51 A2 board (STC89C52RC).</p>
+      </div>
+      <nav aria-label="Learn">
+        <h2>Learn</h2>
+        <a href="getting-started.html">Getting Started</a>
+        <a href="lab-kit.html">Lab Kit</a>
+        <a href="wiki.html">Wiki</a>
+        <a href="examples.html">Examples</a>
+      </nav>
+      <nav aria-label="Coursework">
+        <h2>Coursework</h2>
+        <a href="assignments.html">Assignments</a>
+        <a href="projects.html">Projects</a>
+      </nav>
+      <nav aria-label="Resources">
+        <h2>Resources</h2>
+        <a href="references.html">References</a>
+        <a href="https://github.com/EE390/course_website/issues">Report a site problem</a>
+      </nav>
+    </div>
+    <div class="wrap footer-legal">
+      <p>© 2026 EE 390 course staff · Code: <a href="https://github.com/EE390/course_website/blob/main/LICENSE">MIT License</a> · Written content: <a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a> · Third-party manuals and software belong to their owners · <a href="https://github.com/EE390/course_website">Source on GitHub</a></p>
+    </div>
+  </footer>
+  <script src="assets/js/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+# OS and editor files
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*~
+
+# 8051 build output (ASEM-51 / MIDE-51 / SDCC / packihx)
+*.hex
+*.ihx
+*.lst
+*.rel
+*.rst
+*.sym
+*.map
+*.mem
+*.lk
+*.cdb
+*.omf
+*.adb
+*.asm.bak
+
+# SDCC writes an .asm next to each compiled .c; never commit those
+examples/c/*.asm
+files/c/*.asm
+
+# Local test and preview leftovers
+_probe*
+__pycache__/
+*.log
+
+# Instructor material lives in the private EE390/instructor repository.
+# These guards stop solutions being published by accident.
+instructor/
+*solution*

@@ -1,0 +1,12 @@
+name: Request or suggest content
+description: Something missing that would help, such as a wiki topic, an example or a clearer diagram.
+title: "[Request] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: request
+    attributes:
+      label: What would help?
+      description: Describe the topic, example or improvement, and where on the site it would fit.
+    validations:
+      required: true
