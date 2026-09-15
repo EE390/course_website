@@ -10,31 +10,33 @@ permissions:
   contents: read
 
 jobs:
-  links:
-    name: Internal links
+  site:
+    name: Pages, links, files
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Check links between pages and files
-        uses: lycheeverse/lychee-action@v2
+      - uses: actions/setup-python@v5
         with:
-          # --offline checks only links inside the repo; external sites are not contacted.
-          # 404.html uses absolute /course_website/ paths that only exist on GitHub Pages.
-          args: --offline --no-progress --exclude-path 404.html './**/*.html'
-          fail: true
+          python-version: "3.12"
+      # Required page tags, identical navigation, internal links and #anchors,
+      # examples list, every download linked, file-size limits, no instructor files.
+      - name: Run site checks
+        run: python .github/scripts/check_site.py
 
-  c-examples:
-    name: C examples compile (SDCC)
+  c-code:
+    name: C code compiles (SDCC)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install SDCC
         run: sudo apt-get update && sudo apt-get install -y sdcc
       - name: Compile every C example and starter without warnings
+        shell: bash
         run: |
           sdcc --version
+          shopt -s nullglob
           status=0
-          for f in examples/c/*.c files/*.c; do
+          for f in examples/c/*.c files/starters/*.c; do
             out=$(mktemp -d)
             log=$(sdcc -mmcs51 -o "$out/" "$f" 2>&1) || { echo "::error file=$f::build failed"; echo "$log"; status=1; continue; }
             if echo "$log" | grep -qi "warning"; then
@@ -44,16 +46,3 @@ jobs:
             fi
           done
           exit $status
-
-  no-solutions:
-    name: No instructor material
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Block solution and answer-key files
-        run: |
-          bad=$(git ls-files | grep -iE 'solution|answer[-_ ]?key|grading' || true)
-          if [ -n "$bad" ]; then
-            echo "::error::Instructor files must go to the private EE390/instructor repo:"; echo "$bad"; exit 1
-          fi
-          echo "clean"

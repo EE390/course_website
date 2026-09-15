@@ -1,17 +1,24 @@
 <!doctype html>
+<!--
+  TEMPLATE: new top-level page
+  1. Copy to the repository root as your-page.html (lowercase, hyphens).
+  2. Replace every UPPERCASE placeholder, including PAGE-FILE in the canonical and og:url tags.
+  3. Add <a href="your-page.html">Label</a> to the site-nav in EVERY page (and /course_website/your-page.html in 404.html).
+  4. Run: python .github/scripts/check_site.py
+-->
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Assignments — EE 390</title>
-  <meta name="description" content="EE 390 practical quizzes and assignments.">
-  <link rel="canonical" href="https://ee390.github.io/course_website/assignments.html">
+  <title>PAGE TITLE — EE 390</title>
+  <meta name="description" content="ONE SENTENCE describing the page (shown in search results and link previews).">
+  <link rel="canonical" href="https://ee390.github.io/course_website/PAGE-FILE.html">
   <meta name="theme-color" content="#0b6e4f">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="EE 390">
-  <meta property="og:title" content="Assignments — EE 390">
-  <meta property="og:description" content="EE 390 practical quizzes and assignments.">
-  <meta property="og:url" content="https://ee390.github.io/course_website/assignments.html">
+  <meta property="og:title" content="PAGE TITLE — EE 390">
+  <meta property="og:description" content="ONE SENTENCE describing the page (shown in search results and link previews).">
+  <meta property="og:url" content="https://ee390.github.io/course_website/PAGE-FILE.html">
   <meta property="og:image" content="https://ee390.github.io/course_website/assets/img/setup/board-annotated.jpg">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔌</text></svg>">
@@ -38,40 +45,12 @@
 
   <main class="wrap" id="main">
     <header class="page-header">
-      <h1 class="page-title">Assignments</h1>
-      <p class="page-lead">Practical quizzes and other assignments. Looking for the mini projects? They are on the <a href="projects.html">Projects</a> page. Due dates and submission instructions are announced in class and on the <a href="index.html#announcements">home page</a>.</p>
+      <h1 class="page-title">PAGE TITLE</h1>
+      <p class="page-lead">One or two sentences telling students what this page is for.</p>
     </header>
 
-    <!--
-      PRACTICAL QUIZZES
-      1. Upload the PDF to files/handouts/ (e.g. practical-quiz-1.pdf).
-      2. Delete the "None posted yet" line and uncomment the table, then add one row per quiz, newest at the bottom:
-
-    <div class="table-scroll">
-      <table>
-        <thead><tr><th>Quiz</th><th>Language</th><th>Topics</th><th>Date</th><th>Handout</th></tr></thead>
-        <tbody>
-          <tr>
-            <td>Practical Quiz 1</td>
-            <td><span class="lang-badge lang-asm">ASM</span></td>
-            <td>I/O ports, delays</td>
-            <td><time datetime="2026-10-01">1 Oct 2026</time></td>
-            <td><a href="files/handouts/practical-quiz-1.pdf" target="_blank" rel="noopener">PDF</a></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    -->
-    <h2 id="quizzes">Practical Quizzes</h2>
-    <p class="tba">None posted yet.</p>
-
-    <h2>Before a practical quiz</h2>
-    <ul>
-      <li>Make sure you can program the board — follow <a href="getting-started.html">Getting Started</a> once.</li>
-      <li>Look up the pins you need in the <a href="lab-kit.html#pins">pin map</a>.</li>
-      <li>Start from the closest <a href="examples.html">code example</a> — reusing a delay, LCD or 7-segment routine is fine and saves time.</li>
-      <li>End every program with an infinite loop (e.g. <code>HERE: SJMP HERE</code>) so the CPU doesn't run into empty memory.</li>
-    </ul>
+    <h2 id="first-section">First section</h2>
+    <p>Content. Link downloads from <code>files/&lt;type&gt;/</code>, e.g. <a href="files/handouts/mini-project-1.pdf">a handout</a>.</p>
   </main>
 
   <footer class="site-footer">

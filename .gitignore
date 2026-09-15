@@ -24,7 +24,6 @@ desktop.ini
 
 # SDCC writes an .asm next to each compiled .c; never commit those
 examples/c/*.asm
-files/c/*.asm
 
 # Local test and preview leftovers
 _probe*

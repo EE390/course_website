@@ -1,0 +1,186 @@
+<!doctype html>
+<!--
+  TEMPLATE: mini project page
+  1. Copy to projects/your-project.html. Replace every UPPERCASE placeholder (incl. PROJECT-FILE in canonical/og:url).
+  2. Solutions, answer keys and grading notes go to the private EE390/instructor repo, never here.
+  3. Add a card and a roadmap row in projects.html.
+  4. Run: python .github/scripts/check_site.py
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mini Project N: PROJECT NAME — EE 390</title>
+  <meta name="description" content="ONE SENTENCE: what students build and which peripherals they use.">
+  <link rel="canonical" href="https://ee390.github.io/course_website/projects/PROJECT-FILE.html">
+  <meta name="theme-color" content="#0b6e4f">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="EE 390">
+  <meta property="og:title" content="Mini Project N: PROJECT NAME — EE 390">
+  <meta property="og:description" content="ONE SENTENCE: what students build and which peripherals they use.">
+  <meta property="og:url" content="https://ee390.github.io/course_website/projects/PROJECT-FILE.html">
+  <meta property="og:image" content="https://ee390.github.io/course_website/assets/img/setup/board-annotated.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>">
+  <link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body data-nav="projects.html">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../index.html"><span class="brand-mark">8051</span> EE 390</a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+      <nav class="site-nav" id="site-nav">
+        <a href="../index.html">Home</a>
+        <a href="../getting-started.html">Getting Started</a>
+        <a href="../lab-kit.html">Lab Kit</a>
+        <a href="../wiki.html">Wiki</a>
+        <a href="../examples.html">Examples</a>
+        <a href="../assignments.html">Assignments</a>
+        <a href="../projects.html">Projects</a>
+        <a href="../references.html">References</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap" id="main">
+    <header class="page-header">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../projects.html">Projects</a> › <span aria-current="page">Mini Project N</span>
+      </nav>
+      <!-- Language badge: lang-asm / ASM or lang-c / C -->
+      <h1 class="page-title">PROJECT NAME <span class="lang-badge lang-asm">ASM</span></h1>
+      <p class="page-lead">What the students will build, in two sentences.</p>
+    </header>
+
+    <div class="wiki-layout">
+      <nav class="wiki-toc" aria-label="On this page">
+        <div class="toc-title">On this page</div>
+        <ol>
+          <li><a href="#overview">Overview</a></li>
+          <li><a href="#requirements">Requirements</a></li>
+          <li><a href="#background">Background</a></li>
+          <li><a href="#design">Design notes</a></li>
+          <li><a href="#milestones">Milestones</a></li>
+          <li><a href="#questions">Report questions</a></li>
+          <li><a href="#grading">Submission &amp; grading</a></li>
+        </ol>
+      </nav>
+
+      <div class="wiki-content">
+
+        <section id="overview">
+          <h2>Overview</h2>
+          <div class="table-scroll">
+            <table>
+              <tbody>
+                <tr><th scope="row">Released</th><td class="tba">TBA</td></tr>
+                <tr><th scope="row">Due</th><td class="tba">TBA</td></tr>
+                <tr><th scope="row">Work in</th><td class="tba">TBA</td></tr>
+                <tr><th scope="row">Hardware</th><td>Board modules used</td></tr>
+                <tr><th scope="row">Deliverables</th><td>Commented source, short report answering the <a href="#questions">questions</a>, live demo</td></tr>
+                <tr><th scope="row">Topics</th><td>Topic · topic · topic</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- Put the starter in files/starters/ and link it here. -->
+          <div class="btn-row" style="margin-top:16px">
+            <a class="btn btn-primary" href="../files/starters/STARTER-FILE" download>Download starter template</a>
+          </div>
+        </section>
+
+        <section id="requirements">
+          <h2>Requirements</h2>
+          <p>Your program must meet all of the following. The demo and grading are based on this list.</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>#</th><th>Requirement</th></tr></thead>
+              <tbody>
+                <tr><td><strong>R1</strong></td><td>Observable, testable behaviour.</td></tr>
+                <tr><td><strong>R2</strong></td><td>Required technique (e.g. timer interrupt, table in flash).</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Pins are on the <a href="../lab-kit.html#pins">pin map</a>.</p>
+        </section>
+
+        <section id="background">
+          <h2>Background</h2>
+          <p>Only the theory students need. Link the <a href="../wiki.html">Wiki</a> instead of repeating it.</p>
+        </section>
+
+        <section id="design">
+          <h2>Design notes</h2>
+          <p>Points to consider, not a required structure. Do not give the solution.</p>
+          <ul>
+            <li><strong>Point.</strong> Question that guides the design.</li>
+          </ul>
+        </section>
+
+        <section id="milestones">
+          <h2>Milestones</h2>
+          <ol class="milestones">
+            <li><strong>First milestone.</strong> Measurable check-off criterion.</li>
+            <li><strong>Complete system.</strong> All requirements met.</li>
+          </ol>
+        </section>
+
+        <section id="questions">
+          <h2>Report questions</h2>
+          <ol>
+            <li>Question that needs a calculation or a measurement.</li>
+          </ol>
+        </section>
+
+        <section id="grading">
+          <h2>Submission &amp; grading</h2>
+          <p>Submission method: <span class="tba">TBA</span>.</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Item</th><th>Points</th></tr></thead>
+              <tbody>
+                <tr><td>Milestones</td><td>—</td></tr>
+                <tr><td>Code quality</td><td>—</td></tr>
+                <tr><td>Report questions</td><td>—</td></tr>
+                <tr><td><strong>Total</strong></td><td><strong>100</strong></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <a class="brand" href="../index.html"><span class="brand-mark">8051</span> EE 390</a>
+        <p>Course website for the 8051 microcontroller lab on the Puzhong 51 A2 board (STC89C52RC).</p>
+      </div>
+      <nav aria-label="Learn">
+        <h2>Learn</h2>
+        <a href="../getting-started.html">Getting Started</a>
+        <a href="../lab-kit.html">Lab Kit</a>
+        <a href="../wiki.html">Wiki</a>
+        <a href="../examples.html">Examples</a>
+      </nav>
+      <nav aria-label="Coursework">
+        <h2>Coursework</h2>
+        <a href="../assignments.html">Assignments</a>
+        <a href="../projects.html">Projects</a>
+      </nav>
+      <nav aria-label="Resources">
+        <h2>Resources</h2>
+        <a href="../references.html">References</a>
+        <a href="https://github.com/EE390/course_website/issues">Report a site problem</a>
+      </nav>
+    </div>
+    <div class="wrap footer-legal">
+      <p>© 2026 EE 390 course staff · Code: <a href="https://github.com/EE390/course_website/blob/main/LICENSE">MIT License</a> · Written content: <a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a> · Third-party manuals and software belong to their owners · <a href="https://github.com/EE390/course_website">Source on GitHub</a></p>
+    </div>
+  </footer>
+  <script src="../assets/js/site.js"></script>
+  <script src="../assets/js/wiki.js"></script>
+</body>
+</html>
