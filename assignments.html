@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Assignments — EE 390</title>
-  <meta name="description" content="EE 390 practical quizzes and assignments.">
+  <meta name="description" content="EE 390 homework and practical assignments (mini projects on the board).">
   <link rel="canonical" href="https://ee390.github.io/course_website/assignments.html">
   <meta name="theme-color" content="#0b6e4f">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="EE 390">
   <meta property="og:title" content="Assignments — EE 390">
-  <meta property="og:description" content="EE 390 practical quizzes and assignments.">
+  <meta property="og:description" content="EE 390 homework and practical assignments (mini projects on the board).">
   <meta property="og:url" content="https://ee390.github.io/course_website/assignments.html">
   <meta property="og:image" content="https://ee390.github.io/course_website/assets/img/setup/board-annotated.jpg">
   <meta name="twitter:card" content="summary_large_image">
@@ -25,13 +25,10 @@
       <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
       <nav class="site-nav" id="site-nav">
         <a href="index.html">Home</a>
-        <a href="getting-started.html">Getting Started</a>
-        <a href="lab-kit.html">Lab Kit</a>
-        <a href="wiki.html">Wiki</a>
-        <a href="examples.html">Examples</a>
+        <a href="schedule.html">Schedule</a>
         <a href="assignments.html">Assignments</a>
-        <a href="projects.html">Projects</a>
-        <a href="references.html">References</a>
+        <a href="project.html">Project</a>
+        <a href="resources.html">Resources</a>
       </nav>
     </div>
   </header>
@@ -39,38 +36,45 @@
   <main class="wrap" id="main">
     <header class="page-header">
       <h1 class="page-title">Assignments</h1>
-      <p class="page-lead">Practical quizzes and other assignments. Looking for the mini projects? They are on the <a href="projects.html">Projects</a> page. Due dates and submission instructions are announced in class and on the <a href="index.html#announcements">home page</a>.</p>
+      <p class="page-lead">There are two kinds of assignment. <strong>Homework</strong> is done individually. <strong>Practical Assignments</strong> are the mini projects on the board and are done in groups of 2 to 3 students. Due dates are on the <a href="schedule.html#dates">Schedule</a>.</p>
     </header>
 
-    <!--
-      PRACTICAL QUIZZES
-      1. Upload the PDF to files/handouts/ (e.g. practical-quiz-1.pdf).
-      2. Delete the "None posted yet" line and uncomment the table, then add one row per quiz, newest at the bottom:
-
+    <h2 id="homework">Homework <span class="tag">Individual</span></h2>
     <div class="table-scroll">
       <table>
-        <thead><tr><th>Quiz</th><th>Language</th><th>Topics</th><th>Date</th><th>Handout</th></tr></thead>
+        <thead><tr><th>Homework Title</th><th>Due Date</th></tr></thead>
         <tbody>
           <tr>
-            <td>Practical Quiz 1</td>
-            <td><span class="lang-badge lang-asm">ASM</span></td>
-            <td>I/O ports, delays</td>
-            <td><time datetime="2026-10-01">1 Oct 2026</time></td>
-            <td><a href="files/handouts/practical-quiz-1.pdf" target="_blank" rel="noopener">PDF</a></td>
+            <td>Homework 1</td>
+            <td>--</td>
+          </tr>
+          <tr>
+            <td><a href="files/handouts/homework-2.pdf" target="_blank" rel="noopener">Homework 2</a></td>
+            <td><time datetime="2026-09-30">30 Sep</time></td>
           </tr>
         </tbody>
       </table>
     </div>
-    -->
-    <h2 id="quizzes">Practical Quizzes</h2>
-    <p class="tba">None posted yet.</p>
 
-    <h2>Before a practical quiz</h2>
+    <h2 id="practical">Practical Assignments <span class="tag">Groups of 2–3</span></h2>
+    <p>Mini projects build something real on the development board, first in <strong>assembly</strong> and then in <strong>C</strong>. Each has a handout or project page with the requirements, a starter template and grading.</p>
+    <div class="table-scroll">
+      <table class="roadmap">
+        <thead><tr><th>Title</th><th>Language</th><th>You learn</th></tr></thead>
+        <tbody>
+          <tr><td><a href="getting-started.html">0 · Board Setup &amp; First Program</a></td><td><span class="lang-badge lang-asm">ASM</span></td><td>Toolchain, I/O ports, buttons and LEDs</td></tr>
+          <tr><td><a href="projects/bird-sound.html">1 · Bird Sound Synthesizer</a></td><td><span class="lang-badge lang-asm">ASM</span></td><td>Timers, interrupts, lookup tables, timing accuracy</td></tr>
+          <tr><td>2 · Bird Sound Synthesizer in C</td><td><span class="lang-badge lang-c">C</span></td><td>Embedded C with SDCC, interrupts and memory in C, comparing C with assembly</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Before you start</h2>
     <ul>
-      <li>Make sure you can program the board — follow <a href="getting-started.html">Getting Started</a> once.</li>
+      <li>Make sure you can program the board. Follow <a href="getting-started.html">Getting Started</a> once, including the C setup for Project 2.</li>
       <li>Look up the pins you need in the <a href="lab-kit.html#pins">pin map</a>.</li>
-      <li>Start from the closest <a href="examples.html">code example</a> — reusing a delay, LCD or 7-segment routine is fine and saves time.</li>
-      <li>End every program with an infinite loop (e.g. <code>HERE: SJMP HERE</code>) so the CPU doesn't run into empty memory.</li>
+      <li>Start from the closest <a href="examples.html">example</a> in your language. Reusing a delay, LCD or 7-segment routine is fine and saves time.</li>
+      <li>Never let the program end: finish assembly with an infinite loop (<code>SJMP $</code>) and C with <code>for (;;)</code> in <code>main()</code>.</li>
     </ul>
   </main>
 
@@ -80,8 +84,8 @@
         <a class="brand" href="index.html"><span class="brand-mark">8051</span> EE 390</a>
         <p>Course website for the 8051 microcontroller lab on the Puzhong 51 A2 board (STC89C52RC).</p>
       </div>
-      <nav aria-label="Learn">
-        <h2>Learn</h2>
+      <nav aria-label="Resources">
+        <h2>Resources</h2>
         <a href="getting-started.html">Getting Started</a>
         <a href="lab-kit.html">Lab Kit</a>
         <a href="wiki.html">Wiki</a>
@@ -89,12 +93,12 @@
       </nav>
       <nav aria-label="Coursework">
         <h2>Coursework</h2>
+        <a href="schedule.html">Schedule</a>
         <a href="assignments.html">Assignments</a>
-        <a href="projects.html">Projects</a>
+        <a href="project.html">Project</a>
       </nav>
-      <nav aria-label="Resources">
-        <h2>Resources</h2>
-        <a href="references.html">References</a>
+      <nav aria-label="Site">
+        <h2>Site</h2>
         <a href="https://github.com/EE390/course_website/issues">Report a site problem</a>
       </nav>
     </div>

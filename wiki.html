@@ -17,7 +17,7 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
   <link rel="stylesheet" href="assets/css/site.css">
 </head>
-<body>
+<body data-nav="resources.html">
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header">
     <div class="wrap">
@@ -25,13 +25,10 @@
       <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
       <nav class="site-nav" id="site-nav">
         <a href="index.html">Home</a>
-        <a href="getting-started.html">Getting Started</a>
-        <a href="lab-kit.html">Lab Kit</a>
-        <a href="wiki.html">Wiki</a>
-        <a href="examples.html">Examples</a>
+        <a href="schedule.html">Schedule</a>
         <a href="assignments.html">Assignments</a>
-        <a href="projects.html">Projects</a>
-        <a href="references.html">References</a>
+        <a href="project.html">Project</a>
+        <a href="resources.html">Resources</a>
       </nav>
     </div>
   </header>
@@ -70,6 +67,7 @@
           <li><a href="#programming">Programming the chip</a></li>
           <li><a href="#mistakes">Common mistakes</a></li>
           <li><a href="#sfr">SFR reference</a></li>
+          <li><a href="#further-reading">Further reading</a></li>
         </ol>
       </nav>
 
@@ -739,7 +737,7 @@ SHOW_DIGIT:
         CLR  TF0           ; clear the flag for next time
         RET</code></pre>
           <p>Polling blocks the program while it waits. With the <a href="#interrupts">timer interrupt</a> the main program keeps running and the ISR handles each overflow. In <strong>mode 2</strong> the timer reloads itself from <code>THx</code>, which gives perfectly regular overflows up to 256 counts (≈ 278&nbsp;µs) apart. That is why it's used for baud rates.</p>
-          <p>See Timer 0 generating tones and Timer 1 as a 5&nbsp;ms time base in the <a href="projects/bird-song.html">Bird Song Synthesizer</a> project.</p>
+          <p>See Timer 0 generating tones and Timer 1 as a 5&nbsp;ms time base in the <a href="projects/bird-sound.html">Bird Sound Synthesizer</a> project.</p>
         </section>
 
         <!-- ========================================================== -->
@@ -969,7 +967,7 @@ void main(void)
               </tbody>
             </table>
           </div>
-          <p><strong>Why learn both?</strong> C is faster to write and easier to read and change. Assembly gives exact control over size and timing. For the Bird Song project, the C build uses about 15% more flash (1505 vs 1307 bytes) and each 5&nbsp;ms tick takes slightly longer. The <code>.rst</code> file shows exactly what your C turned into. See the C examples on the <a href="examples.html">Examples</a> page.</p>
+          <p><strong>Why learn both?</strong> C is faster to write and easier to read and change. Assembly gives exact control over size and timing. For the Bird Sound project, the C build uses about 15% more flash (1505 vs 1307 bytes) and each 5&nbsp;ms tick takes slightly longer. The <code>.rst</code> file shows exactly what your C turned into. See the C examples on the <a href="examples.html">Examples</a> page.</p>
         </section>
 
         <!-- ========================================================== -->
@@ -1167,7 +1165,27 @@ void timer0_isr(void) __interrupt(1)    /* 1 = Timer 0 */
               </tbody>
             </table>
           </div>
-          <p>For everything else (Timer 2, watchdog, internal EEPROM, power-saving modes) see the <a href="https://www.stcmicro.com/datasheet/STC89C51RC-en.pdf" target="_blank" rel="noopener">STC89C52RC datasheet ↗</a> and chapters 3 and 5 of the <a href="references.html#manual">board manual</a>.</p>
+          <p>For everything else (Timer 2, watchdog, internal EEPROM, power-saving modes) see the <a href="https://www.stcmicro.com/datasheet/STC89C51RC-en.pdf" target="_blank" rel="noopener">STC89C52RC datasheet ↗</a> and chapters 3 and 5 of the <a href="lab-kit.html#manual">board manual</a>.</p>
+        </section>
+
+        <!-- ========================================================== -->
+        <section id="further-reading">
+          <h2>Further reading</h2>
+          <h3>Datasheet</h3>
+          <ul>
+            <li><a href="https://www.stcmicro.com/datasheet/STC89C51RC-en.pdf" target="_blank" rel="noopener">STC89C52RC datasheet ↗</a>: English datasheet for the microcontroller, covering the whole STC89C5xRC family.</li>
+          </ul>
+          <p class="section-note">Datasheets for the other chips on the board (LCD1602, AT24C02, DS1302, DS18B20, XPT2046, 74HC595) are summarised in the <a href="lab-kit.html#manual">board manual</a>.</p>
+          <h3>C programming</h3>
+          <ul>
+            <li><a href="https://sdcc.sourceforge.net/doc/sdccman.pdf" target="_blank" rel="noopener">SDCC Compiler User Guide (PDF) ↗</a>: see the MCS-51 chapters on storage classes, interrupt service routines and memory models.</li>
+            <li><a href="#c-intro">C with SDCC</a> and <a href="#c-more">C: memory, interrupts &amp; timing</a> on this page, including a Keil C51 → SDCC translation table for code found online and in the board manual.</li>
+          </ul>
+          <h3>Recommended reading</h3>
+          <ul>
+            <li>M. A. Mazidi, J. G. Mazidi and R. D. McKinlay, <em>The 8051 Microcontroller and Embedded Systems: Using Assembly and C</em>, 2nd ed., Pearson.</li>
+            <li>I. S. MacKenzie and R. C.-W. Phan, <em>The 8051 Microcontroller</em>, 4th ed., Pearson.</li>
+          </ul>
         </section>
 
       </div>
@@ -1180,8 +1198,8 @@ void timer0_isr(void) __interrupt(1)    /* 1 = Timer 0 */
         <a class="brand" href="index.html"><span class="brand-mark">8051</span> EE 390</a>
         <p>Course website for the 8051 microcontroller lab on the Puzhong 51 A2 board (STC89C52RC).</p>
       </div>
-      <nav aria-label="Learn">
-        <h2>Learn</h2>
+      <nav aria-label="Resources">
+        <h2>Resources</h2>
         <a href="getting-started.html">Getting Started</a>
         <a href="lab-kit.html">Lab Kit</a>
         <a href="wiki.html">Wiki</a>
@@ -1189,12 +1207,12 @@ void timer0_isr(void) __interrupt(1)    /* 1 = Timer 0 */
       </nav>
       <nav aria-label="Coursework">
         <h2>Coursework</h2>
+        <a href="schedule.html">Schedule</a>
         <a href="assignments.html">Assignments</a>
-        <a href="projects.html">Projects</a>
+        <a href="project.html">Project</a>
       </nav>
-      <nav aria-label="Resources">
-        <h2>Resources</h2>
-        <a href="references.html">References</a>
+      <nav aria-label="Site">
+        <h2>Site</h2>
         <a href="https://github.com/EE390/course_website/issues">Report a site problem</a>
       </nav>
     </div>

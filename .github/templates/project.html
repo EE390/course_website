@@ -3,7 +3,7 @@
   TEMPLATE: mini project page
   1. Copy to projects/your-project.html. Replace every UPPERCASE placeholder (incl. PROJECT-FILE in canonical/og:url).
   2. Solutions, answer keys and grading notes go to the private EE390/instructor repo, never here.
-  3. Add a card and a roadmap row in projects.html.
+  3. Add a card and a roadmap row under Practical Assignments in assignments.html.
   4. Run: python .github/scripts/check_site.py
 -->
 <html lang="en">
@@ -24,7 +24,7 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>">
   <link rel="stylesheet" href="../assets/css/site.css">
 </head>
-<body data-nav="projects.html">
+<body data-nav="assignments.html">
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header">
     <div class="wrap">
@@ -32,13 +32,9 @@
       <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
       <nav class="site-nav" id="site-nav">
         <a href="../index.html">Home</a>
-        <a href="../getting-started.html">Getting Started</a>
-        <a href="../lab-kit.html">Lab Kit</a>
-        <a href="../wiki.html">Wiki</a>
-        <a href="../examples.html">Examples</a>
+        <a href="../schedule.html">Schedule</a>
         <a href="../assignments.html">Assignments</a>
-        <a href="../projects.html">Projects</a>
-        <a href="../references.html">References</a>
+        <a href="../resources.html">Resources</a>
       </nav>
     </div>
   </header>
@@ -46,7 +42,7 @@
   <main class="wrap" id="main">
     <header class="page-header">
       <nav class="breadcrumb" aria-label="Breadcrumb">
-        <a href="../projects.html">Projects</a> › <span aria-current="page">Mini Project N</span>
+        <a href="../assignments.html#practical">Assignments</a> › <span aria-current="page">Mini Project N</span>
       </nav>
       <!-- Language badge: lang-asm / ASM or lang-c / C -->
       <h1 class="page-title">PROJECT NAME <span class="lang-badge lang-asm">ASM</span></h1>
@@ -158,8 +154,8 @@
         <a class="brand" href="../index.html"><span class="brand-mark">8051</span> EE 390</a>
         <p>Course website for the 8051 microcontroller lab on the Puzhong 51 A2 board (STC89C52RC).</p>
       </div>
-      <nav aria-label="Learn">
-        <h2>Learn</h2>
+      <nav aria-label="Resources">
+        <h2>Resources</h2>
         <a href="../getting-started.html">Getting Started</a>
         <a href="../lab-kit.html">Lab Kit</a>
         <a href="../wiki.html">Wiki</a>
@@ -167,12 +163,11 @@
       </nav>
       <nav aria-label="Coursework">
         <h2>Coursework</h2>
+        <a href="../schedule.html">Schedule</a>
         <a href="../assignments.html">Assignments</a>
-        <a href="../projects.html">Projects</a>
       </nav>
-      <nav aria-label="Resources">
-        <h2>Resources</h2>
-        <a href="../references.html">References</a>
+      <nav aria-label="Site">
+        <h2>Site</h2>
         <a href="https://github.com/EE390/course_website/issues">Report a site problem</a>
       </nav>
     </div>

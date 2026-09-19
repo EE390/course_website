@@ -17,7 +17,7 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔌</text></svg>">
   <link rel="stylesheet" href="assets/css/site.css">
 </head>
-<body>
+<body data-nav="resources.html">
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header">
     <div class="wrap">
@@ -25,13 +25,10 @@
       <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
       <nav class="site-nav" id="site-nav">
         <a href="index.html">Home</a>
-        <a href="getting-started.html">Getting Started</a>
-        <a href="lab-kit.html">Lab Kit</a>
-        <a href="wiki.html">Wiki</a>
-        <a href="examples.html">Examples</a>
+        <a href="schedule.html">Schedule</a>
         <a href="assignments.html">Assignments</a>
-        <a href="projects.html">Projects</a>
-        <a href="references.html">References</a>
+        <a href="project.html">Project</a>
+        <a href="resources.html">Resources</a>
       </nav>
     </div>
   </header>
@@ -154,7 +151,47 @@
       <img src="assets/img/setup/board-annotated.jpg" alt="Development board with the P2 header, LEDs on P2, power button, USB input and push buttons highlighted" width="580" height="504" loading="lazy">
       <figcaption>USB and power on the left, LEDs and matrix keypad on the right, 7-segment displays along the top.</figcaption>
     </figure>
-    <p>For schematics and a description of every module, see chapter 2 and the “hardware design” section of each chapter in the <a href="references.html#manual">board manual</a>.</p>
+    <p>For schematics and a description of every module, see chapter 2 and the “hardware design” section of each chapter in the <a href="#manual">board manual</a> below.</p>
+
+    <h2 id="manual">Board manual (Chinese)</h2>
+    <div class="panel">
+      <p><strong>Puzhong 51 MCU Development Guide — A2 board</strong> (普中 51 单片机开发攻略, 313 pages). The official manual for our board. It is in Chinese and its code is in C, but the <strong>hardware design</strong> sections and schematics apply directly. Use your browser's or phone's translate feature on the PDF if needed.</p>
+      <div class="btn-row" style="margin-bottom:16px">
+        <a class="btn btn-primary" href="files/manuals/puzhong-51-a2-manual-zh.pdf" target="_blank" rel="noopener">Open PDF (22&nbsp;MB)</a>
+      </div>
+      <details>
+        <summary><strong>English chapter guide</strong> — page numbers are the manual's printed page numbers</summary>
+        <div class="table-scroll" style="margin-top:12px">
+          <table>
+            <thead><tr><th>Ch.</th><th>Topic</th><th>Page</th></tr></thead>
+            <tbody>
+              <tr><td>2</td><td>Board overview, module list, CH340 driver, programming</td><td>3</td></tr>
+              <tr><td>3</td><td>Introduction to the 8051 and the STC89Cxx chip</td><td>16</td></tr>
+              <tr><td>5</td><td>Minimum system: crystal, reset, power, download circuit</td><td>54</td></tr>
+              <tr><td>7</td><td>GPIO and LEDs</td><td>77</td></tr>
+              <tr><td>8</td><td>Buzzer</td><td>90</td></tr>
+              <tr><td>9</td><td>Multiplexed 7-segment display (74HC245, 74HC138)</td><td>96</td></tr>
+              <tr><td>10</td><td>Independent push buttons, debouncing</td><td>106</td></tr>
+              <tr><td>11</td><td>4×4 matrix keypad</td><td>112</td></tr>
+              <tr><td>12</td><td>I/O expansion with the 74HC595 shift register</td><td>120</td></tr>
+              <tr><td>13</td><td>8×8 LED matrix</td><td>126</td></tr>
+              <tr><td>14</td><td>DC motor (ULN2003)</td><td>143</td></tr>
+              <tr><td>15</td><td>Interrupt system</td><td>150</td></tr>
+              <tr><td>16</td><td>External interrupts</td><td>158</td></tr>
+              <tr><td>17</td><td>Timer interrupts</td><td>166</td></tr>
+              <tr><td>18</td><td>I²C and the AT24C02 EEPROM</td><td>178</td></tr>
+              <tr><td>19</td><td>DS18B20 temperature sensor</td><td>198</td></tr>
+              <tr><td>20</td><td>DS1302 real-time clock</td><td>215</td></tr>
+              <tr><td>21</td><td>Infrared remote</td><td>231</td></tr>
+              <tr><td>22</td><td>ADC (XPT2046)</td><td>243</td></tr>
+              <tr><td>23</td><td>DAC / PWM</td><td>259</td></tr>
+              <tr><td>24</td><td>LCD1602 character LCD</td><td>269</td></tr>
+              <tr><td>25</td><td>LCD12864 graphic LCD</td><td>284</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+    </div>
   </main>
 
   <footer class="site-footer">
@@ -163,8 +200,8 @@
         <a class="brand" href="index.html"><span class="brand-mark">8051</span> EE 390</a>
         <p>Course website for the 8051 microcontroller lab on the Puzhong 51 A2 board (STC89C52RC).</p>
       </div>
-      <nav aria-label="Learn">
-        <h2>Learn</h2>
+      <nav aria-label="Resources">
+        <h2>Resources</h2>
         <a href="getting-started.html">Getting Started</a>
         <a href="lab-kit.html">Lab Kit</a>
         <a href="wiki.html">Wiki</a>
@@ -172,12 +209,12 @@
       </nav>
       <nav aria-label="Coursework">
         <h2>Coursework</h2>
+        <a href="schedule.html">Schedule</a>
         <a href="assignments.html">Assignments</a>
-        <a href="projects.html">Projects</a>
+        <a href="project.html">Project</a>
       </nav>
-      <nav aria-label="Resources">
-        <h2>Resources</h2>
-        <a href="references.html">References</a>
+      <nav aria-label="Site">
+        <h2>Site</h2>
         <a href="https://github.com/EE390/course_website/issues">Report a site problem</a>
       </nav>
     </div>

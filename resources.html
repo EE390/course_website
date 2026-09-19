@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Code Examples — EE 390</title>
-  <meta name="description" content="8051 assembly and C example programs for the Puzhong 51 A2 development board.">
-  <link rel="canonical" href="https://ee390.github.io/course_website/examples.html">
+  <title>Resources — EE 390</title>
+  <meta name="description" content="Everything you need to work with the 8051 board: setup guide, lab kit pin map, the 8051 wiki and example programs.">
+  <link rel="canonical" href="https://ee390.github.io/course_website/resources.html">
   <meta name="theme-color" content="#0b6e4f">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="EE 390">
-  <meta property="og:title" content="Code Examples — EE 390">
-  <meta property="og:description" content="8051 assembly and C example programs for the Puzhong 51 A2 development board.">
-  <meta property="og:url" content="https://ee390.github.io/course_website/examples.html">
+  <meta property="og:title" content="Resources — EE 390">
+  <meta property="og:description" content="Everything you need to work with the 8051 board: setup guide, lab kit pin map, the 8051 wiki and example programs.">
+  <meta property="og:url" content="https://ee390.github.io/course_website/resources.html">
   <meta property="og:image" content="https://ee390.github.io/course_website/assets/img/setup/board-annotated.jpg">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔌</text></svg>">
@@ -35,27 +35,36 @@
 
   <main class="wrap" id="main">
     <header class="page-header">
-      <h1 class="page-title">Code Examples</h1>
-      <p class="page-lead">Programs written for the course board, in <strong>assembly</strong> (build with MIDE-51) and <strong>C</strong> (build with SDCC, see <a href="getting-started.html#first-c">Getting Started</a>). Burn one with STC-ISP to see it run, then change it. Pin assignments are listed in the <a href="lab-kit.html#pins">pin map</a>.</p>
+      <h1 class="page-title">Resources</h1>
+      <p class="page-lead">Everything you need to work with the board. New to it? Work through these in order.</p>
     </header>
 
-    <div class="filter-bar" id="language-filters" role="group" aria-label="Filter examples by language"></div>
-    <div class="filter-bar" id="example-filters" role="group" aria-label="Filter examples by topic"></div>
-    <div class="grid" id="example-grid">
-      <noscript><p>JavaScript is off — browse the <a href="https://github.com/EE390/course_website/tree/main/examples">example files on GitHub</a>.</p></noscript>
+    <div class="grid journey">
+      <a class="card" href="getting-started.html">
+        <span class="step" aria-hidden="true"></span>
+        <h3>Getting Started</h3>
+        <p>Install the tools (MIDE-51, SDCC, STC-ISP) and burn your first program in assembly or C.</p>
+        <span class="card-cta">Set up →</span>
+      </a>
+      <a class="card" href="lab-kit.html">
+        <span class="step" aria-hidden="true"></span>
+        <h3>Lab Kit &amp; Pin Map</h3>
+        <p>What is on the board, which pins drive the LEDs, displays, buttons and sensors, and the board manual.</p>
+        <span class="card-cta">See the pin map →</span>
+      </a>
+      <a class="card" href="wiki.html">
+        <span class="step" aria-hidden="true"></span>
+        <h3>8051 Wiki</h3>
+        <p>How the chip works and how to program it: memory, I/O, timers, interrupts, assembly and C, plus datasheets and further reading.</p>
+        <span class="card-cta">Read the wiki →</span>
+      </a>
+      <a class="card" href="examples.html">
+        <span class="step" aria-hidden="true"></span>
+        <h3>Examples</h3>
+        <p>Ready-to-run programs for the board in assembly and C, from buttons and displays to I²C, SPI and IR.</p>
+        <span class="card-cta">Browse examples →</span>
+      </a>
     </div>
-
-    <section class="code-viewer" id="code-viewer" hidden aria-live="polite">
-      <header>
-        <h3>—</h3>
-        <div class="btn-row">
-          <button class="btn btn-sm" id="btn-copy" type="button">Copy</button>
-          <a class="btn btn-sm" id="btn-raw" target="_blank" rel="noopener">Open raw</a>
-          <a class="btn btn-sm btn-primary" id="btn-download" download>Download .asm</a>
-        </div>
-      </header>
-      <pre><code></code></pre>
-    </section>
   </main>
 
   <footer class="site-footer">
@@ -87,6 +96,5 @@
     </div>
   </footer>
   <script src="assets/js/site.js"></script>
-  <script src="assets/js/examples.js"></script>
 </body>
 </html>

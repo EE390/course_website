@@ -13,12 +13,10 @@ Course website for **EE 390**, a hands-on lab where students program an 8051 mic
 
 | | |
 | --- | --- |
-| **Getting Started** | Install MIDE-51 (assembly), SDCC (C) and STC-ISP, then program the board for the first time |
-| **Lab Kit** | Board modules and the pin that drives each one |
-| **8051 Wiki** | How the chip works: minimum circuit, memory, I/O, timers, interrupts, serial, programming, C with SDCC |
-| **Examples** | Ready-to-run programs in assembly and C, with an in-browser code viewer |
-| **Projects** | Mini projects with requirements, starter templates and grading, e.g. the *Bird Song Synthesizer* in assembly and in C |
-| **References** | Software, datasheets, board manual and reading |
+| **Home** | About the course, teaching staff and office hours |
+| **Schedule** | Lecture schedule, slides and important dates |
+| **Assignments** | Homework (individual) and Practical Assignments (mini projects, groups of 2 to 3), e.g. the *Bird Song Synthesizer* in assembly and in C |
+| **Resources** | Getting Started (install MIDE-51, SDCC and STC-ISP), Lab Kit (pin map and board manual), 8051 Wiki (how the chip works, datasheets, reading) and Examples (ready-to-run programs in assembly and C) |
 
 ## Found a mistake?
 
@@ -26,7 +24,7 @@ Course website for **EE 390**, a hands-on lab where students program an 8051 mic
 
 ## Maintainers
 
-Course staff: see [CONTRIBUTING.md](CONTRIBUTING.md) for how pages are organised and how to post announcements, projects and examples.
+Course staff: see [CONTRIBUTING.md](CONTRIBUTING.md) for how pages are organised and how to update staff, assignments, schedule entries and examples.
 
 ## Credits
 

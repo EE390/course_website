@@ -3,21 +3,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Mini Project 2: Bird Song Synthesizer — EE 390</title>
-  <meta name="description" content="Use 8051 timers, interrupts and I/O to make the buzzer play four bird calls.">
-  <link rel="canonical" href="https://ee390.github.io/course_website/projects/bird-song.html">
+  <title>Mini Project 2: Bird Sound Synthesizer in C — EE 390</title>
+  <meta name="description" content="Rebuild the Bird Sound Synthesizer in C with SDCC: timer interrupts, tables in flash and a comparison with assembly.">
+  <link rel="canonical" href="https://ee390.github.io/course_website/projects/bird-sound-c.html">
   <meta name="theme-color" content="#0b6e4f">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="EE 390">
-  <meta property="og:title" content="Mini Project 2: Bird Song Synthesizer — EE 390">
-  <meta property="og:description" content="Use 8051 timers, interrupts and I/O to make the buzzer play four bird calls.">
-  <meta property="og:url" content="https://ee390.github.io/course_website/projects/bird-song.html">
+  <meta property="og:title" content="Mini Project 2: Bird Sound Synthesizer in C — EE 390">
+  <meta property="og:description" content="Rebuild the Bird Sound Synthesizer in C with SDCC: timer interrupts, tables in flash and a comparison with assembly.">
+  <meta property="og:url" content="https://ee390.github.io/course_website/projects/bird-sound-c.html">
   <meta property="og:image" content="https://ee390.github.io/course_website/assets/img/setup/board-annotated.jpg">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐦</text></svg>">
   <link rel="stylesheet" href="../assets/css/site.css">
 </head>
-<body data-nav="projects.html">
+<body data-nav="assignments.html">
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header">
     <div class="wrap">
@@ -25,13 +25,10 @@
       <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
       <nav class="site-nav" id="site-nav">
         <a href="../index.html">Home</a>
-        <a href="../getting-started.html">Getting Started</a>
-        <a href="../lab-kit.html">Lab Kit</a>
-        <a href="../wiki.html">Wiki</a>
-        <a href="../examples.html">Examples</a>
+        <a href="../schedule.html">Schedule</a>
         <a href="../assignments.html">Assignments</a>
-        <a href="../projects.html">Projects</a>
-        <a href="../references.html">References</a>
+        <a href="../project.html">Project</a>
+        <a href="../resources.html">Resources</a>
       </nav>
     </div>
   </header>
@@ -39,10 +36,10 @@
   <main class="wrap" id="main">
     <header class="page-header">
       <nav class="breadcrumb" aria-label="Breadcrumb">
-        <a href="../projects.html">Projects</a> › <span aria-current="page">Mini Project 2</span>
+        <a href="../assignments.html#practical">Assignments</a> › <span aria-current="page">Mini Project 2</span>
       </nav>
-      <h1 class="page-title">Bird Song Synthesizer <span class="lang-badge lang-asm">ASM</span></h1>
-      <p class="page-lead">Program the development board so its buzzer imitates four real bird calls. Pitch is generated with a timer interrupt, note lengths with a second timer, and each call is stored as data in program memory.</p>
+      <h1 class="page-title">Bird Sound Synthesizer in C <span class="lang-badge lang-c">C</span></h1>
+      <p class="page-lead">Rebuild <a href="bird-sound.html">Mini Project 2</a> in C with the SDCC compiler: the same board, the same four bird calls, the same requirements. Along the way, find out what the compiler does with your code, and compare it with your assembly version.</p>
     </header>
 
     <div class="wiki-layout">
@@ -52,7 +49,7 @@
           <li><a href="#overview">Overview</a></li>
           <li><a href="#requirements">Requirements</a></li>
           <li><a href="#birds">The four bird calls</a></li>
-          <li><a href="#background">Background</a></li>
+          <li><a href="#background">Background: C on the 8051</a></li>
           <li><a href="#design">Design notes</a></li>
           <li><a href="#milestones">Milestones</a></li>
           <li><a href="#questions">Report questions</a></li>
@@ -71,21 +68,23 @@
                 <tr><th scope="row">Released</th><td class="tba">TBA</td></tr>
                 <tr><th scope="row">Due</th><td class="tba">TBA</td></tr>
                 <tr><th scope="row">Work in</th><td class="tba">TBA</td></tr>
+                <tr><th scope="row">Language</th><td>C, compiled with SDCC 4.5 (<a href="../getting-started.html#first-c">setup</a>)</td></tr>
+                <tr><th scope="row">Builds on</th><td><a href="bird-sound.html">Mini Project 2</a>: same calls and hardware. Your assembly version is useful for the comparison questions.</td></tr>
                 <tr><th scope="row">Hardware</th><td>Development board only: passive buzzer, push buttons K1–K4, LEDs D1–D4</td></tr>
-                <tr><th scope="row">Deliverables</th><td>Commented <code>.asm</code> source, short report answering the <a href="#questions">questions</a>, live demo</td></tr>
-                <tr><th scope="row">Topics</th><td>Timer modes and reload values · timer interrupts · timers as a time base · lookup tables in ROM · bit I/O</td></tr>
+                <tr><th scope="row">Deliverables</th><td>Commented <code>.c</code> source, the <code>.mem</code> file of your final build, your table-generation spreadsheet or script, a short report answering the <a href="#questions">questions</a>, live demo</td></tr>
+                <tr><th scope="row">Topics</th><td>Interrupts in C · <code>volatile</code> and critical sections · tables in flash · memory use · reading compiler output · C vs assembly</td></tr>
               </tbody>
             </table>
           </div>
           <div class="btn-row" style="margin-top:16px">
-            <a class="btn btn-primary" href="../files/starters/bird_song_starter.asm" download>Download starter template (.asm)</a>
+            <a class="btn btn-primary" href="../files/starters/bird_sound_starter.c" download>Download starter template (.c)</a>
+            <a class="btn" href="../files/software/build.bat" download>build.bat</a>
           </div>
-          <p class="section-note" style="margin-top:12px">Adapted from the <a href="https://vanhunteradams.com/Pico/Birds/Birdsong.html" target="_blank" rel="noopener">Birdsong Synthesis lab ↗</a> (Cornell ECE 4760, V. Hunter Adams) for the 8051 and a buzzer. <strong>Keep your solution:</strong> <a href="bird-song-c.html">Mini Project 3</a> rebuilds it in C and compares the two.</p>
         </section>
 
         <section id="requirements">
           <h2>Requirements</h2>
-          <p>Your program must meet all of the following. The demo and grading are based on this list.</p>
+          <p>R1–R8 are the same as in Mini Project 2. R4 and R6 now apply to C code, and R9 is new.</p>
           <div class="table-scroll">
             <table>
               <thead><tr><th>#</th><th>Requirement</th></tr></thead>
@@ -93,20 +92,21 @@
                 <tr><td><strong>R1</strong></td><td>Pressing K1, K2, K3 or K4 plays bird call 1, 2, 3 or 4 (<a href="#birds">below</a>) <strong>once</strong>.</td></tr>
                 <tr><td><strong>R2</strong></td><td>The matching LED (D1–D4) is on while its call plays and off otherwise.</td></tr>
                 <tr><td><strong>R3</strong></td><td>Holding a button does not repeat the call. The button must be released and pressed again.</td></tr>
-                <tr><td><strong>R4</strong></td><td>The tone is a square wave on the buzzer pin generated by the <strong>Timer 0 interrupt</strong>. No software delay loops for pitch.</td></tr>
+                <tr><td><strong>R4</strong></td><td>The tone is a square wave on the buzzer pin generated by a <strong>Timer 0 interrupt routine written in C</strong> (<code>__interrupt(1)</code>). No delay loops for pitch.</td></tr>
                 <tr><td><strong>R5</strong></td><td>Note durations are timed with <strong>Timer 1</strong> using a 5&nbsp;ms time base (polled or interrupt-driven).</td></tr>
-                <tr><td><strong>R6</strong></td><td>Each call is stored as a <strong>data table in program memory</strong> and played by one shared routine, not as a separate block of code per bird.</td></tr>
+                <tr><td><strong>R6</strong></td><td>Each call is stored as a <strong>data table</strong> and played by one shared function, not as separate code per bird.</td></tr>
                 <tr><td><strong>R7</strong></td><td>When no call is playing, the buzzer is silent and its pin is left <strong>HIGH</strong>.</td></tr>
-                <tr><td><strong>R8</strong></td><td>Measured pitch is within <strong>±3%</strong> of the specification. Check it with a tuner or spectrogram app on your phone.</td></tr>
+                <tr><td><strong>R8</strong></td><td>Measured pitch is within <strong>±3%</strong> of the specification. Check it with a tuner or spectrogram app.</td></tr>
+                <tr><td><strong>R9</strong></td><td>The whole program is written in <strong>C</strong> (no inline assembly), and the sound tables are stored in <strong>flash</strong>, not RAM. Show this with your <code>.mem</code> / <code>.map</code> files.</td></tr>
               </tbody>
             </table>
           </div>
-          <p>Pin assignments are on the <a href="../lab-kit.html#pins">pin map</a>. This project uses the buzzer on <code>P2.5</code>, K1–K4 on <code>P3.1</code>, <code>P3.0</code>, <code>P3.2</code>, <code>P3.3</code> and D1–D4 on <code>P2.0</code>–<code>P2.3</code>. Remove the LCD module during this project, because it shares <code>P2.5</code>. LED D6 is also on <code>P2.5</code>, so it glows faintly while a call plays. That is normal.</p>
+          <p>Pins are as in Mini Project 2: buzzer <code>P2_5</code>, K1–K4 <code>P3_1</code>, <code>P3_0</code>, <code>P3_2</code>, <code>P3_3</code>, and D1–D4 <code>P2_0</code>–<code>P2_3</code> (SDCC names). Remove the LCD module. LED D6 glows while a call plays.</p>
         </section>
 
         <section id="birds">
           <h2>The four bird calls</h2>
-          <p>Each call imitates the typical song of a real bird, simplified to what a buzzer and a 5&nbsp;ms time base can play. Use <strong>Listen</strong> to hear the target (a square wave at the specified frequencies, like your buzzer), and compare it with the real recordings.</p>
+          <p>These are the <strong>same four calls as Mini Project 2</strong>. Each imitates the typical song of a real bird, simplified to what a buzzer and a 5&nbsp;ms time base can play. Use <strong>Listen</strong> to hear the target (a square wave at the specified frequencies, like your buzzer), and compare it with the real recordings.</p>
           <div class="table-scroll">
             <table>
               <thead><tr><th>Key</th><th>Call</th><th>Specification</th><th>Length</th></tr></thead>
@@ -152,7 +152,7 @@
               </tbody>
             </table>
           </div>
-          <p class="section-note">The first note is exactly <em>f</em><sub>1</sub> and the last exactly <em>f</em><sub>2</sub>. The tables have many notes, so it is sensible to calculate them with a spreadsheet or a short script. Include it with your submission.</p>
+          <p class="section-note">The first note is exactly <em>f</em><sub>1</sub> and the last exactly <em>f</em><sub>2</sub>. You may reuse the spreadsheet or script from Mini Project 2 and make it output C array initialisers.</p>
 
           <div class="grid bird-grid">
             <div class="card" data-bird="CHEEP">
@@ -192,90 +192,97 @@
         </section>
 
         <section id="background">
-          <h2>Background</h2>
+          <h2>Background: C on the 8051</h2>
+          <p>The timer theory is unchanged from <a href="bird-sound.html#background">Mini Project 2</a>: 921&nbsp;600 counts per second, <code>reload = 65536 − N</code>, the ISR reloads the timer and toggles the pin, and the measured pitch comes out slightly low until you correct for the ISR's delay. What's new is how you express it in C, and what the compiler makes of it.</p>
 
-          <h3>Making a pitch with a passive buzzer</h3>
-          <p>A passive buzzer only sounds while its drive signal keeps changing. Toggling the pin every <strong>half period</strong> produces a square wave, so a tone of frequency <em>f</em> needs a toggle every <code>T/2 = 1/(2f)</code> seconds. On this board the buzzer is driven through a PNP transistor.</p>
+          <h3>Pins and registers</h3>
+          <p>Include <code>&lt;8052.h&gt;</code> and use the register names directly: <code>TMOD = 0x11;</code> <code>TR0 = 1;</code> <code>BUZZER = !BUZZER;</code> with <code>#define BUZZER P2_5</code>. See <a href="../wiki.html#c-intro">Wiki: C with SDCC</a>.</p>
 
-          <h3>Timer 0 in mode 1</h3>
-          <p>With the 11.0592&nbsp;MHz crystal in 12T mode, a timer counts <strong>921&nbsp;600 times per second</strong>. In mode 1 it counts up from the value you load into <code>TH0:TL0</code> and sets <code>TF0</code> (and requests an interrupt) when it rolls over from <code>FFFFH</code> to <code>0000H</code>. To overflow after <em>N</em> counts, load:</p>
-          <div class="formula">reload = 65536 − N</div>
-          <p><strong>Example:</strong> a 3000&nbsp;Hz tone has a half period of 1/6000&nbsp;s = 153.6 → 154 counts, so reload = 65536 − 154 = 65382 = <code>FF66H</code>.</p>
-          <p>Mode 1 does not reload itself, so your ISR must reload the timer on every overflow. The interrupt response and the reload take some time, and those counts add to every half period. Expect the measured pitch to be slightly <strong>lower</strong> than calculated, most of all at high frequencies. Measure it and correct for it to meet R8.</p>
-          <p>More detail: <a href="../wiki.html#timers">Wiki: Timers</a> · <a href="../wiki.html#interrupts">Wiki: Interrupts</a> · <a href="../wiki.html#clock">Wiki: Clock &amp; timing</a>.</p>
+          <h3>Interrupt routines</h3>
+<pre><code>void timer0_isr(void) __interrupt(1);    /* prototype - must be in the file with main() */
 
-          <h3>A 5 ms time base with Timer 1</h3>
-          <p>Every note in the specification is a whole number of 5&nbsp;ms steps. Use Timer 1 to measure exactly 5&nbsp;ms, and count those steps to hold each note for its length. Work out the reload value yourself and verify it (see <a href="#milestones">Milestone 1</a>).</p>
+void timer0_isr(void) __interrupt(1)
+{
+    /* your code: as short as possible */
+}</code></pre>
+          <p>What SDCC generates depends on what you write inside. A routine that only reads and writes SFRs and global variables compiles to plain instructions. If it calls a function, SDCC saves and restores 15 registers on every interrupt. Look at the <code>.rst</code> listing to see exactly what you got (<a href="../wiki.html#c-more">Wiki: Interrupts in C</a>).</p>
 
-          <h3>Storing sounds as tables</h3>
-          <p>R6 asks you to describe each call as data rather than code. A simple format is a list of notes, each giving a <strong>pitch</strong> and a <strong>length</strong>, with special values for a rest and for the end of the call:</p>
-<pre><code>CALL_NAME:
-    DB  pitch_high, pitch_low, length   ; one note
-    DB  ...                             ; more notes
-    DB  &lt;rest code&gt;, length             ; silence
-    DB  &lt;end marker&gt;                    ; end of the call</code></pre>
-          <p>Choose your own encoding for pitch, rest and end, and document it in your code. A sweep is a sequence of short notes. Tables are read with <code>MOVC A,@A+DPTR</code>, as in the <a href="../examples.html#Simple_Seven_Segment_Display">7-segment example</a>.</p>
+          <h3>Data shared with the ISR</h3>
+          <p>Declare variables used by both <code>main()</code> and the ISR as <code>volatile</code>. If a value takes more than one byte to update, the ISR must not run halfway through the update: use <code>EA = 0; … EA = 1;</code> or <code>__critical { … }</code>.</p>
+
+          <h3>Tables in flash</h3>
+          <p>The chip has only 512&nbsp;bytes of RAM, and the four calls need about 1&nbsp;KB of table data, so the tables must live in flash:</p>
+<pre><code>const unsigned char CHEEP[] = { /* your encoding */ };
+
+void play_call(const unsigned char *call)   /* walk through a table with a pointer */
+{
+    …
+}</code></pre>
+          <p>Choose and document your own encoding, as in Mini Project 2. After building, check the <code>.map</code> file: the tables should be listed with a <code>C:</code> (code) address.</p>
+
+          <h3>Timing</h3>
+          <p>Don't use empty loops for delays in C: their length depends on the compiler. Use Timer 1 exactly as in Mini Project 2. Also expect each 5&nbsp;ms tick to come out slightly longer than in assembly, because the function call and loop code add a little overhead.</p>
         </section>
 
         <section id="design">
           <h2>Design notes</h2>
-          <p>How you structure the program is up to you. These are points to consider while designing it, not a required structure:</p>
+          <p>How you structure the program is up to you. Things to consider:</p>
           <ul>
-            <li><strong>Division of work.</strong> The ISR should do as little as possible: reload and toggle. Reading tables, timing notes and checking buttons belong in the main program.</li>
-            <li><strong>Shared data.</strong> The main program chooses the pitch and the ISR uses it. What happens if the interrupt fires halfway through updating a 16-bit value?</li>
-            <li><strong>Starting and stopping the tone.</strong> Think about what state the timer, its flag and the buzzer pin are left in when a note ends, a rest starts or a call finishes (R7).</li>
-            <li><strong>Register usage.</strong> If the ISR uses <code>A</code>, <code>PSW</code> or <code>R0</code>–<code>R7</code>, the main program's values must be preserved.</li>
-            <li><strong>Buttons.</strong> Mechanical buttons bounce for a few milliseconds when pressed and released. R3 also needs you to detect a new press, not just a held button.</li>
-            <li><strong>Stack.</strong> After reset <code>SP = 07H</code>. Consider where your stack and RAM variables live (<a href="../wiki.html#memory">Wiki: Memory</a>).</li>
+            <li><strong>Keep the ISR tiny.</strong> Reload and toggle, nothing else. Read the <code>.rst</code> listing to confirm SDCC didn't add register saving.</li>
+            <li><strong>Shared data.</strong> Which variables do <code>main()</code> and the ISR share, and how do you update them safely?</li>
+            <li><strong>Types.</strong> Use <code>unsigned char</code> wherever values fit in 0–255. It's faster and smaller than <code>int</code>.</li>
+            <li><strong>Starting and stopping the tone.</strong> What state are the timer, its flag and the buzzer pin in after a rest or at the end of a call (R7)?</li>
+            <li><strong>Buttons.</strong> Debounce, and detect a <em>new</em> press (R3).</li>
+            <li><strong>Memory.</strong> Watch the RAM and flash totals in the <code>.mem</code> file as your program grows.</li>
           </ul>
-          <p>The <a href="../files/starters/bird_song_starter.asm" download>starter template</a> gives the pin names, vector addresses, and headings for the routines most solutions need. You may change it freely.</p>
+          <p>The <a href="../files/starters/bird_sound_starter.c" download>starter template</a> gives pin names, the ISR declaration and suggested function headings. It compiles as it is, but does nothing yet.</p>
         </section>
 
         <section id="milestones">
           <h2>Milestones</h2>
           <p>Show each milestone to the lab instructor as you reach it.</p>
           <ol class="milestones">
-            <li><strong>Time base.</strong> Using only your Timer 1 routine, blink LED D8 (<code>P2.7</code>) at 1&nbsp;Hz (500&nbsp;ms on, 500&nbsp;ms off). Ten blinks must take 10&nbsp;s ± 0.2&nbsp;s by stopwatch.</li>
-            <li><strong>Interrupt tone.</strong> While K1 is held, the buzzer plays a steady 3000&nbsp;Hz tone generated by the Timer 0 interrupt. It is silent otherwise.</li>
-            <li><strong>First call.</strong> K1 plays the house sparrow call from a table, with D1 lit.</li>
-            <li><strong>Complete system.</strong> All four calls meet R1–R8.</li>
+            <li><strong>Toolchain and time base.</strong> Build with SDCC and program the board. Using only your Timer 1 function, blink LED D8 (<code>P2_7</code>) at 1&nbsp;Hz: 10 blinks in 10&nbsp;s ± 0.2&nbsp;s.</li>
+            <li><strong>Interrupt tone in C.</strong> While K1 is held, a steady 3000&nbsp;Hz tone is generated by your C interrupt routine. It is silent otherwise.</li>
+            <li><strong>First call.</strong> K1 plays the house sparrow call from a table in flash, with D1 lit.</li>
+            <li><strong>Complete system.</strong> All four calls meet R1–R9.</li>
           </ol>
 
           <h3>Bonus (up to +10)</h3>
           <ul>
-            <li><strong>Dawn chorus:</strong> pressing K1 and K4 together plays all four calls in sequence.</li>
-            <li><strong>Your own bird:</strong> design a fifth call that imitates a real bird recording (e.g. from xeno-canto), and play it from a key on the 4×4 keypad. Include the recording link and your specification.</li>
-            <li><strong>Spectrogram:</strong> include a phone spectrogram (for example Spectroid on Android) of each call next to the plots on this page, and comment on the differences.</li>
+            <li><strong>Serial control:</strong> typing 1–4 in a serial terminal (9600 baud) plays the matching call, and the board replies with the call's name.</li>
+            <li><strong>Your own bird:</strong> add a fifth call imitating a real recording, played from the 4×4 keypad.</li>
+            <li><strong>Size challenge:</strong> make your C build no more than 10% larger than your assembly build, and explain what you changed.</li>
           </ul>
         </section>
 
         <section id="questions">
           <h2>Report questions</h2>
-          <p class="section-note">Answer in your report and show your working.</p>
+          <p class="section-note">Answer in your report. Include listings or file excerpts where asked.</p>
           <ol>
-            <li>Calculate <code>TH0</code> and <code>TL0</code> for a 2500&nbsp;Hz tone, before any correction.</li>
-            <li>What values did you load into <code>TH1</code> and <code>TL1</code> for the 5&nbsp;ms time base? Show the calculation.</li>
-            <li>R7 requires the buzzer pin to be left HIGH when idle. Using the buzzer's drive circuit, explain why.</li>
-            <li>Before correction, what frequency did you measure for the 3000&nbsp;Hz tone of Milestone 2? What causes the error, how did you correct it, and what was the result?</li>
-            <li>Your main program and ISR share data. Describe what could go wrong if an interrupt occurs while that data is being updated, and how your code prevents it.</li>
-            <li>What is the highest frequency your design could produce, and what limits it?</li>
+            <li>Using your <code>.map</code> and <code>.mem</code> files: where are your sound tables stored, and how much flash and RAM does your program use? What would happen if the tables were declared without <code>const</code>?</li>
+            <li>Copy the assembly SDCC generated for your Timer 0 ISR (from the <code>.rst</code> file). Which registers does it save, if any? Compare it with the ISR you wrote by hand in Mini Project 2.</li>
+            <li>Measure the 3000&nbsp;Hz tone of Milestone 2 before correction. Is the error the same as in Mini Project 2? Explain using your answer to question 2.</li>
+            <li>Change your ISR so it calls a small function (e.g. <code>toggle_buzzer()</code>). What changes in the generated code and in the measured pitch? Why?</li>
+            <li>Why must variables shared by <code>main()</code> and the ISR be <code>volatile</code>? Show how your code prevents the ISR from seeing a half-updated value.</li>
+            <li>Compare your C and assembly versions: code size in bytes, the length of one call as measured, and development time. When would you choose C, and when assembly, for a microcontroller project?</li>
           </ol>
         </section>
 
         <section id="grading">
           <h2>Submission &amp; grading</h2>
-          <p>Submit your commented <code>.asm</code> file and report, and demo the project live. Submission method: <span class="tba">TBA</span>.</p>
+          <p>Submit your commented <code>.c</code> file, the <code>.mem</code> file of your final build, your table-generation spreadsheet or script and your report, and demo the project live. Submission method: <span class="tba">TBA</span>.</p>
           <div class="table-scroll">
             <table>
               <thead><tr><th>Item</th><th>Points</th></tr></thead>
               <tbody>
-                <tr><td>Milestone 1: Timer 1 time base</td><td>10</td></tr>
-                <tr><td>Milestone 2: Timer 0 interrupt tone</td><td>15</td></tr>
-                <tr><td>Milestone 3: house sparrow call from a table</td><td>15</td></tr>
-                <tr><td>Milestone 4: cardinal, trill and chickadee (7 each); R2, R3 and R7 (4)</td><td>25</td></tr>
+                <tr><td>Milestone 1: SDCC build + Timer 1 time base</td><td>10</td></tr>
+                <tr><td>Milestone 2: C interrupt tone</td><td>15</td></tr>
+                <tr><td>Milestone 3: house sparrow call from a table in flash</td><td>10</td></tr>
+                <tr><td>Milestone 4: cardinal, trill and chickadee (6 each); R2, R3, R7 (4)</td><td>22</td></tr>
                 <tr><td>Pitch accuracy R8, checked during the demo</td><td>5</td></tr>
-                <tr><td>Code quality: structure, comments, documented table format, table-generation spreadsheet or script</td><td>10</td></tr>
-                <tr><td>Report questions</td><td>20</td></tr>
+                <tr><td>R9 and code quality: C only, tables in flash, clear structure and comments, sensible types</td><td>13</td></tr>
+                <tr><td>Report questions</td><td>25</td></tr>
                 <tr><td><strong>Total</strong></td><td><strong>100</strong> (+10 bonus)</td></tr>
               </tbody>
             </table>
@@ -292,8 +299,8 @@
         <a class="brand" href="../index.html"><span class="brand-mark">8051</span> EE 390</a>
         <p>Course website for the 8051 microcontroller lab on the Puzhong 51 A2 board (STC89C52RC).</p>
       </div>
-      <nav aria-label="Learn">
-        <h2>Learn</h2>
+      <nav aria-label="Resources">
+        <h2>Resources</h2>
         <a href="../getting-started.html">Getting Started</a>
         <a href="../lab-kit.html">Lab Kit</a>
         <a href="../wiki.html">Wiki</a>
@@ -301,12 +308,12 @@
       </nav>
       <nav aria-label="Coursework">
         <h2>Coursework</h2>
+        <a href="../schedule.html">Schedule</a>
         <a href="../assignments.html">Assignments</a>
-        <a href="../projects.html">Projects</a>
+        <a href="../project.html">Project</a>
       </nav>
-      <nav aria-label="Resources">
-        <h2>Resources</h2>
-        <a href="../references.html">References</a>
+      <nav aria-label="Site">
+        <h2>Site</h2>
         <a href="https://github.com/EE390/course_website/issues">Report a site problem</a>
       </nav>
     </div>
@@ -316,6 +323,6 @@
   </footer>
   <script src="../assets/js/site.js"></script>
   <script src="../assets/js/wiki.js"></script>
-  <script src="../assets/js/bird-song.js"></script>
+  <script src="../assets/js/bird-sound.js"></script>
 </body>
 </html>

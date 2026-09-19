@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>EE 390 — 8051 Microcontroller Lab</title>
-  <meta name="description" content="Course website for EE 390: announcements, lab kit setup, 8051 assembly and C examples, projects and references.">
+  <meta name="description" content="Course website for EE 390: teaching staff, schedule, assignments and resources for the 8051 lab.">
   <link rel="canonical" href="https://ee390.github.io/course_website/">
   <meta name="theme-color" content="#0b6e4f">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="EE 390">
   <meta property="og:title" content="EE 390 — 8051 Microcontroller Lab">
-  <meta property="og:description" content="Course website for EE 390: announcements, lab kit setup, 8051 assembly and C examples, projects and references.">
+  <meta property="og:description" content="Course website for EE 390: teaching staff, schedule, assignments and resources for the 8051 lab.">
   <meta property="og:url" content="https://ee390.github.io/course_website/">
   <meta property="og:image" content="https://ee390.github.io/course_website/assets/img/setup/board-annotated.jpg">
   <meta name="twitter:card" content="summary_large_image">
@@ -25,13 +25,10 @@
       <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
       <nav class="site-nav" id="site-nav">
         <a href="index.html">Home</a>
-        <a href="getting-started.html">Getting Started</a>
-        <a href="lab-kit.html">Lab Kit</a>
-        <a href="wiki.html">Wiki</a>
-        <a href="examples.html">Examples</a>
+        <a href="schedule.html">Schedule</a>
         <a href="assignments.html">Assignments</a>
-        <a href="projects.html">Projects</a>
-        <a href="references.html">References</a>
+        <a href="project.html">Project</a>
+        <a href="resources.html">Resources</a>
       </nav>
     </div>
   </header>
@@ -41,106 +38,56 @@
       <div>
         <div class="eyebrow">EE 390 · 8051 Microcontroller Lab</div>
         <h1>Program a real microcontroller, in assembly and C.</h1>
-        <p>Everything for the course in one place: board setup, how the 8051 works, example programs in assembly and C, projects and references.</p>
+        <p>Course information, the lecture schedule, assignments and everything you need to work with the board, in one place.</p>
         <div class="btn-row">
-          <a class="btn btn-primary" href="getting-started.html">Set up your board →</a>
-          <a class="btn" href="wiki.html">Learn how the 8051 works</a>
+          <a class="btn btn-primary" href="schedule.html">See the schedule →</a>
+          <a class="btn" href="resources.html">Resources</a>
         </div>
       </div>
       <img src="assets/img/setup/board-annotated.jpg" alt="Puzhong 51 A2 development board with the LEDs, push buttons, USB port and power button highlighted" width="580" height="504">
     </section>
 
     <div class="section-head">
-      <h2>Start here</h2>
-      <p>New to the board? Work through these in order.</p>
-    </div>
-    <div class="grid journey">
-      <a class="card" href="getting-started.html">
-        <span class="step" aria-hidden="true"></span>
-        <h3>Getting Started</h3>
-        <p>Install the tools (MIDE-51, SDCC, STC-ISP) and burn your first program in assembly or C.</p>
-        <span class="card-cta">Set up →</span>
-      </a>
-      <a class="card" href="lab-kit.html">
-        <span class="step" aria-hidden="true"></span>
-        <h3>Lab Kit &amp; Pin Map</h3>
-        <p>What is on the board and which pins drive the LEDs, displays, buttons and sensors.</p>
-        <span class="card-cta">See the pin map →</span>
-      </a>
-      <a class="card" href="wiki.html">
-        <span class="step" aria-hidden="true"></span>
-        <h3>8051 Wiki</h3>
-        <p>How the chip works and how to program it: memory, I/O, timers, interrupts, assembly and C.</p>
-        <span class="card-cta">Read the wiki →</span>
-      </a>
-      <a class="card" href="examples.html">
-        <span class="step" aria-hidden="true"></span>
-        <h3>Examples</h3>
-        <p>Ready-to-run programs for the board in assembly and C, from buttons and displays to I²C, SPI and IR.</p>
-        <span class="card-cta">Browse examples →</span>
-      </a>
+      <h2 id="about">About the Course</h2>
+      <p>EE 390 is a hands-on laboratory course introducing the fundamentals of microcontrollers using the 8051 architecture. Students will learn to program in both Assembly and C, interfacing with timers, interrupts, and I/O devices to build practical embedded systems.</p>
     </div>
 
-    <div class="home-columns">
-      <div>
-        <!--
-          ANNOUNCEMENTS
-          Add the newest announcement at the TOP of the list. Copy one <li> block and edit it.
-        -->
-        <h2 id="announcements">Announcements</h2>
-        <ul class="announcements">
-          <li>
-            <time datetime="2026-09-13">13 Sep 2026</time>
-            <strong>Course website is live</strong>
-            <p>All handouts, example code and references will be posted here. Start with <a href="getting-started.html">Getting Started</a> to install the tools and program your board for the first time.</p>
-          </li>
-        </ul>
-      </div>
-      <div>
-        <!--
-          COURSE INFORMATION
-          Replace every "TBA" with the real details.
-        -->
-        <h2 id="info">Course information</h2>
-        <div class="table-scroll">
-          <table>
-            <tbody>
-              <tr><th scope="row">Course</th><td>EE 390</td></tr>
-              <tr><th scope="row">Instructor</th><td class="tba">TBA</td></tr>
-              <tr><th scope="row">Email</th><td class="tba">TBA</td></tr>
-              <tr><th scope="row">Office hours</th><td class="tba">TBA</td></tr>
-              <tr><th scope="row">Lab</th><td class="tba">TBA</td></tr>
-              <tr><th scope="row">Board</th><td>Puzhong 51 A2 (STC89C52RC)</td></tr>
-              <tr><th scope="row">Languages</th><td>8051 assembly (MIDE-51) and C (SDCC)</td></tr>
-              <tr><th scope="row">Programmer</th><td>STC-ISP</td></tr>
-            </tbody>
-          </table>
+    <h2 id="staff">Teaching Staff</h2>
+    <h3 class="staff-label">Instructors</h3>
+    <div class="staff-grid staff-instructors" style="--cols:2">
+        <div class="card staff-card">
+          <h4>Ali AlBeladi</h4>
+          <p>Office hours: 10 am UTR</p>
+          <p>Office: 59-1070</p>
         </div>
-      </div>
+        <div class="card staff-card">
+          <h4>Abdulrahman Al Qadami</h4>
+          <p>Office hours: 9 am UTR</p>
+          <p>Office: 59-1074</p>
+        </div>
     </div>
-
-    <div class="section-head">
-      <h2>Coursework &amp; resources</h2>
-    </div>
-    <div class="grid">
-      <a class="card" href="projects.html">
-        <span class="card-icon" aria-hidden="true">🐦</span>
-        <h3>Projects</h3>
-        <p>Mini projects in assembly and C with requirements, starter templates and grading. Currently: Bird Song Synthesizer (assembly and C).</p>
-        <span class="card-cta">Open projects →</span>
-      </a>
-      <a class="card" href="assignments.html">
-        <span class="card-icon" aria-hidden="true">📝</span>
-        <h3>Assignments</h3>
-        <p>Practical quizzes and their handouts.</p>
-        <span class="card-cta">Open assignments →</span>
-      </a>
-      <a class="card" href="references.html">
-        <span class="card-icon" aria-hidden="true">📚</span>
-        <h3>References</h3>
-        <p>Board manual, datasheet, video walkthrough, software downloads and recommended reading.</p>
-        <span class="card-cta">Open references →</span>
-      </a>
+    <h3 class="staff-label">Teaching assistants</h3>
+    <div class="staff-grid staff-tas" style="--cols:4">
+        <div class="card staff-card">
+          <h4>AbdoulHaye Sanankoua</h4>
+          <p>Office hours: 1 pm UTR</p>
+          <p>Office: 59-0070</p>
+        </div>
+        <div class="card staff-card">
+          <h4>Arwa AlHayek</h4>
+          <p>Office hours: 2 pm UTR</p>
+          <p>Office: 59-0070</p>
+        </div>
+        <div class="card staff-card">
+          <h4>Ibrahim Muhammed</h4>
+          <p>Office hours: 3 pm UTR</p>
+          <p>Office: 59-0070</p>
+        </div>
+        <div class="card staff-card">
+          <h4>Salman Fazle Rabby</h4>
+          <p>Office hours: 4 pm UTR</p>
+          <p>Office: 59-0070</p>
+        </div>
     </div>
   </main>
 
@@ -150,8 +97,8 @@
         <a class="brand" href="index.html"><span class="brand-mark">8051</span> EE 390</a>
         <p>Course website for the 8051 microcontroller lab on the Puzhong 51 A2 board (STC89C52RC).</p>
       </div>
-      <nav aria-label="Learn">
-        <h2>Learn</h2>
+      <nav aria-label="Resources">
+        <h2>Resources</h2>
         <a href="getting-started.html">Getting Started</a>
         <a href="lab-kit.html">Lab Kit</a>
         <a href="wiki.html">Wiki</a>
@@ -159,12 +106,12 @@
       </nav>
       <nav aria-label="Coursework">
         <h2>Coursework</h2>
+        <a href="schedule.html">Schedule</a>
         <a href="assignments.html">Assignments</a>
-        <a href="projects.html">Projects</a>
+        <a href="project.html">Project</a>
       </nav>
-      <nav aria-label="Resources">
-        <h2>Resources</h2>
-        <a href="references.html">References</a>
+      <nav aria-label="Site">
+        <h2>Site</h2>
         <a href="https://github.com/EE390/course_website/issues">Report a site problem</a>
       </nav>
     </div>

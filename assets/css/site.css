@@ -287,6 +287,12 @@ a.card .card-cta { margin-top: auto; padding-top: 6px; color: var(--accent); fon
 @media (max-width: 860px) { .home-columns { grid-template-columns: minmax(0, 1fr); } }
 .home-columns h2 { margin-top: 48px; }
 
+.staff-label { margin: 20px 0 10px; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+.staff-grid { display: grid; gap: 16px; grid-template-columns: repeat(var(--cols, 2), minmax(0, 1fr)); }
+.staff-card h4 { margin: 0; font-size: 1.05rem; }
+@media (max-width: 860px) { .staff-tas { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .staff-instructors { grid-template-columns: minmax(0, 1fr); } }
+
 th[scope="row"] { width: 1%; white-space: nowrap; padding-right: 28px; }
 .card-icon { font-size: 1.5rem; line-height: 1; }
 
