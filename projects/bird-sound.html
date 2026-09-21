@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Mini Project 1: Bird Sound Synthesizer — EE 390</title>
-  <meta name="description" content="Use 8051 timers, interrupts and I/O to make the buzzer play four bird calls.">
+  <meta name="description" content="Two stages: make the buzzer beep under button control, then play one of four bird calls with 8051 timers and interrupts.">
   <link rel="canonical" href="https://ee390.github.io/course_website/projects/bird-sound.html">
   <meta name="theme-color" content="#0b6e4f">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="EE 390">
   <meta property="og:title" content="Mini Project 1: Bird Sound Synthesizer — EE 390">
-  <meta property="og:description" content="Use 8051 timers, interrupts and I/O to make the buzzer play four bird calls.">
+  <meta property="og:description" content="Two stages: make the buzzer beep under button control, then play one of four bird calls with 8051 timers and interrupts.">
   <meta property="og:url" content="https://ee390.github.io/course_website/projects/bird-sound.html">
   <meta property="og:image" content="https://ee390.github.io/course_website/assets/img/setup/board-annotated.jpg">
   <meta name="twitter:card" content="summary_large_image">
@@ -39,7 +39,7 @@
         <a href="../assignments.html#practical">Assignments</a> › <span aria-current="page">Mini Project 1</span>
       </nav>
       <h1 class="page-title">Bird Sound Synthesizer <span class="lang-badge lang-asm">ASM</span></h1>
-      <p class="page-lead">Program the development board so its buzzer imitates four real bird calls. Pitch is generated with a timer interrupt, note lengths with a second timer, and each call is stored as data in program memory.</p>
+      <p class="page-lead">Build it in two stages. First make each button play a simple tone on the buzzer. Then pick one of the four birds and play its call properly: pitch from a timer interrupt, note lengths from a second timer, and the call itself stored as data in program memory.</p>
     </header>
 
     <div class="wiki-layout">
@@ -47,12 +47,14 @@
         <div class="toc-title">On this page</div>
         <ol>
           <li><a href="#overview">Overview</a></li>
-          <li><a href="#requirements">Requirements</a></li>
+          <li><a href="#stages">The two stages</a></li>
+          <li><a href="#stage-1">Stage 1 requirements</a></li>
+          <li><a href="#stage-2">Stage 2 requirements</a></li>
           <li><a href="#birds">The four bird calls</a></li>
           <li><a href="#background">Background</a></li>
           <li><a href="#design">Design notes</a></li>
           <li><a href="#milestones">Milestones</a></li>
-          <li><a href="#questions">Report questions</a></li>
+          <li><a href="#oral">Oral questions</a></li>
           <li><a href="#grading">Submission &amp; grading</a></li>
         </ol>
       </nav>
@@ -66,70 +68,118 @@
             <table>
               <tbody>
                 <tr><th scope="row">Released</th><td class="tba">TBA</td></tr>
-                <tr><th scope="row">Due</th><td class="tba">TBA</td></tr>
-                <tr><th scope="row">Work in</th><td class="tba">TBA</td></tr>
+                <tr><th scope="row">Stage 1 due</th><td class="tba">TBA</td></tr>
+                <tr><th scope="row">Stage 2 due</th><td class="tba">TBA</td></tr>
+                <tr><th scope="row">Work in</th><td>Groups of 2–3</td></tr>
                 <tr><th scope="row">Hardware</th><td>Development board only: passive buzzer, push buttons K1–K4, LEDs D1–D4</td></tr>
-                <tr><th scope="row">Deliverables</th><td>Commented <code>.asm</code> source, short report answering the <a href="#questions">questions</a>, live demo</td></tr>
-                <tr><th scope="row">Topics</th><td>Timer modes and reload values · timer interrupts · timers as a time base · lookup tables in ROM · bit I/O</td></tr>
+                <tr><th scope="row">Deliverables</th><td><strong>Stage 1:</strong> <code>.asm</code> source, checkpoint demo and a one-page note. <strong>Stage 2:</strong> commented <code>.asm</code> source, live demo, and <a href="#oral">oral questions</a> answered individually.</td></tr>
+                <tr><th scope="row">Grade</th><td>One grade out of 100, awarded at stage 2. Stage 1 is a required checkpoint.</td></tr>
+                <tr><th scope="row">Topics</th><td>Bit I/O and buttons · square waves from a delay loop · timer modes and reload values · timer interrupts · timers as a time base · lookup tables in ROM</td></tr>
               </tbody>
             </table>
           </div>
           <div class="btn-row" style="margin-top:16px">
             <a class="btn btn-primary" href="../files/starters/bird_sound_starter.asm" download>Download starter template (.asm)</a>
           </div>
-          <p class="section-note" style="margin-top:12px">Adapted from the <a href="https://vanhunteradams.com/Pico/Birds/Birdsong.html" target="_blank" rel="noopener">Birdsong Synthesis lab ↗</a> (Cornell ECE 4760, V. Hunter Adams) for the 8051 and a buzzer. <strong>Keep your solution:</strong> <a href="bird-sound-c.html">Mini Project 3</a> rebuilds it in C and compares the two.</p>
+          <p class="section-note" style="margin-top:12px">Adapted from the <a href="https://vanhunteradams.com/Pico/Birds/Birdsong.html" target="_blank" rel="noopener">Birdsong Synthesis lab ↗</a> (Cornell ECE 4760, V. Hunter Adams) for the 8051 and a buzzer. <strong>Keep your solution:</strong> <a href="bird-sound-c.html">Practical Assignment 2</a> rebuilds it in C and compares the two.</p>
         </section>
 
-        <section id="requirements">
-          <h2>Requirements</h2>
-          <p>Your program must meet all of the following. The demo and grading are based on this list.</p>
+        <section id="stages">
+          <h2>The two stages</h2>
+          <p>The project is built in two stages. Stage 1 gets sound out of the buzzer with the simplest method there is, so that you know your buttons, your buzzer and your pin assignments all work. Stage 2 replaces that method with a timer interrupt and plays one of the four bird calls from a table.</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Stage</th><th>What you build</th><th>Deliverables</th><th>Due</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><strong>1</strong><br>Checkpoint</td>
+                  <td>Each button plays a different simple tone on the buzzer. <strong>No interrupts.</strong></td>
+                  <td><code>.asm</code> source · live demo · one-page note (<a href="#stage-1">S1–S6</a>)</td>
+                  <td class="tba">TBA</td>
+                </tr>
+                <tr>
+                  <td><strong>2</strong><br>Final</td>
+                  <td><strong>One</strong> of the four bird calls, played from a table, with the pitch generated by the Timer 0 interrupt.</td>
+                  <td>Commented <code>.asm</code> source · live demo · oral questions (<a href="#stage-2">R1–R8</a>)</td>
+                  <td class="tba">TBA</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="section-note">Stage 1 carries no marks of its own, but it must be demonstrated on time: it is the checkpoint that shows your group is on track. The project is graded once, at stage 2, out of 100. See <a href="#grading">Submission &amp; grading</a>.</p>
+        </section>
+
+        <section id="stage-1">
+          <h2>Stage 1 requirements <span class="tag">Checkpoint</span></h2>
+          <p>Make the buzzer sound under button control, using only what you already know from the <a href="../examples.html">I/O examples</a>. <strong>Do not use interrupts in this stage</strong>, and you do not need a table. The point is a clean, controllable tone and correct pin assignments.</p>
           <div class="table-scroll">
             <table>
               <thead><tr><th>#</th><th>Requirement</th></tr></thead>
               <tbody>
-                <tr><td><strong>R1</strong></td><td>Pressing K1, K2, K3 or K4 plays bird call 1, 2, 3 or 4 (<a href="#birds">below</a>) <strong>once</strong>.</td></tr>
-                <tr><td><strong>R2</strong></td><td>The matching LED (D1–D4) is on while its call plays and off otherwise.</td></tr>
-                <tr><td><strong>R3</strong></td><td>Holding a button does not repeat the call. The button must be released and pressed again.</td></tr>
-                <tr><td><strong>R4</strong></td><td>The tone is a square wave on the buzzer pin generated by the <strong>Timer 0 interrupt</strong>. No software delay loops for pitch.</td></tr>
+                <tr><td><strong>S1</strong></td><td>Each of the four buttons K1–K4 plays a <strong>different tone</strong> on the buzzer. The four tones must be clearly distinguishable by ear.</td></tr>
+                <tr><td><strong>S2</strong></td><td>A tone sounds while its button is held down, and stops when the button is released.</td></tr>
+                <tr><td><strong>S3</strong></td><td>The matching LED (D1–D4) is on while its tone plays, and off otherwise.</td></tr>
+                <tr><td><strong>S4</strong></td><td>The pitch is produced by <strong>toggling the buzzer pin in a delay loop</strong>. No interrupts in this stage.</td></tr>
+                <tr><td><strong>S5</strong></td><td>When no button is pressed, the buzzer is silent and its pin is left <strong>HIGH</strong>.</td></tr>
+                <tr><td><strong>S6</strong></td><td>You state the four frequencies you aimed for and <strong>measure</strong> what the buzzer actually produced, with a tuner or spectrogram app on your phone.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Deliverables.</strong> Your <code>.asm</code> source, a live demo of S1–S5, and a note of at most one page giving: the delay calculation for one of your tones, the four target frequencies, the four measured frequencies, and the difference between them.</p>
+          <p>Pin assignments are on the <a href="../lab-kit.html#pins">pin map</a>: buzzer on <code>P2.5</code>, K1–K4 on <code>P3.1</code>, <code>P3.0</code>, <code>P3.2</code>, <code>P3.3</code>, and D1–D4 on <code>P2.0</code>–<code>P2.3</code>. Remove the LCD module during this project, because it shares <code>P2.5</code>. LED D6 is also on <code>P2.5</code>, so it glows faintly while a tone plays. That is normal.</p>
+        </section>
+
+        <section id="stage-2">
+          <h2>Stage 2 requirements <span class="tag">Final</span></h2>
+          <p>Choose <strong>one</strong> of the <a href="#birds">four bird calls</a> and make your board play it. The delay loop from stage 1 is replaced by a timer interrupt, and the call comes from a data table instead of from code. The demo and grading are based on this list.</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>#</th><th>Requirement</th></tr></thead>
+              <tbody>
+                <tr><td><strong>R1</strong></td><td>Pressing the button that belongs to your chosen call plays that call <strong>once</strong>, to the specification in <a href="#birds">The four bird calls</a>.</td></tr>
+                <tr><td><strong>R2</strong></td><td>The matching LED (D1–D4) is on while the call plays and off otherwise.</td></tr>
+                <tr><td><strong>R3</strong></td><td>Holding the button does not repeat the call. It must be released and pressed again.</td></tr>
+                <tr><td><strong>R4</strong></td><td>The tone is a square wave on the buzzer pin generated by the <strong>Timer 0 interrupt</strong>. No delay loops for pitch in this stage.</td></tr>
                 <tr><td><strong>R5</strong></td><td>Note durations are timed with <strong>Timer 1</strong> using a 5&nbsp;ms time base (polled or interrupt-driven).</td></tr>
-                <tr><td><strong>R6</strong></td><td>Each call is stored as a <strong>data table in program memory</strong> and played by one shared routine, not as a separate block of code per bird.</td></tr>
+                <tr><td><strong>R6</strong></td><td>The call is stored as a <strong>data table in program memory</strong> and played by a routine that reads that table, not as a block of code per note.</td></tr>
                 <tr><td><strong>R7</strong></td><td>When no call is playing, the buzzer is silent and its pin is left <strong>HIGH</strong>.</td></tr>
                 <tr><td><strong>R8</strong></td><td>Measured pitch is within <strong>±3%</strong> of the specification. Check it with a tuner or spectrogram app on your phone.</td></tr>
               </tbody>
             </table>
           </div>
-          <p>Pin assignments are on the <a href="../lab-kit.html#pins">pin map</a>. This project uses the buzzer on <code>P2.5</code>, K1–K4 on <code>P3.1</code>, <code>P3.0</code>, <code>P3.2</code>, <code>P3.3</code> and D1–D4 on <code>P2.0</code>–<code>P2.3</code>. Remove the LCD module during this project, because it shares <code>P2.5</code>. LED D6 is also on <code>P2.5</code>, so it glows faintly while a call plays. That is normal.</p>
+          <p><strong>Deliverables.</strong> Your commented <code>.asm</code> source and a live demo of R1–R8. There is no written report: instead, every member of the group answers <a href="#oral">oral questions</a> about the code during the demo. Bring your stage 1 program as well, because you may be asked to compare the two.</p>
+          <p class="section-note">Your other three buttons may keep their stage 1 tones or do nothing. Adding more bird calls is <a href="#milestones">bonus work</a>.</p>
         </section>
 
         <section id="birds">
           <h2>The four bird calls</h2>
-          <p>Each call imitates the typical song of a real bird, simplified to what a buzzer and a 5&nbsp;ms time base can play. Use <strong>Listen</strong> to hear the target (a square wave at the specified frequencies, like your buzzer), and compare it with the real recordings.</p>
+          <p>Each call is a pattern of frequency sweeps and rests, simplified to what a buzzer and a 5&nbsp;ms time base can play. <strong>Pick one of the four for stage 2</strong>, and use the button listed for it. Use <strong>Listen</strong> to hear the target: a square wave at the specified frequencies, like your buzzer.</p>
           <div class="table-scroll">
             <table>
               <thead><tr><th>Key</th><th>Call</th><th>Specification</th><th>Length</th></tr></thead>
               <tbody>
                 <tr>
                   <td>K1 / D1</td>
-                  <td><strong>House sparrow</strong><br>&ldquo;cheep&rdquo;</td>
-                  <td>One <em>cheep</em> = <strong>fast</strong> sweep 3000 &rarr; 4400&nbsp;Hz over 30&nbsp;ms, then <strong>slow</strong> sweep 4400 &rarr; 3200&nbsp;Hz over 40&nbsp;ms (5&nbsp;ms steps).<br>Call: cheep &middot; rest 110&nbsp;ms &middot; cheep &middot; rest 160&nbsp;ms &middot; cheep</td>
+                  <td><strong>Bird 1</strong></td>
+                  <td>One <em>pulse</em> = <strong>fast</strong> sweep 3000 &rarr; 4400&nbsp;Hz over 30&nbsp;ms, then <strong>slow</strong> sweep 4400 &rarr; 3200&nbsp;Hz over 40&nbsp;ms (5&nbsp;ms steps).<br>Call: pulse &middot; rest 110&nbsp;ms &middot; pulse &middot; rest 160&nbsp;ms &middot; pulse</td>
                   <td>480&nbsp;ms</td>
                 </tr>
                 <tr>
                   <td>K2 / D2</td>
-                  <td><strong>Northern cardinal</strong><br>&ldquo;cheer-cheer-cheer&rdquo;</td>
-                  <td>One <em>cheer</em> = <strong>fast</strong> sweep 4400 &rarr; 2000&nbsp;Hz over 150&nbsp;ms (5&nbsp;ms steps).<br>Call: 5 cheers, with rests of 120, 100, 80 and 60&nbsp;ms between them (the song speeds up)</td>
+                  <td><strong>Bird 2</strong></td>
+                  <td>One <em>pulse</em> = <strong>fast</strong> sweep 4400 &rarr; 2000&nbsp;Hz over 150&nbsp;ms (5&nbsp;ms steps).<br>Call: 5 pulses, with rests of 120, 100, 80 and 60&nbsp;ms between them (the call speeds up)</td>
                   <td>1110&nbsp;ms</td>
                 </tr>
                 <tr>
                   <td>K3 / D3</td>
-                  <td><strong>Chipping sparrow</strong><br>trill</td>
-                  <td>20 &times; ( <strong>linear</strong> sweep 4600 &rarr; 3400&nbsp;Hz over 25&nbsp;ms (5&nbsp;ms steps), then rest 35&nbsp;ms )<br><span class="tba">About one octave below the real bird, to suit the buzzer.</span></td>
+                  <td><strong>Bird 3</strong></td>
+                  <td>20 &times; ( <strong>linear</strong> sweep 4600 &rarr; 3400&nbsp;Hz over 25&nbsp;ms (5&nbsp;ms steps), then rest 35&nbsp;ms ) &mdash; a fast trill</td>
                   <td>1200&nbsp;ms</td>
                 </tr>
                 <tr>
                   <td>K4 / D4</td>
-                  <td><strong>Black-capped chickadee</strong><br>&ldquo;fee-bee&rdquo;</td>
-                  <td><em>fee</em> = <strong>linear</strong> sweep 4000 &rarr; 3800&nbsp;Hz over 300&nbsp;ms (10&nbsp;ms steps) &middot; rest 80&nbsp;ms &middot; <em>bee</em> = 3550&nbsp;Hz for 300&nbsp;ms</td>
+                  <td><strong>Bird 4</strong></td>
+                  <td>First note = <strong>linear</strong> sweep 4000 &rarr; 3800&nbsp;Hz over 300&nbsp;ms (10&nbsp;ms steps) &middot; rest 80&nbsp;ms &middot; second note = 3550&nbsp;Hz for 300&nbsp;ms</td>
                   <td>680&nbsp;ms</td>
                 </tr>
               </tbody>
@@ -152,40 +202,35 @@
           <p class="section-note">The first note is exactly <em>f</em><sub>1</sub> and the last exactly <em>f</em><sub>2</sub>. The tables have many notes, so it is sensible to calculate them with a spreadsheet or a short script. Include it with your submission.</p>
 
           <div class="grid bird-grid">
-            <div class="card" data-bird="CHEEP">
-              <h3>K1 &middot; House sparrow</h3>
+            <div class="card" data-bird="BIRD1">
+              <h3>K1 &middot; Bird 1</h3>
               <div class="plot"></div>
               <div class="btn-row">
                 <button class="btn btn-sm btn-primary listen" type="button">&#9654; Listen</button>
-                <a class="btn btn-sm" href="https://xeno-canto.org/species/Passer-domesticus" target="_blank" rel="noopener">Real recordings &#8599;</a>
               </div>
             </div>
-            <div class="card" data-bird="CARDINAL">
-              <h3>K2 &middot; Northern cardinal</h3>
+            <div class="card" data-bird="BIRD2">
+              <h3>K2 &middot; Bird 2</h3>
               <div class="plot"></div>
               <div class="btn-row">
                 <button class="btn btn-sm btn-primary listen" type="button">&#9654; Listen</button>
-                <a class="btn btn-sm" href="https://xeno-canto.org/species/Cardinalis-cardinalis" target="_blank" rel="noopener">Real recordings &#8599;</a>
               </div>
             </div>
-            <div class="card" data-bird="TRILL">
-              <h3>K3 &middot; Chipping sparrow</h3>
+            <div class="card" data-bird="BIRD3">
+              <h3>K3 &middot; Bird 3</h3>
               <div class="plot"></div>
               <div class="btn-row">
                 <button class="btn btn-sm btn-primary listen" type="button">&#9654; Listen</button>
-                <a class="btn btn-sm" href="https://xeno-canto.org/species/Spizella-passerina" target="_blank" rel="noopener">Real recordings &#8599;</a>
               </div>
             </div>
-            <div class="card" data-bird="CHICKADEE">
-              <h3>K4 &middot; Black-capped chickadee</h3>
+            <div class="card" data-bird="BIRD4">
+              <h3>K4 &middot; Bird 4</h3>
               <div class="plot"></div>
               <div class="btn-row">
                 <button class="btn btn-sm btn-primary listen" type="button">&#9654; Listen</button>
-                <a class="btn btn-sm" href="https://xeno-canto.org/species/Poecile-atricapillus" target="_blank" rel="noopener">Real recordings &#8599;</a>
               </div>
             </div>
           </div>
-          <p class="section-note">Recordings: <a href="https://xeno-canto.org" target="_blank" rel="noopener">xeno-canto.org</a>, a shared archive of wild bird sounds.</p>
         </section>
 
         <section id="background">
@@ -194,85 +239,85 @@
           <h3>Making a pitch with a passive buzzer</h3>
           <p>A passive buzzer only sounds while its drive signal keeps changing. Toggling the pin every <strong>half period</strong> produces a square wave, so a tone of frequency <em>f</em> needs a toggle every <code>T/2 = 1/(2f)</code> seconds. On this board the buzzer is driven through a PNP transistor.</p>
 
+          <h3>Stage 1: a tone without interrupts</h3>
+          <p>Without interrupts, your own code has to toggle the pin, so the pitch depends on how long the program takes between toggles. One machine cycle is 12 crystal periods, about 1.085&nbsp;µs on this board. Work out your own timing, then measure what the buzzer actually produces.</p>
+
           <h3>Timer 0 in mode 1</h3>
           <p>With the 11.0592&nbsp;MHz crystal in 12T mode, a timer counts <strong>921&nbsp;600 times per second</strong>. In mode 1 it counts up from the value you load into <code>TH0:TL0</code> and sets <code>TF0</code> (and requests an interrupt) when it rolls over from <code>FFFFH</code> to <code>0000H</code>. To overflow after <em>N</em> counts, load:</p>
           <div class="formula">reload = 65536 − N</div>
-          <p><strong>Example:</strong> a 3000&nbsp;Hz tone has a half period of 1/6000&nbsp;s = 153.6 → 154 counts, so reload = 65536 − 154 = 65382 = <code>FF66H</code>.</p>
-          <p>Mode 1 does not reload itself, so your ISR must reload the timer on every overflow. The interrupt response and the reload take some time, and those counts add to every half period. Expect the measured pitch to be slightly <strong>lower</strong> than calculated, most of all at high frequencies. Measure it and correct for it to meet R8.</p>
+          <p>Mode 1 does not reload itself, so your ISR must reload the timer on every overflow. Responding to the interrupt and reloading takes time of its own, which is added to every half period, so the pitch you measure will not be quite the pitch you calculated. Measuring that difference and correcting for it is part of meeting R8.</p>
           <p>More detail: <a href="../wiki.html#timers">Wiki: Timers</a> · <a href="../wiki.html#interrupts">Wiki: Interrupts</a> · <a href="../wiki.html#clock">Wiki: Clock &amp; timing</a>.</p>
 
           <h3>A 5 ms time base with Timer 1</h3>
-          <p>Every note in the specification is a whole number of 5&nbsp;ms steps. Use Timer 1 to measure exactly 5&nbsp;ms, and count those steps to hold each note for its length. Work out the reload value yourself and verify it (see <a href="#milestones">Milestone 1</a>).</p>
+          <p>Every note in the specification is a whole number of 5&nbsp;ms steps, so R5 asks for a 5&nbsp;ms time base from Timer 1. Work out the reload value yourself and verify it (see <a href="#milestones">Milestone 1</a>).</p>
 
           <h3>Storing sounds as tables</h3>
-          <p>R6 asks you to describe each call as data rather than code. A simple format is a list of notes, each giving a <strong>pitch</strong> and a <strong>length</strong>, with special values for a rest and for the end of the call:</p>
-<pre><code>CALL_NAME:
-    DB  pitch_high, pitch_low, length   ; one note
-    DB  ...                             ; more notes
-    DB  &lt;rest code&gt;, length             ; silence
-    DB  &lt;end marker&gt;                    ; end of the call</code></pre>
-          <p>Choose your own encoding for pitch, rest and end, and document it in your code. A sweep is a sequence of short notes. Tables are read with <code>MOVC A,@A+DPTR</code>, as in the <a href="../examples.html#Simple_Seven_Segment_Display">7-segment example</a>.</p>
+          <p>R6 asks you to describe the call as data rather than as code. How you encode a note, a rest and the end of the call is your design decision: invent a format, document it in your source, and make one routine play anything written in it. Constants are placed in program memory with <code>DB</code> and read back with <code>MOVC A,@A+DPTR</code>, as in the <a href="../examples.html#Simple_Seven_Segment_Display">7-segment example</a>.</p>
         </section>
 
         <section id="design">
           <h2>Design notes</h2>
-          <p>How you structure the program is up to you. These are points to consider while designing it, not a required structure:</p>
+          <p>How you structure the program is entirely up to you. These are questions worth answering before you write much code, not a required design:</p>
           <ul>
-            <li><strong>Division of work.</strong> The ISR should do as little as possible: reload and toggle. Reading tables, timing notes and checking buttons belong in the main program.</li>
-            <li><strong>Shared data.</strong> The main program chooses the pitch and the ISR uses it. What happens if the interrupt fires halfway through updating a 16-bit value?</li>
-            <li><strong>Starting and stopping the tone.</strong> Think about what state the timer, its flag and the buzzer pin are left in when a note ends, a rest starts or a call finishes (R7).</li>
-            <li><strong>Register usage.</strong> If the ISR uses <code>A</code>, <code>PSW</code> or <code>R0</code>–<code>R7</code>, the main program's values must be preserved.</li>
-            <li><strong>Buttons.</strong> Mechanical buttons bounce for a few milliseconds when pressed and released. R3 also needs you to detect a new press, not just a held button.</li>
-            <li><strong>Stack.</strong> After reset <code>SP = 07H</code>. Consider where your stack and RAM variables live (<a href="../wiki.html#memory">Wiki: Memory</a>).</li>
+            <li>What has to happen on every single interrupt, and what can wait for the main program?</li>
+            <li>The main program chooses the pitch and the interrupt routine uses it. What could go wrong if the interrupt arrives halfway through a change?</li>
+            <li>What state are the timer, its flag and the buzzer pin left in when a note ends, a rest starts, or the call finishes (R7)?</li>
+            <li>How will you tell a new press from a button that is simply still held down (R3)?</li>
           </ul>
-          <p>The <a href="../files/starters/bird_sound_starter.asm" download>starter template</a> gives the pin names, vector addresses, and headings for the routines most solutions need. You may change it freely.</p>
+          <p>Register banks, the stack and program memory are covered in the <a href="../wiki.html">8051 Wiki</a>. The <a href="../files/starters/bird_sound_starter.asm" download>starter template</a> gives the pin names and vector addresses; everything else in it is yours to change or delete.</p>
         </section>
 
         <section id="milestones">
           <h2>Milestones</h2>
-          <p>Show each milestone to the lab instructor as you reach it.</p>
-          <ol class="milestones">
+          <p>Show each milestone to the lab instructor as you reach it. Milestone 0 is the stage 1 checkpoint; the rest belong to stage 2.</p>
+          <ol class="milestones" start="0">
+            <li><strong>Buttons and buzzer (stage 1).</strong> Each of K1–K4 plays its own tone while held, with the matching LED on, meeting S1–S6.</li>
             <li><strong>Time base.</strong> Using only your Timer 1 routine, blink LED D8 (<code>P2.7</code>) at 1&nbsp;Hz (500&nbsp;ms on, 500&nbsp;ms off). Ten blinks must take 10&nbsp;s ± 0.2&nbsp;s by stopwatch.</li>
-            <li><strong>Interrupt tone.</strong> While K1 is held, the buzzer plays a steady 3000&nbsp;Hz tone generated by the Timer 0 interrupt. It is silent otherwise.</li>
-            <li><strong>First call.</strong> K1 plays the house sparrow call from a table, with D1 lit.</li>
-            <li><strong>Complete system.</strong> All four calls meet R1–R8.</li>
+            <li><strong>Interrupt tone.</strong> While its button is held, the buzzer plays a steady 3000&nbsp;Hz tone generated by the Timer 0 interrupt. It is silent otherwise.</li>
+            <li><strong>Your bird call.</strong> The button plays your chosen call from a table, with its LED lit, meeting R1–R8.</li>
           </ol>
 
           <h3>Bonus (up to +10)</h3>
           <ul>
-            <li><strong>Dawn chorus:</strong> pressing K1 and K4 together plays all four calls in sequence.</li>
-            <li><strong>Your own bird:</strong> design a fifth call that imitates a real bird recording (e.g. from xeno-canto), and play it from a key on the 4×4 keypad. Include the recording link and your specification.</li>
-            <li><strong>Spectrogram:</strong> include a phone spectrogram (for example Spectroid on Android) of each call next to the plots on this page, and comment on the differences.</li>
+            <li><strong>More birds:</strong> a second and third call on their own buttons, to the same specification (+5 each).</li>
+            <li><strong>Dawn chorus:</strong> pressing two buttons together plays every call you implemented, one after another.</li>
+            <li><strong>Your own bird:</strong> design a fifth call of your own and play it from a key on the 4×4 keypad. Include its specification.</li>
+            <li><strong>Spectrogram:</strong> include a phone spectrogram (for example Spectroid on Android) of your call next to the plot on this page, and comment on the differences.</li>
           </ul>
         </section>
 
-        <section id="questions">
-          <h2>Report questions</h2>
-          <p class="section-note">Answer in your report and show your working.</p>
-          <ol>
-            <li>Calculate <code>TH0</code> and <code>TL0</code> for a 2500&nbsp;Hz tone, before any correction.</li>
-            <li>What values did you load into <code>TH1</code> and <code>TL1</code> for the 5&nbsp;ms time base? Show the calculation.</li>
-            <li>R7 requires the buzzer pin to be left HIGH when idle. Using the buzzer's drive circuit, explain why.</li>
-            <li>Before correction, what frequency did you measure for the 3000&nbsp;Hz tone of Milestone 2? What causes the error, how did you correct it, and what was the result?</li>
-            <li>Your main program and ISR share data. Describe what could go wrong if an interrupt occurs while that data is being updated, and how your code prevents it.</li>
-            <li>What is the highest frequency your design could produce, and what limits it?</li>
-          </ol>
+        <section id="oral">
+          <h2>Oral questions</h2>
+          <p>There is no written report. Instead, <strong>40 of the 100 marks</strong> come from the oral questions: at the demo, each member of the group is questioned <strong>individually</strong> about the program you submitted. Marks are given for your own answers, so every member must understand the whole program, not only the part they wrote.</p>
+          <p>You may keep your source in front of you. Expect questions of these kinds:</p>
+          <ul>
+            <li><strong>Your numbers.</strong> Where does a particular reload value come from? Recalculate it, at the desk, for a frequency the examiner names.</li>
+            <li><strong>Your table.</strong> Explain your encoding, then read a few bytes of your own table aloud and say what they play.</li>
+            <li><strong>Your interrupt.</strong> Walk through what happens between the timer overflowing and the next instruction of the main program. Why is each instruction in the routine there?</li>
+            <li><strong>Your measurements.</strong> What pitch did you measure, how far was it from the specification, and what did you change?</li>
+            <li><strong>Change it now.</strong> Which line would you edit to make the call play an octave lower, or twice as fast? Do it, reassemble and show us.</li>
+            <li><strong>Break it.</strong> What would happen if this instruction were deleted, or if the interrupt were disabled here?</li>
+            <li><strong>Stage 1 against stage 2.</strong> What can the processor do now that it could not do while the delay loop was running?</li>
+          </ul>
+          <p class="section-note">You are responsible for every line you submit, including anything adapted from an example or written by another member of your group. "My teammate wrote that part" does not earn marks.</p>
         </section>
 
         <section id="grading">
           <h2>Submission &amp; grading</h2>
-          <p>Submit your commented <code>.asm</code> file and report, and demo the project live. Submission method: <span class="tba">TBA</span>.</p>
+          <p><strong>Stage 1</strong> is a required checkpoint: submit your <code>.asm</code> file and the one-page note, and demonstrate S1–S5 in the lab. It carries no marks, but a group that misses it cannot demonstrate stage 2 until it is shown.</p>
+          <p><strong>Stage 2</strong> is graded out of 100. Submit your commented <code>.asm</code> file, demo the project live, and answer the <a href="#oral">oral questions</a> individually. Submission method: <span class="tba">TBA</span>.</p>
           <div class="table-scroll">
             <table>
               <thead><tr><th>Item</th><th>Points</th></tr></thead>
               <tbody>
+                <tr><td>Milestone 0: stage 1 checkpoint demonstrated on time</td><td>required</td></tr>
                 <tr><td>Milestone 1: Timer 1 time base</td><td>10</td></tr>
-                <tr><td>Milestone 2: Timer 0 interrupt tone</td><td>15</td></tr>
-                <tr><td>Milestone 3: house sparrow call from a table</td><td>15</td></tr>
-                <tr><td>Milestone 4: cardinal, trill and chickadee (7 each); R2, R3 and R7 (4)</td><td>25</td></tr>
-                <tr><td>Pitch accuracy R8, checked during the demo</td><td>5</td></tr>
-                <tr><td>Code quality: structure, comments, documented table format, table-generation spreadsheet or script</td><td>10</td></tr>
-                <tr><td>Report questions</td><td>20</td></tr>
+                <tr><td>Milestone 2: Timer 0 interrupt tone</td><td>12</td></tr>
+                <tr><td>Milestone 3: your bird call played from a table (R1, R6)</td><td>18</td></tr>
+                <tr><td>Behaviour: LED (R2), no repeat while held (R3), buzzer idle HIGH (R7)</td><td>8</td></tr>
+                <tr><td>Pitch accuracy R8, checked during the demo</td><td>4</td></tr>
+                <tr><td>Code quality: structure, comments, documented table format, table-generation spreadsheet or script</td><td>8</td></tr>
+                <tr><td><strong>Oral questions at the demo, marked per student</strong></td><td><strong>40</strong></td></tr>
                 <tr><td><strong>Total</strong></td><td><strong>100</strong> (+10 bonus)</td></tr>
               </tbody>
             </table>

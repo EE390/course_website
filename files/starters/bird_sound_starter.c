@@ -40,10 +40,10 @@ void timer0_isr(void) __interrupt(1);
  *
  * Format:
  */
-const unsigned char __code CHEEP[]     = { 0 /* TODO: K1 - house sparrow */ };
-const unsigned char __code CARDINAL[]  = { 0 /* TODO: K2 - northern cardinal */ };
-const unsigned char __code TRILL[]     = { 0 /* TODO: K3 - chipping sparrow trill */ };
-const unsigned char __code CHICKADEE[] = { 0 /* TODO: K4 - chickadee fee-bee */ };
+const unsigned char __code BIRD1[] = { 0 /* TODO: K1 - bird 1 */ };
+const unsigned char __code BIRD2[] = { 0 /* TODO: K2 - bird 2 */ };
+const unsigned char __code BIRD3[] = { 0 /* TODO: K3 - bird 3 */ };
+const unsigned char __code BIRD4[] = { 0 /* TODO: K4 - bird 4 */ };
 
 /* ------------------------------------------------------------- functions -- */
 

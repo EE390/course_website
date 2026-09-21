@@ -14,17 +14,17 @@
   function repeat(n, segs) { var out = []; for (var i = 0; i < n; i++) out = out.concat(segs); return out; }
   function rest(ms) { return { type: "rest", ms: ms }; }
 
-  var CHEEP = [
+  var PULSE1 = [
     { type: "sweep", f1: 3000, f2: 4400, ms: 30, step: 5, curve: "fast" },
     { type: "sweep", f1: 4400, f2: 3200, ms: 40, step: 5, curve: "slow" }
   ];
-  var CHEER = [{ type: "sweep", f1: 4400, f2: 2000, ms: 150, step: 5, curve: "fast" }];
+  var PULSE2 = [{ type: "sweep", f1: 4400, f2: 2000, ms: 150, step: 5, curve: "fast" }];
 
   var BIRDS = {
-    CHEEP: [].concat(CHEEP, rest(110), CHEEP, rest(160), CHEEP),
-    CARDINAL: [].concat(CHEER, rest(120), CHEER, rest(100), CHEER, rest(80), CHEER, rest(60), CHEER),
-    TRILL: repeat(20, [{ type: "sweep", f1: 4600, f2: 3400, ms: 25, step: 5, curve: "linear" }, rest(35)]),
-    CHICKADEE: [
+    BIRD1: [].concat(PULSE1, rest(110), PULSE1, rest(160), PULSE1),
+    BIRD2: [].concat(PULSE2, rest(120), PULSE2, rest(100), PULSE2, rest(80), PULSE2, rest(60), PULSE2),
+    BIRD3: repeat(20, [{ type: "sweep", f1: 4600, f2: 3400, ms: 25, step: 5, curve: "linear" }, rest(35)]),
+    BIRD4: [
       { type: "sweep", f1: 4000, f2: 3800, ms: 300, step: 10, curve: "linear" },
       rest(80),
       { type: "tone", f: 3550, ms: 300 }
