@@ -1,8 +1,9 @@
 /* 8051 emulator for the EE 390 lab simulator.
  *
  * A direct port of the Python emulator used to verify the course solutions
- * (instructor/tools/emu8051.js). Full MCS-51 instruction set, Timer 0/1 in
- * modes 1 and 2, Timer 0/1 interrupts with IP priority, ports, 12T clock.
+ * (instructor/tools/emu8051.py). Full MCS-51 instruction set, Timer 0/1 in all
+ * four modes with the C/T and GATE bits, all five interrupt sources with IP
+ * priority, input pins on every port, and the 12T clock.
  *
  * Keep the two in step: any fix here belongs in the Python version too.
  */
@@ -15,7 +16,25 @@
   var ACC = 0xE0, B = 0xF0, PSW = 0xD0, SP = 0x81, DPL = 0x82, DPH = 0x83;
   var P0 = 0x80, P1 = 0x90, P2 = 0xA0, P3 = 0xB0;
   var TCON = 0x88, TMOD = 0x89, TL0 = 0x8A, TL1 = 0x8B, TH0 = 0x8C, TH1 = 0x8D;
-  var IE = 0xA8, IP = 0xB8;
+  var SCON = 0x98, IE = 0xA8, IP = 0xB8;
+
+  /* Pins on P3 that the timers and the external interrupts watch. */
+  var TPIN = [0x10, 0x20];        // T0 = P3.4, T1 = P3.5
+  var INTPIN = [0x04, 0x08];      // INT0 = P3.2, INT1 = P3.3
+
+  /* Interrupt sources in hardware polling order, highest first inside a level.
+   * clear: what the hardware does to the flag when it vectors.
+   *   "always" - timer flags
+   *   "ifEdge" - IE0/IE1, but only when ITx selects edge triggering
+   *   "never"  - RI/TI, which the service routine has to clear itself
+   */
+  var SOURCES = [
+    { reg: TCON, flag: 0x02, en: 0x01, vec: 0x0003, pri: 0x01, clear: "ifEdge", it: 0x01 },
+    { reg: TCON, flag: 0x20, en: 0x02, vec: 0x000B, pri: 0x02, clear: "always" },
+    { reg: TCON, flag: 0x08, en: 0x04, vec: 0x0013, pri: 0x04, clear: "ifEdge", it: 0x04 },
+    { reg: TCON, flag: 0x80, en: 0x08, vec: 0x001B, pri: 0x08, clear: "always" },
+    { reg: SCON, flag: 0x03, en: 0x10, vec: 0x0023, pri: 0x10, clear: "never" }
+  ];
 
   var SIZE = new Uint8Array(256).fill(1);
   var CYC = new Uint8Array(256).fill(1);
@@ -110,29 +129,75 @@
     this.sfr[SP] = 0x07;
     this.pc = 0;
     this.cycles = 0;
+    /* What the outside world holds each port pin at. A port reads its latch
+     * ANDed with these, so 0xFF means "nothing is pulling anything low". */
+    this.pinsP0 = 0xFF;
+    this.pinsP1 = 0xFF;
+    this.pinsP2 = 0xFF;
     this.pinsP3 = 0xFF;          // pulled low by simulated buttons
+    /* Optional board wiring: function(portAddr, latch) -> extra pin mask. Used
+     * for a matrix keypad, where an input pin follows an output pin next to it. */
+    this.wirePins = null;
     this.levels = [];            // priorities of interrupts in progress
+    this.holdoff = false;        // one instruction must follow RETI or a write to IE/IP
+    this.prevT = [1, 1];         // last seen level on T0/T1, for the counters
+    this.prevInt = [1, 1];       // last seen level on INT0/INT1, for edge triggering
     this.p2Log = [];             // [time_s, bit, level] for the buzzer
+    this.portLog = [];           // [cycles, addr, value] for every port write
+    this.winCycles = 0;          // start of the current board window
+    this.winPorts = [0xFF, 0xFF, 0xFF, 0xFF];   // P0..P3 as the window opened
     this.logPortWrites = true;
     this.halted = null;
   }
 
   Emu.prototype.time = function () { return this.cycles * CYCLE_S; };
 
+  Emu.prototype.isPort = function (a) { return a === P0 || a === P1 || a === P2 || a === P3; };
+
+  Emu.prototype.pinsOf = function (a) {
+    var base = a === P0 ? this.pinsP0 : a === P1 ? this.pinsP1
+             : a === P2 ? this.pinsP2 : this.pinsP3;
+    if (this.wirePins) base &= this.wirePins(a, this.sfr[a]);
+    return base & 0xFF;
+  };
+
+  /* A normal read of a port sees the pin, which the outside world can pull low. */
   Emu.prototype.rd = function (a) {
     if (a < 0x80) return this.iram[a];
     if (a === PSW) return this.pswWithParity();
-    if (a === P3) return this.sfr[P3] & this.pinsP3;
+    if (this.isPort(a)) return this.sfr[a] & this.pinsOf(a);
     return this.sfr[a];
+  };
+
+  /* Read-modify-write instructions (INC, DEC, DJNZ, ANL, ORL, XRL on a direct
+   * address, and CLR, SETB, CPL, JBC, MOV Px.y,C on a bit) read the output
+   * latch instead, so a pin held low by a button cannot corrupt the latch. */
+  Emu.prototype.rdLatch = function (a) {
+    if (a < 0x80) return this.iram[a];
+    if (a === PSW) return this.pswWithParity();
+    return this.sfr[a];
+  };
+
+  /* Start a fresh window: the board rebuilds the display and the buzzer tone
+   * from the port writes inside it. */
+  Emu.prototype.markWindow = function () {
+    this.winCycles = this.cycles;
+    this.winPorts = [this.sfr[P0], this.sfr[P1], this.sfr[P2], this.sfr[P3]];
+    this.portLog.length = 0;
+    this.p2Log.length = 0;
   };
 
   Emu.prototype.wr = function (a, v) {
     v &= 0xFF;
     if (a < 0x80) { this.iram[a] = v; return; }
-    if (a === P2 && this.logPortWrites) {
-      var old = this.sfr[P2];
-      for (var bit = 0; bit < 8; bit++) {
-        if (((old ^ v) >> bit) & 1) this.p2Log.push([this.time(), bit, (v >> bit) & 1]);
+    if (a === IE || a === IP) this.holdoff = true;
+    if (this.logPortWrites && this.isPort(a) && this.sfr[a] !== v) {
+      this.portLog.push([this.cycles, a, v]);
+      if (a === P2) {
+        var old = this.sfr[P2];
+        for (var bit = 0; bit < 8; bit++) {
+          if (((old ^ v) >> bit) & 1) this.p2Log.push([this.time(), bit, (v >> bit) & 1]);
+        }
       }
     }
     this.sfr[a] = v;
@@ -159,6 +224,10 @@
     var loc = this.bitLoc(b);
     return (this.rd(loc[0]) >> loc[1]) & 1;
   };
+  Emu.prototype.getbitLatch = function (b) {
+    var loc = this.bitLoc(b);
+    return (this.rdLatch(loc[0]) >> loc[1]) & 1;
+  };
   Emu.prototype.setbit = function (b, val) {
     var loc = this.bitLoc(b), byte = loc[0], n = loc[1];
     var cur = byte < 0x80 ? this.iram[byte] : this.sfr[byte];
@@ -174,6 +243,9 @@
     this.sfr[SP] = (this.sfr[SP] - 1) & 0xFF;
     return v;
   };
+
+  /* MOVX @Ri carries only the low address byte; P2 supplies the page. */
+  Emu.prototype.xpage = function (low) { return ((this.sfr[P2] << 8) | low) & 0xFFFF; };
 
   Emu.prototype.getDptr = function () { return (this.sfr[DPH] << 8) | this.sfr[DPL]; };
   Emu.prototype.setDptr = function (v) {
@@ -199,50 +271,121 @@
     this.setA(res & 0xFF);
   };
 
-  Emu.prototype.tick = function (n) {
-    var tcon = this.sfr[TCON], tmod = this.sfr[TMOD];
-    var timers = [[0, 0x10, 0x20, TH0, TL0], [1, 0x40, 0x80, TH1, TL1]];
-    for (var i = 0; i < 2; i++) {
-      var t = timers[i][0], tr = timers[i][1], tf = timers[i][2], th = timers[i][3], tl = timers[i][4];
-      if (!(tcon & tr)) continue;
-      var mode = (tmod >> (4 * t)) & 3;
-      if (mode === 2) {
-        var v = this.sfr[tl] + n;
-        while (v > 0xFF) {
-          tcon |= tf;
-          v = this.sfr[th] + (v - 0x100);
-        }
-        this.sfr[tl] = v;
-      } else {
-        var w = ((this.sfr[th] << 8) | this.sfr[tl]) + n;
-        if (w > 0xFFFF) { tcon |= tf; w &= 0xFFFF; }
-        this.sfr[th] = w >> 8;
-        this.sfr[tl] = w & 0xFF;
+  /* TRx is set, and if GATE is set the matching INTx pin is high. */
+  Emu.prototype.timerRuns = function (t) {
+    if (!(this.sfr[TCON] & (t ? 0x40 : 0x10))) return false;
+    if ((this.sfr[TMOD] >> (4 * t + 3)) & 1) {
+      if (!(this.rd(P3) & INTPIN[t])) return false;
+    }
+    return true;
+  };
+
+  /* C/T picks the input: machine cycles, or falling edges on the Tx pin. */
+  Emu.prototype.timerPulses = function (t, n, edges) {
+    return ((this.sfr[TMOD] >> (4 * t + 2)) & 1) ? edges[t] : n;
+  };
+
+  /* Count pulses into TH/TL for one timer. Mode 0 is 13 bits, mode 1 is 16,
+   * mode 2 is 8 with auto-reload from TH. `quiet` holds back the overflow flag,
+   * which Timer 1 needs while Timer 0 has taken TF1 over in mode 3. */
+  Emu.prototype.countUp = function (t, mode, n, quiet) {
+    if (!n) return;
+    var th = t ? TH1 : TH0, tl = t ? TL1 : TL0, tf = t ? 0x80 : 0x20;
+    var v, max;
+    if (mode === 2) {
+      v = this.sfr[tl] + n;
+      while (v > 0xFF) {
+        if (!quiet) this.sfr[TCON] |= tf;
+        v = this.sfr[th] + (v - 0x100);
       }
+      this.sfr[tl] = v;
+      return;
+    }
+    if (mode === 0) { max = 0x1FFF; v = ((this.sfr[th] << 5) | (this.sfr[tl] & 0x1F)) + n; }
+    else { max = 0xFFFF; v = ((this.sfr[th] << 8) | this.sfr[tl]) + n; }
+    if (v > max) {
+      if (!quiet) this.sfr[TCON] |= tf;
+      v &= max;
+    }
+    if (mode === 0) { this.sfr[tl] = v & 0x1F; this.sfr[th] = (v >> 5) & 0xFF; }
+    else { this.sfr[tl] = v & 0xFF; this.sfr[th] = (v >> 8) & 0xFF; }
+  };
+
+  /* One half of Timer 0 in mode 3, which is a plain 8-bit counter. */
+  Emu.prototype.count8 = function (reg, tf, n) {
+    if (!n) return;
+    var v = this.sfr[reg] + n;
+    while (v > 0xFF) { this.sfr[TCON] |= tf; v -= 0x100; }
+    this.sfr[reg] = v;
+  };
+
+  Emu.prototype.tick = function (n) {
+    var p3 = this.rd(P3), edges = [0, 0], t, lvl;
+    for (t = 0; t < 2; t++) {
+      lvl = (p3 & TPIN[t]) ? 1 : 0;
+      if (this.prevT[t] === 1 && lvl === 0) edges[t] = 1;   // one edge per machine cycle at most
+      this.prevT[t] = lvl;
+    }
+    var tmod = this.sfr[TMOD];
+    var m0 = tmod & 3, m1 = (tmod >> 4) & 3;
+    if (m0 === 3) {
+      /* Mode 3 splits Timer 0: TL0 keeps TR0 and TF0, TH0 borrows TR1 and TF1. */
+      if (this.timerRuns(0)) this.count8(TL0, 0x20, this.timerPulses(0, n, edges));
+      if (this.sfr[TCON] & 0x40) this.count8(TH0, 0x80, n);
+      /* Timer 1 keeps counting for the baud generator but can no longer raise TF1. */
+      if (m1 !== 3) this.countUp(1, m1, this.timerPulses(1, n, edges), true);
+    } else {
+      if (this.timerRuns(0)) this.countUp(0, m0, this.timerPulses(0, n, edges));
+      if (m1 !== 3 && this.timerRuns(1)) this.countUp(1, m1, this.timerPulses(1, n, edges));
+    }
+    this.pollExternal(p3);
+  };
+
+  /* INT0/INT1: ITx = 1 latches a falling edge into IEx, ITx = 0 makes IEx
+   * follow the low level, which is why a level-triggered source has to be
+   * released before the service routine returns. */
+  Emu.prototype.pollExternal = function (p3) {
+    var tcon = this.sfr[TCON];
+    for (var i = 0; i < 2; i++) {
+      var lvl = (p3 & INTPIN[i]) ? 1 : 0;
+      var itBit = i ? 0x04 : 0x01, ieFlag = i ? 0x08 : 0x02;
+      if (tcon & itBit) {
+        if (this.prevInt[i] === 1 && lvl === 0) tcon |= ieFlag;
+      } else if (lvl === 0) {
+        tcon |= ieFlag;
+      } else {
+        tcon &= ~ieFlag;
+      }
+      this.prevInt[i] = lvl;
     }
     this.sfr[TCON] = tcon;
   };
 
   Emu.prototype.checkInterrupts = function () {
+    /* RETI, and any write to IE or IP, lets one more instruction run first. */
+    if (this.holdoff) { this.holdoff = false; return false; }
     var ie = this.sfr[IE];
     if (!(ie & 0x80)) return false;
-    var tcon = this.sfr[TCON], ip = this.sfr[IP];
+    var ip = this.sfr[IP];
     var current = this.levels.length ? this.levels[this.levels.length - 1] : -1;
-    var sources = [[0x20, 0x02, 0x000B, 0x02], [0x80, 0x08, 0x001B, 0x08]];
-    for (var i = 0; i < sources.length; i++) {
-      var flag = sources[i][0], en = sources[i][1], vec = sources[i][2], priBit = sources[i][3];
-      if ((tcon & flag) && (ie & en)) {
-        var level = (ip & priBit) ? 1 : 0;
-        if (level > current) {
-          this.sfr[TCON] = tcon & ~flag;
-          this.push(this.pc & 0xFF);
-          this.push(this.pc >> 8);
-          this.pc = vec;
-          this.levels.push(level);
-          this.cycles += 2;
-          this.tick(2);
-          return true;
+    /* Everything at the high priority level first, then the low one, each in
+     * the fixed polling order that breaks ties inside a level. */
+    for (var level = 1; level > current; level--) {
+      for (var i = 0; i < SOURCES.length; i++) {
+        var s = SOURCES[i];
+        if (!(ie & s.en)) continue;
+        if (!(this.sfr[s.reg] & s.flag)) continue;
+        if (((ip & s.pri) ? 1 : 0) !== level) continue;
+        if (s.clear === "always" || (s.clear === "ifEdge" && (this.sfr[TCON] & s.it))) {
+          this.sfr[s.reg] &= ~s.flag;
         }
+        this.push(this.pc & 0xFF);
+        this.push(this.pc >> 8);
+        this.pc = s.vec;
+        this.levels.push(level);
+        this.cycles += 2;
+        this.tick(2);
+        return true;
       }
     }
     return false;
@@ -293,13 +436,13 @@
     } else if ((hi === 0x00 || hi === 0x10) && lo >= 4) {
       var d = hi === 0x00 ? 1 : -1;
       if (lo === 4) this.setA(this.getA() + d);
-      else if (lo === 5) this.wr(o1, this.rd(o1) + d);
+      else if (lo === 5) this.wr(o1, this.rdLatch(o1) + d);      // read-modify-write
       else if (lo === 6 || lo === 7) {
         var ri = this.rget(lo - 6);
         this.iram[ri] = (this.iram[ri] + d) & 0xFF;
       } else this.rset(lo - 8, this.rget(lo - 8) + d);
     } else if (op === 0x10) {
-      if (this.getbit(o1)) { this.setbit(o1, 0); nxt = rel(o2); }
+      if (this.getbitLatch(o1)) { this.setbit(o1, 0); nxt = rel(o2); }   // read-modify-write
     } else if (op === 0x20) {
       if (this.getbit(o1)) nxt = rel(o2);
     } else if (op === 0x30) {
@@ -307,7 +450,10 @@
     } else if (op === 0x22 || op === 0x32) {
       var hiB = this.pop(), loB = this.pop();
       nxt = (hiB << 8) | loB;
-      if (op === 0x32 && this.levels.length) this.levels.pop();
+      if (op === 0x32) {
+        if (this.levels.length) this.levels.pop();
+        this.holdoff = true;      // one instruction runs before the next interrupt
+      }
     } else if (hi === 0x20 && lo >= 4) {
       this._add(operand(), 0);
     } else if (hi === 0x30 && lo >= 4) {
@@ -316,8 +462,8 @@
       var f = hi === 0x40 ? function (a, b) { return a | b; }
         : hi === 0x50 ? function (a, b) { return a & b; }
           : function (a, b) { return a ^ b; };
-      if (lo === 2) this.wr(o1, f(this.rd(o1), this.getA()));
-      else if (lo === 3) this.wr(o1, f(this.rd(o1), o2));
+      if (lo === 2) this.wr(o1, f(this.rdLatch(o1), this.getA()));     // read-modify-write
+      else if (lo === 3) this.wr(o1, f(this.rdLatch(o1), o2));         // read-modify-write
       else this.setA(f(this.getA(), operand()));
     } else if (op === 0x40) {
       if (this.cy()) nxt = rel(o1);
@@ -385,7 +531,7 @@
     } else if (op >= 0xA8 && op <= 0xAF) {
       this.rset(op - 0xA8, this.rd(o1));
     } else if (op === 0xB2) {
-      this.setbit(o1, 1 - this.getbit(o1));
+      this.setbit(o1, 1 - this.getbitLatch(o1));                       // read-modify-write
     } else if (op === 0xB3) {
       this.setCy(1 - this.cy());
     } else if (op >= 0xB4 && op <= 0xBF) {
@@ -429,7 +575,7 @@
       this.setCy(cv || av > 0xFF ? 1 : 0);
       this.setA(av);
     } else if (op === 0xD5) {
-      var dv = (this.rd(o1) - 1) & 0xFF;
+      var dv = (this.rdLatch(o1) - 1) & 0xFF;                          // read-modify-write
       this.wr(o1, dv);
       if (dv) nxt = rel(o2);
     } else if (op === 0xD6 || op === 0xD7) {
@@ -443,7 +589,7 @@
     } else if (op === 0xE0) {
       this.setA(this.xram[this.getDptr()]);
     } else if (op === 0xE2 || op === 0xE3) {
-      this.setA(this.xram[this.rget(op - 0xE2)]);
+      this.setA(this.xram[this.xpage(this.rget(op - 0xE2))]);
     } else if (op === 0xE4) {
       this.setA(0);
     } else if (op === 0xE5) {
@@ -455,7 +601,7 @@
     } else if (op === 0xF0) {
       this.xram[this.getDptr()] = this.getA();
     } else if (op === 0xF2 || op === 0xF3) {
-      this.xram[this.rget(op - 0xF2)] = this.getA();
+      this.xram[this.xpage(this.rget(op - 0xF2))] = this.getA();
     } else if (op === 0xF4) {
       this.setA(~this.getA());
     } else if (op === 0xF5) {
@@ -503,7 +649,8 @@
     SIZE: SIZE,
     CYC: CYC,
     ADDR: { ACC: ACC, B: B, PSW: PSW, SP: SP, DPL: DPL, DPH: DPH, P0: P0, P1: P1, P2: P2, P3: P3,
-            TCON: TCON, TMOD: TMOD, TL0: TL0, TL1: TL1, TH0: TH0, TH1: TH1, IE: IE, IP: IP }
+            TCON: TCON, TMOD: TMOD, TL0: TL0, TL1: TL1, TH0: TH0, TH1: TH1,
+            SCON: SCON, IE: IE, IP: IP }
   };
 })(typeof window !== "undefined" ? window
   : (typeof module !== "undefined" && module.exports) ? module.exports : this);

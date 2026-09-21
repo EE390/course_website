@@ -39,6 +39,22 @@
       <p class="page-lead">Write assembly and run it on a simulated board, with the same pins as the real kit. Nothing to install. When it works here, build the <code>.hex</code> in MIDE-51 and program the board the usual way.</p>
     </header>
 
+    <section class="lab-gate panel" id="lab-gate" aria-labelledby="gate-title">
+      <h2 id="gate-title">Closed beta</h2>
+      <p>The simulator is still being tested, so it needs the access code from your instructor.</p>
+      <form class="gate-form" id="gate-form">
+        <label class="gate-label" for="gate-code">Access code</label>
+        <input class="gate-input" id="gate-code" type="password" autocomplete="off"
+               autocapitalize="off" autocorrect="off" spellcheck="false" required>
+        <button class="btn btn-primary" type="submit">Unlock</button>
+      </form>
+      <p class="gate-msg" id="gate-msg" role="status" aria-live="polite"></p>
+      <p class="lab-hint">Your browser remembers this, so you only enter it once on this device.
+        Everything else on the site stays open — the <a href="examples.html">examples</a>,
+        the <a href="wiki.html">wiki</a> and the <a href="lab-kit.html">lab kit</a> pages.</p>
+    </section>
+
+    <div id="lab-main" hidden>
     <div class="lab-toolbar">
       <button class="btn btn-primary" id="run" type="button">▶ Run</button>
       <button class="btn" id="step" type="button">Step</button>
@@ -85,8 +101,18 @@
         </div>
 
         <div class="board-block">
+          <div class="board-label">8×8 LED matrix <span class="pinnote">columns P0 · rows via 74HC595 on P3.4–P3.6</span></div>
+          <div class="pix-grid" id="matrix"></div>
+        </div>
+
+        <div class="board-block">
           <div class="board-label">LEDs D1–D8 <span class="pinnote">P2, on when LOW</span></div>
           <div class="led-row" id="leds"></div>
+        </div>
+
+        <div class="board-block">
+          <div class="board-label">Output loads O1–O6 <span class="pinnote">P1.0–P1.5, on when HIGH</span></div>
+          <div class="led-row" id="loads"></div>
         </div>
 
         <div class="board-block">
@@ -94,10 +120,16 @@
           <div class="key-row">
             <button class="keybtn" data-bit="1" type="button">K1<span>P3.1</span></button>
             <button class="keybtn" data-bit="0" type="button">K2<span>P3.0</span></button>
-            <button class="keybtn" data-bit="2" type="button">K3<span>P3.2</span></button>
-            <button class="keybtn" data-bit="3" type="button">K4<span>P3.3</span></button>
+            <button class="keybtn" data-bit="2" type="button">K3<span>P3.2 · INT0</span></button>
+            <button class="keybtn" data-bit="3" type="button">K4<span>P3.3 · INT1</span></button>
           </div>
           <p class="lab-hint">Hold the mouse button down, or use the keyboard keys 1, 2, 3 and 4.</p>
+        </div>
+
+        <div class="board-block">
+          <div class="board-label">4×4 matrix keypad <span class="pinnote">rows P1.7–P1.4 · columns P1.3–P1.0</span></div>
+          <div class="pad-grid" id="keypad"></div>
+          <p class="lab-hint">Drive one row LOW, then read the columns. A held key ties its column to its row.</p>
         </div>
 
         <div class="board-block">
@@ -111,14 +143,16 @@
         </div>
       </section>
     </div>
+    </div><!-- /lab-main -->
 
     <section class="lab-notes">
       <h2>What this is, and what it is not</h2>
       <ul>
         <li>The assembler accepts the same syntax as MIDE-51 (ASEM-51). Every example on this site assembles here to <strong>exactly the same bytes</strong> as MIDE-51 produces, and that is checked automatically whenever the site changes.</li>
-        <li>The processor model is the one used to verify the course solutions: full instruction set, Timer 0 and Timer 1 in modes 1 and 2, interrupts with priority, and 12T timing at 11.0592&nbsp;MHz.</li>
+        <li>The processor model is the one used to verify the course solutions: full instruction set, Timer 0 and Timer 1 in all four modes with the C/T and GATE bits, all five interrupt sources with priority, and 12T timing at 11.0592&nbsp;MHz.</li>
         <li>Timing here is <em>simulated</em> time, not your computer's clock. The reading under “Board” is what the chip would have experienced.</li>
-        <li>Not simulated: the LCD, I²C EEPROM, DS1302 clock, ADC, temperature sensor, IR receiver and the serial port. Programs using those still assemble, but their pins just move.</li>
+        <li>The display and the LEDs are <strong>multiplexed</strong>, far faster than a screen refreshes, so the board shows how long each lamp was actually lit rather than where the pins happened to sit. A digit that is driven one-eighth of the time reads as bright as a steady one, exactly as it does on the bench.</li>
+        <li>Not simulated: the LCD, I²C EEPROM, DS1302 clock, ADC, temperature sensor, IR receiver and Timer 2. The serial port raises its interrupt when you set RI or TI, but no bytes are shifted. Programs using any of those still assemble, and their pins still move.</li>
         <li>A working program here should behave the same on the real board. If it does not, trust the board, and tell us: <a href="https://github.com/EE390/course_website/issues/new?template=report-a-mistake.yml">report it</a>.</li>
       </ul>
     </section>
@@ -153,6 +187,7 @@
     </div>
   </footer>
   <script src="assets/js/site.js"></script>
+  <script src="assets/js/lab/gate.js"></script>
   <script src="assets/js/lab/asm8051.js"></script>
   <script src="assets/js/lab/emu8051.js"></script>
   <script src="assets/js/lab/lab.js"></script>

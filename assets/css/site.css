@@ -654,22 +654,47 @@ pre {
 .lab-errors .err { margin-top: 6px; font-family: ui-monospace, Consolas, monospace; font-size: 0.8rem; }
 .err-line { font: inherit; border: 0; background: none; padding: 0 4px 0 0; color: var(--accent); cursor: pointer; text-decoration: underline; }
 
+.lab-gate { max-width: 520px; padding: 22px; }
+.lab-gate h2 { margin: 0 0 6px; font-size: 1.05rem; }
+.lab-gate p { margin: 0 0 14px; }
+.gate-form { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; }
+.gate-label { flex: 1 1 100%; font-size: 0.82rem; font-weight: 600; }
+.gate-input { flex: 1 1 200px; font: inherit; padding: 8px 10px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--surface-2); color: var(--text); }
+.gate-msg { margin: 10px 0 0; color: #c0392b; font-size: 0.85rem; min-height: 1.2em; }
+.lab-gate .lab-hint { margin-top: 14px; }
+
 .board-block { margin-bottom: 18px; }
 .board-label { font-size: 0.82rem; font-weight: 600; margin-bottom: 8px; display: flex; gap: 8px; flex-wrap: wrap; align-items: baseline; }
 .pinnote { font-weight: 400; color: var(--muted); font-family: ui-monospace, Consolas, monospace; font-size: 0.75rem; }
 
+/* Lamps carry their brightness as inline opacity, because a multiplexed digit
+   is lit for only a slice of each frame. See assets/js/lab/lab.js. */
 .seg-row { display: flex; gap: 4px; padding: 10px; border-radius: var(--radius);
   background: #14181a; overflow-x: auto; }
 .seg-digit svg { width: 30px; height: 51px; display: block; }
 .seg-digit .s { fill: #23292c; }
 .seg-digit .s.on { fill: #ff4436; }
 
+.pix-grid { display: grid; grid-template-columns: repeat(8, 14px); gap: 3px;
+  padding: 10px; border-radius: var(--radius); background: #14181a; width: max-content; }
+.pix { width: 14px; height: 14px; border-radius: 50%; background: #23292c; }
+.pix.on { background: #ff4436; box-shadow: 0 0 6px rgba(255, 68, 54, 0.7); }
+
 .led-row { display: flex; gap: 12px; flex-wrap: wrap; }
 .led-cell { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.led { width: 20px; height: 20px; border-radius: 50%; background: var(--surface-2);
-  border: 1px solid var(--border); transition: background 60ms linear; }
-.led.on { background: #ff5347; border-color: #ff5347; box-shadow: 0 0 10px rgba(255, 83, 71, 0.75); }
+.led { position: relative; width: 20px; height: 20px; border-radius: 50%;
+  background: var(--surface-2); border: 1px solid var(--border); }
+.led-glow { position: absolute; inset: -1px; border-radius: 50%; opacity: 0; }
+.led-glow.on { background: #ff5347; box-shadow: 0 0 10px rgba(255, 83, 71, 0.75); }
+.led-load .led-glow.on { background: #30c06a; box-shadow: 0 0 10px rgba(48, 192, 106, 0.75); }
 .led-name { font-size: 0.7rem; color: var(--muted); font-family: ui-monospace, Consolas, monospace; }
+
+.pad-grid { display: grid; grid-template-columns: repeat(4, 44px); gap: 6px; }
+.padbtn { font: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+  height: 40px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--surface-2); color: var(--text); }
+.padbtn.down { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
 
 .key-row { display: flex; gap: 10px; flex-wrap: wrap; }
 .keybtn {

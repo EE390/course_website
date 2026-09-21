@@ -2,21 +2,62 @@
 <meta charset="utf-8">
 <title>lab ui test</title>
 <pre id="out">running</pre>
+<script>
+/* The simulator is behind a beta gate. This page is the same origin as
+   lab.html, so writing the unlock key here lets the frame below come up
+   unlocked. Must run before the frame is created, hence its own script tag.
+   The value is the code hash from assets/js/lab/gate.js, not the code. */
+try { localStorage.setItem("ee390-lab-beta", "mtw2sojsef"); } catch (e) { /* private mode */ }
+</script>
 <iframe id="f" src="../../lab.html" style="width:1200px;height:900px;border:0"></iframe>
 <script>
 var results = [];
-function check(name, cond, detail) { results.push({ test: name, pass: !!cond, detail: detail || "" }); }
+/* Written out after every check, so a hang shows how far the run got. */
+function report() { document.getElementById("out").textContent = JSON.stringify(results, null, 1); }
+function check(name, cond, detail) {
+  results.push({ test: name, pass: !!cond, detail: detail || "" });
+  report();
+}
 function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
 
 var f = document.getElementById("f");
-f.onload = function () {
+/* Served locally the iframe can finish before this script runs, so onload alone
+   would never fire and the page would sit at "running" forever. */
+function start() {
   var w = f.contentWindow, d = f.contentDocument;
   var errs = [];
   w.addEventListener("error", function (e) { errs.push(String(e.message)); });
 
-  function leds() {
-    return Array.prototype.map.call(d.querySelectorAll(".led"), function (l) {
+  /* Lamps carry brightness as inline opacity on an inner .led-glow, because the
+     board shows how long each one was lit rather than where the pins sit. */
+  function lit(sel) {
+    return Array.prototype.map.call(d.querySelectorAll(sel), function (l) {
       return l.classList.contains("on") ? 1 : 0;
+    }).join("");
+  }
+  function leds() { return lit("#leds .led-glow"); }
+  function loads() { return lit("#loads .led-glow"); }
+  function pad(row, col, down) {
+    var b = d.querySelector('.padbtn[data-row="' + row + '"][data-col="' + col + '"]');
+    b.dispatchEvent(new w.MouseEvent(down ? "mousedown" : "mouseup", { bubbles: true, cancelable: true }));
+  }
+  function loadExample(name) {
+    return fetch("../../examples/" + name + ".asm").then(function (r) { return r.text(); })
+      .then(function (text) {
+        var src = d.getElementById("source");
+        src.value = text.replace(/\r\n?/g, "\n");
+        src.dispatchEvent(new w.Event("input", { bubbles: true }));
+        return w.EE390Lab.build();
+      });
+  }
+  function digits() {
+    var GLYPH = { 63: "0", 6: "1", 91: "2", 79: "3", 102: "4", 109: "5", 125: "6",
+                  7: "7", 127: "8", 111: "9", 0: " " };
+    var SEG_BIT = [0, 5, 1, 6, 4, 2, 3, 7];   // DOM order -> P0 bit
+    return Array.prototype.map.call(d.querySelectorAll(".seg-digit"), function (dig) {
+      var segs = dig.querySelectorAll(".s"), bits = 0;
+      for (var i = 0; i < 8; i++) if (segs[i].classList.contains("on")) bits |= 1 << SEG_BIT[i];
+      return GLYPH[bits] !== undefined ? GLYPH[bits] : "?";
     }).join("");
   }
   function cycles() {
@@ -34,6 +75,23 @@ f.onload = function () {
             d.getElementById("editor-status").textContent);
       check("no assembler errors", d.getElementById("errors").textContent === "",
             d.getElementById("errors").textContent.slice(0, 80));
+
+      /* The beta gate. This frame is unlocked because the script at the top of
+         this page seeded the key; open lab.html directly to see the gate. */
+      check("gate markup is present",
+            !!d.getElementById("lab-gate") && !!d.getElementById("lab-main") &&
+            !!d.getElementById("gate-form"),
+            "gate, lab-main and form");
+      check("a remembered unlock opens the simulator",
+            d.getElementById("lab-main").hidden === false && d.getElementById("lab-gate").hidden === true,
+            "main hidden=" + d.getElementById("lab-main").hidden +
+            ", gate hidden=" + d.getElementById("lab-gate").hidden);
+      check("gate accepts the beta code", w.EE390Gate.accepts("BETA-Ibrahim") === true, "exact");
+      check("gate ignores case and spaces", w.EE390Gate.accepts("  beta-ibrahim  ") === true, "relaxed");
+      check("gate rejects anything else",
+            !w.EE390Gate.accepts("beta-ibrahi") && !w.EE390Gate.accepts("") &&
+            !w.EE390Gate.accepts("BETA_Ibrahim"),
+            "near misses and empty");
       check("LEDs start off", leds() === "00000000", leds());
 
       d.getElementById("run").click();
@@ -87,12 +145,61 @@ f.onload = function () {
       check("edited program is reassembled", leds() === "00010000", leds());
       check("no errors after good edit", d.getElementById("errors").textContent === "",
             d.getElementById("errors").textContent.slice(0, 80));
+      d.getElementById("run").click();       // pause before the board checks
+      return loadExample("Simple_Seven_Segment_Display");
+    })
+    .then(function () {
+      /* The display is multiplexed about 1 ms per digit, far faster than the
+         screen refreshes. Sampling the ports once a frame used to show one digit
+         crawling into place; the whole number should be readable straight away. */
+      w.EE390Lab.advance(0.1);
+      check("multiplexed display reads as a whole number", digits() === "01234567", digits());
+      return loadExample("Matrix_4x4_Keypad_with_Buzzer");
+    })
+    .then(function () {
+      w.EE390Lab.advance(0.05);
+      check("keypad is silent with nothing held",
+            d.getElementById("buzz-text").textContent === "silent",
+            d.getElementById("buzz-text").textContent);
+      pad(1, 1, true);                       // key "5": row P1.6, column P1.2
+      w.EE390Lab.advance(0.05);
+      var hz = parseInt(d.getElementById("buzz-text").textContent, 10);
+      check("held keypad key sounds its own tone", hz === 150,
+            d.getElementById("buzz-text").textContent + " (want 150 Hz)");
+      pad(1, 1, false);
+      return loadExample("LED_8x8_Matrix");
+    })
+    .then(function () {
+      w.EE390Lab.advance(0.3);
+      var on = lit(".pix").split("").filter(function (c) { return c === "1"; }).length;
+      check("74HC595 drives the LED matrix", on > 10 && on < 40, on + " pixels lit");
+      return loadExample("Simple_Buttons_with_Output_Loads");
+    })
+    .then(function () {
+      w.EE390Lab.advance(0.02);
+      check("output loads start off", loads() === "000000", loads());
+      press(1, true);                        // K1 -> P3.1
+      w.EE390Lab.advance(0.02);
+      check("K1 switches O1 on", loads()[0] === "1", loads());
+      press(1, false);
+      press(2, true);                        // K3 -> P3.2, also INT0
+      w.EE390Lab.advance(0.02);
+      check("K3 switches O3 on", loads()[2] === "1", loads());
+      press(2, false);
+
       check("no uncaught page errors", errs.length === 0, errs.join(" | "));
-      document.getElementById("out").textContent = JSON.stringify(results, null, 1);
+      report();
     })
     .catch(function (e) {
       results.push({ test: "harness", pass: false, detail: String(e && e.message || e) });
-      document.getElementById("out").textContent = JSON.stringify(results, null, 1);
+      report();
     });
-};
+}
+
+if (f.contentDocument && f.contentDocument.readyState === "complete" &&
+    f.contentWindow && f.contentWindow.EE390Lab) {
+  start();
+} else {
+  f.onload = start;
+}
 </script>

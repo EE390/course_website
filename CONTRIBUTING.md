@@ -119,14 +119,32 @@ node .github/tests/run-tests.js
   bytes in `.github/tests/fixtures/*.hex`, which is ASEM-51 v1.3 output, the assembler inside MIDE-51.
 - **Processor:** each program must run identically to `fixtures/traces.json`, recorded from
   `instructor/tools/emu8051.py`, the emulator used to verify the course solutions.
+- **Assembler details:** operand forms and diagnostics the examples never exercise.
+- **Processor details:** flags, ports, timer modes and interrupt sources, checked against the
+  MCS-51 manual. A trace only proves the two emulators still agree, not that either one is right,
+  so anything the examples do not happen to use needs a check here as well.
 
 Changing an example means regenerating its fixture (an instructor job: assemble it in MIDE-51 and
-copy the `.hex`, then rebuild the traces). Without that, CI will fail, which is the point.
+copy the `.hex`, then rebuild the traces with `instructor/tools/make_traces.py --site ../course_website`).
+Without that, CI will fail, which is the point.
 
 For the page itself, open `.github/tests/ui-test.html` through a local server: it drives the real
 page in an iframe (Run, Step, buttons, error reporting) and prints pass/fail.
 
-If you fix a bug in `emu8051.js`, fix it in `instructor/tools/emu8051.py` too. They are meant to agree.
+If you fix a bug in `emu8051.js`, fix it in `instructor/tools/emu8051.py` too. They are meant to agree,
+and after a processor change the traces have to be rebuilt from the Python side:
+
+```sh
+python ../instructor/tools/make_traces.py --site .     # then re-run run-tests.js
+```
+
+A trace that moves is not automatically a regression — it may be the fix. Read the diff and be able to
+say which program changed and why before committing it.
+
+`lab.js` shows each lamp by how long it was actually lit during the frame, replayed from the port
+writes, not by sampling the ports once. The 7-segment display and the LED matrix are multiplexed
+more slowly than the screen refreshes, so a single sample is mostly noise: the display used to show
+one digit crawling into place instead of a number. Keep that in mind before "simplifying" it.
 
 ## Large files (over 50 MB)
 
