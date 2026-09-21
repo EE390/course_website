@@ -5,6 +5,11 @@
   2. Solutions, answer keys and grading notes go to the private EE390/instructor repo, never here.
   3. Add a card and a roadmap row under Practical Assignments in assignments.html.
   4. Run: python .github/scripts/check_site.py
+
+  House style for practical assignments:
+   - two stages: a checkpoint with no marks, then the graded final stage
+   - state requirements and deliverables per stage; do not describe a solution
+   - no written report. Oral questions at the demo, marked per student, 40/100
 -->
 <html lang="en">
 <head>
@@ -34,6 +39,7 @@
         <a href="../index.html">Home</a>
         <a href="../schedule.html">Schedule</a>
         <a href="../assignments.html">Assignments</a>
+        <a href="../project.html">Project</a>
         <a href="../resources.html">Resources</a>
       </nav>
     </div>
@@ -42,11 +48,11 @@
   <main class="wrap" id="main">
     <header class="page-header">
       <nav class="breadcrumb" aria-label="Breadcrumb">
-        <a href="../assignments.html#practical">Assignments</a> › <span aria-current="page">Mini Project N</span>
+        <a href="../assignments.html">Assignments</a> › <span aria-current="page">Practical Assignment N</span>
       </nav>
       <!-- Language badge: lang-asm / ASM or lang-c / C -->
       <h1 class="page-title">PROJECT NAME <span class="lang-badge lang-asm">ASM</span></h1>
-      <p class="page-lead">What the students will build, in two sentences.</p>
+      <p class="page-lead">Two sentences: what they build in stage 1, and what it becomes in stage 2.</p>
     </header>
 
     <div class="wiki-layout">
@@ -54,11 +60,13 @@
         <div class="toc-title">On this page</div>
         <ol>
           <li><a href="#overview">Overview</a></li>
-          <li><a href="#requirements">Requirements</a></li>
+          <li><a href="#stages">The two stages</a></li>
+          <li><a href="#stage-1">Stage 1 requirements</a></li>
+          <li><a href="#stage-2">Stage 2 requirements</a></li>
           <li><a href="#background">Background</a></li>
           <li><a href="#design">Design notes</a></li>
           <li><a href="#milestones">Milestones</a></li>
-          <li><a href="#questions">Report questions</a></li>
+          <li><a href="#oral">Oral questions</a></li>
           <li><a href="#grading">Submission &amp; grading</a></li>
         </ol>
       </nav>
@@ -71,10 +79,12 @@
             <table>
               <tbody>
                 <tr><th scope="row">Released</th><td class="tba">TBA</td></tr>
-                <tr><th scope="row">Due</th><td class="tba">TBA</td></tr>
-                <tr><th scope="row">Work in</th><td class="tba">TBA</td></tr>
+                <tr><th scope="row">Stage 1 due</th><td class="tba">TBA</td></tr>
+                <tr><th scope="row">Stage 2 due</th><td class="tba">TBA</td></tr>
+                <tr><th scope="row">Work in</th><td>Groups of 2–3</td></tr>
                 <tr><th scope="row">Hardware</th><td>Board modules used</td></tr>
-                <tr><th scope="row">Deliverables</th><td>Commented source, short report answering the <a href="#questions">questions</a>, live demo</td></tr>
+                <tr><th scope="row">Deliverables</th><td><strong>Stage 1:</strong> source and checkpoint demo. <strong>Stage 2:</strong> commented source, live demo, and <a href="#oral">oral questions</a> answered individually.</td></tr>
+                <tr><th scope="row">Grade</th><td>One grade out of 100, awarded at stage 2. Stage 1 is a required checkpoint.</td></tr>
                 <tr><th scope="row">Topics</th><td>Topic · topic · topic</td></tr>
               </tbody>
             </table>
@@ -85,60 +95,123 @@
           </div>
         </section>
 
-        <section id="requirements">
-          <h2>Requirements</h2>
-          <p>Your program must meet all of the following. The demo and grading are based on this list.</p>
+        <section id="stages">
+          <h2>The two stages</h2>
+          <p>One or two sentences: what stage 1 proves, and what stage 2 replaces or adds.</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Stage</th><th>What you build</th><th>Deliverables</th><th>Due</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><strong>1</strong><br>Checkpoint</td>
+                  <td>The simplest working version, using only techniques they already know.</td>
+                  <td>Source · live demo (<a href="#stage-1">S1–Sn</a>)</td>
+                  <td class="tba">TBA</td>
+                </tr>
+                <tr>
+                  <td><strong>2</strong><br>Final</td>
+                  <td>The real thing: the technique this assignment is about.</td>
+                  <td>Commented source · live demo · oral questions (<a href="#stage-2">R1–Rn</a>)</td>
+                  <td class="tba">TBA</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="section-note">Stage 1 carries no marks of its own, but it must be demonstrated on time: it is the checkpoint that shows your group is on track. The project is graded once, at stage 2, out of 100. See <a href="#grading">Submission &amp; grading</a>.</p>
+        </section>
+
+        <section id="stage-1">
+          <h2>Stage 1 requirements <span class="tag">Checkpoint</span></h2>
+          <p>What they must get working, and which technique is deliberately <strong>not</strong> allowed yet.</p>
           <div class="table-scroll">
             <table>
               <thead><tr><th>#</th><th>Requirement</th></tr></thead>
               <tbody>
-                <tr><td><strong>R1</strong></td><td>Observable, testable behaviour.</td></tr>
-                <tr><td><strong>R2</strong></td><td>Required technique (e.g. timer interrupt, table in flash).</td></tr>
+                <tr><td><strong>S1</strong></td><td>Observable behaviour, testable in a demo.</td></tr>
+                <tr><td><strong>S2</strong></td><td>A measurement they must make and report.</td></tr>
               </tbody>
             </table>
           </div>
+          <p><strong>Deliverables.</strong> Source, a live demo of S1–Sn, and any measurements.</p>
           <p>Pins are on the <a href="../lab-kit.html#pins">pin map</a>.</p>
+        </section>
+
+        <section id="stage-2">
+          <h2>Stage 2 requirements <span class="tag">Final</span></h2>
+          <p>What replaces the stage 1 approach, and what the finished system must do. The demo and grading are based on this list.</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>#</th><th>Requirement</th></tr></thead>
+              <tbody>
+                <tr><td><strong>R1</strong></td><td>Observable behaviour, testable in a demo.</td></tr>
+                <tr><td><strong>R2</strong></td><td>Required technique (e.g. timer interrupt, table in program memory).</td></tr>
+                <tr><td><strong>R3</strong></td><td>A measurable accuracy or timing limit.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Deliverables.</strong> Commented source and a live demo of R1–Rn. There is no written report: every member answers <a href="#oral">oral questions</a> about the code during the demo.</p>
         </section>
 
         <section id="background">
           <h2>Background</h2>
-          <p>Only the theory students need. Link the <a href="../wiki.html">Wiki</a> instead of repeating it.</p>
+          <p>Only the facts they cannot look up quickly: a formula, a hardware constraint, a rate. Link the <a href="../wiki.html">Wiki</a> instead of repeating it, and leave the design decisions to them.</p>
         </section>
 
         <section id="design">
           <h2>Design notes</h2>
-          <p>Points to consider, not a required structure. Do not give the solution.</p>
+          <p>How you structure the program is entirely up to you. These are questions worth answering before you write much code, not a required design:</p>
           <ul>
-            <li><strong>Point.</strong> Question that guides the design.</li>
+            <li>An open question about what belongs where.</li>
+            <li>An open question about what could go wrong, with no answer given.</li>
           </ul>
         </section>
 
         <section id="milestones">
           <h2>Milestones</h2>
-          <ol class="milestones">
-            <li><strong>First milestone.</strong> Measurable check-off criterion.</li>
-            <li><strong>Complete system.</strong> All requirements met.</li>
+          <p>Show each milestone to the lab instructor as you reach it. Milestone 0 is the stage 1 checkpoint; the rest belong to stage 2.</p>
+          <ol class="milestones" start="0">
+            <li><strong>Stage 1 checkpoint.</strong> Meets S1–Sn.</li>
+            <li><strong>First mechanism.</strong> Measurable check-off criterion.</li>
+            <li><strong>Complete system.</strong> Meets R1–Rn.</li>
           </ol>
+
+          <h3>Bonus (up to +10)</h3>
+          <ul>
+            <li><strong>Extension:</strong> something that reuses the same mechanism for more credit.</li>
+          </ul>
         </section>
 
-        <section id="questions">
-          <h2>Report questions</h2>
-          <ol>
-            <li>Question that needs a calculation or a measurement.</li>
-          </ol>
+        <section id="oral">
+          <h2>Oral questions</h2>
+          <p>There is no written report. Instead, <strong>40 of the 100 marks</strong> come from the oral questions: at the demo, each member of the group is questioned <strong>individually</strong> about the program you submitted. Marks are given for your own answers, so every member must understand the whole program, not only the part they wrote.</p>
+          <p>You may keep your source in front of you. Expect questions of these kinds:</p>
+          <ul>
+            <li><strong>Your numbers.</strong> Where a value came from, recalculated at the desk for a case the examiner names.</li>
+            <li><strong>Your data.</strong> Explain your own encoding or structure, and read part of it back.</li>
+            <li><strong>Your code path.</strong> Walk through what happens, step by step, and say why each instruction is there.</li>
+            <li><strong>Your measurements.</strong> What you measured, how far off it was, and what you changed.</li>
+            <li><strong>Change it now.</strong> Which line would you edit to change X? Do it, rebuild and show us.</li>
+            <li><strong>Break it.</strong> What would happen if this instruction were removed?</li>
+            <li><strong>Stage 1 against stage 2.</strong> What the processor can do now that it could not do before.</li>
+          </ul>
+          <p class="section-note">You are responsible for every line you submit, including anything adapted from an example or written by another member of your group. &ldquo;My teammate wrote that part&rdquo; does not earn marks.</p>
         </section>
 
         <section id="grading">
           <h2>Submission &amp; grading</h2>
-          <p>Submission method: <span class="tba">TBA</span>.</p>
+          <p><strong>Stage 1</strong> is a required checkpoint: submit your source and demonstrate S1–Sn in the lab. It carries no marks, but a group that misses it cannot demonstrate stage 2 until it is shown.</p>
+          <p><strong>Stage 2</strong> is graded out of 100. Submit your commented source, demo the project live, and answer the <a href="#oral">oral questions</a> individually. Submission method: <span class="tba">TBA</span>.</p>
           <div class="table-scroll">
             <table>
               <thead><tr><th>Item</th><th>Points</th></tr></thead>
               <tbody>
-                <tr><td>Milestones</td><td>—</td></tr>
-                <tr><td>Code quality</td><td>—</td></tr>
-                <tr><td>Report questions</td><td>—</td></tr>
-                <tr><td><strong>Total</strong></td><td><strong>100</strong></td></tr>
+                <tr><td>Milestone 0: stage 1 checkpoint demonstrated on time</td><td>required</td></tr>
+                <tr><td>Milestone 1</td><td>—</td></tr>
+                <tr><td>Milestone 2</td><td>—</td></tr>
+                <tr><td>Behaviour and accuracy requirements</td><td>—</td></tr>
+                <tr><td>Code quality: structure, comments, documented data format</td><td>—</td></tr>
+                <tr><td><strong>Oral questions at the demo, marked per student</strong></td><td><strong>40</strong></td></tr>
+                <tr><td><strong>Total</strong></td><td><strong>100</strong> (+10 bonus)</td></tr>
               </tbody>
             </table>
           </div>
