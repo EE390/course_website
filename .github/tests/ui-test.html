@@ -1,0 +1,98 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>lab ui test</title>
+<pre id="out">running</pre>
+<iframe id="f" src="../../lab.html" style="width:1200px;height:900px;border:0"></iframe>
+<script>
+var results = [];
+function check(name, cond, detail) { results.push({ test: name, pass: !!cond, detail: detail || "" }); }
+function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+var f = document.getElementById("f");
+f.onload = function () {
+  var w = f.contentWindow, d = f.contentDocument;
+  var errs = [];
+  w.addEventListener("error", function (e) { errs.push(String(e.message)); });
+
+  function leds() {
+    return Array.prototype.map.call(d.querySelectorAll(".led"), function (l) {
+      return l.classList.contains("on") ? 1 : 0;
+    }).join("");
+  }
+  function cycles() {
+    var m = /([\d,]+) cycles/.exec(d.getElementById("clock").textContent);
+    return m ? +m[1].replace(/,/g, "") : -1;
+  }
+  function press(bit, down) {
+    var b = d.querySelector('.keybtn[data-bit="' + bit + '"]');
+    b.dispatchEvent(new w.MouseEvent(down ? "mousedown" : "mouseup", { bubbles: true, cancelable: true }));
+  }
+
+  Promise.resolve()
+    .then(function () {
+      check("assembled on load", /bytes assembled/.test(d.getElementById("editor-status").textContent),
+            d.getElementById("editor-status").textContent);
+      check("no assembler errors", d.getElementById("errors").textContent === "",
+            d.getElementById("errors").textContent.slice(0, 80));
+      check("LEDs start off", leds() === "00000000", leds());
+
+      d.getElementById("run").click();
+      return wait(300);
+    })
+    .then(function () {
+      check("run starts the clock", cycles() > 1000, cycles() + " cycles");
+      check("LED off before the button", leds()[0] === "0", leds());
+
+      // drive simulated time directly: headless browsers throttle animation frames
+      w.EE390Lab.advance(0.05);
+      check("LED still off with no button", leds()[0] === "0", leds());
+
+      press(1, true);                       // K1 -> P3.1
+      w.EE390Lab.advance(0.05);
+      check("D1 lights while K1 is held", leds()[0] === "1", leds());
+
+      press(1, false);
+      w.EE390Lab.advance(0.05);
+      check("D1 goes out when K1 is released", leds()[0] === "0", leds());
+
+      d.getElementById("run").click();      // pause
+      var stopped = cycles();
+      return wait(250).then(function () {
+        check("pause stops the clock", cycles() === stopped, stopped + " -> " + cycles());
+      });
+    })
+    .then(function () {
+      var before = cycles();
+      d.getElementById("step").click();
+      check("step advances a little", cycles() > before && cycles() - before < 20,
+            before + " -> " + cycles());
+
+      // a program with a deliberate mistake
+      var src = d.getElementById("source");
+      src.value = ["MAIN:", "  MOV A, #", "  SJMP NOWHERE", "  END"].join(String.fromCharCode(10));
+      src.dispatchEvent(new w.Event("input", { bubbles: true }));
+      d.getElementById("run").click();
+      return wait(200);
+    })
+    .then(function () {
+      var txt = d.getElementById("errors").textContent;
+      check("bad program reports errors", /error/i.test(txt), txt.slice(0, 120));
+
+      // a good edit must be assembled by Run, not silently ignored
+      var src2 = d.getElementById("source");
+      src2.value = ["        ORG 0000H", "MAIN:   CLR P2.3", "        SJMP MAIN", "        END"].join(String.fromCharCode(10));
+      src2.dispatchEvent(new w.Event("input", { bubbles: true }));
+      d.getElementById("run").click();
+      w.EE390Lab.advance(0.01);
+      check("edited program is reassembled", leds() === "00010000", leds());
+      check("no errors after good edit", d.getElementById("errors").textContent === "",
+            d.getElementById("errors").textContent.slice(0, 80));
+      check("no uncaught page errors", errs.length === 0, errs.join(" | "));
+      document.getElementById("out").textContent = JSON.stringify(results, null, 1);
+    })
+    .catch(function (e) {
+      results.push({ test: "harness", pass: false, detail: String(e && e.message || e) });
+      document.getElementById("out").textContent = JSON.stringify(results, null, 1);
+    });
+};
+</script>

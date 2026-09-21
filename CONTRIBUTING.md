@@ -27,6 +27,7 @@ Keep commit messages short and in the imperative: `Add Homework 2`, `Fix buzzer 
 | Every example in `assets/js/examples.js` exists | The code viewer never shows an empty file |
 | No file over 50 MB; whole site under 900 MB | GitHub's file limit and the 1 GB Pages limit |
 | All C examples and starters compile with SDCC without warnings (CI only) | Students can build what we give them |
+| The simulator assembles every example to the same bytes as ASEM-51, and runs them identically to the Python emulator (CI only) | The browser simulator cannot drift from the real toolchain |
 
 ## Where things go
 
@@ -52,6 +53,10 @@ assets/js/site.js       nav highlight, mobile menu, Assembly/C tabs
 assets/js/examples.js   example list + viewer + assembly and C syntax highlighters
 assets/js/bird-sound.js  bird call plots and audio preview on the project pages
 assets/js/wiki.js       table-of-contents highlighting (wiki and project pages)
+assets/js/lab/          browser simulator: asm8051.js (assembler), emu8051.js (CPU),
+                        lab.js (page, virtual board). Used by lab.html
+.github/tests/          simulator tests: run-tests.js, fixtures/ (ASEM-51 output +
+                        reference traces), ui-test.html (manual browser check)
 assets/img/             images, one folder per topic (e.g. assets/img/setup/)
 .github/templates/      page.html and project.html: start every new page from these
 .github/scripts/        check_site.py
@@ -98,6 +103,30 @@ Mark language-specific items with `<span class="lang-badge lang-asm">ASM</span>`
 3. Add it to the footer columns if it belongs there.
 
 The navigation has four items and room for a few more on laptops. Prefer adding a section to an existing page, such as a new wiki section or a new table on Assignments. A new page that belongs under Resources should get a card on `resources.html` and `<body data-nav="resources.html">` instead of a nav item.
+
+## The lab simulator
+
+`lab.html` runs 8051 assembly in the browser on a simulated board. Three files:
+`assets/js/lab/asm8051.js` (assembler), `emu8051.js` (processor) and `lab.js` (page and board).
+
+Both engines are checked against the real tools, and CI fails if they drift:
+
+```sh
+node .github/tests/run-tests.js
+```
+
+- **Assembler:** every program in `examples/` plus the project starter must assemble to exactly the
+  bytes in `.github/tests/fixtures/*.hex`, which is ASEM-51 v1.3 output, the assembler inside MIDE-51.
+- **Processor:** each program must run identically to `fixtures/traces.json`, recorded from
+  `instructor/tools/emu8051.py`, the emulator used to verify the course solutions.
+
+Changing an example means regenerating its fixture (an instructor job: assemble it in MIDE-51 and
+copy the `.hex`, then rebuild the traces). Without that, CI will fail, which is the point.
+
+For the page itself, open `.github/tests/ui-test.html` through a local server: it drives the real
+page in an iframe (Run, Step, buttons, error reporting) and prints pass/fail.
+
+If you fix a bug in `emu8051.js`, fix it in `instructor/tools/emu8051.py` too. They are meant to agree.
 
 ## Large files (over 50 MB)
 

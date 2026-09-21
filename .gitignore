@@ -9,6 +9,8 @@ desktop.ini
 
 # 8051 build output (ASEM-51 / MIDE-51 / SDCC / packihx)
 *.hex
+# ...except the ASEM-51 reference output the simulator tests compare against
+!.github/tests/fixtures/*.hex
 *.ihx
 *.lst
 *.rel

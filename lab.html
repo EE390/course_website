@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>8051 Simulator — EE 390</title>
+  <meta name="description" content="Write 8051 assembly in the browser and run it on a simulated Puzhong 51 A2 board: LEDs, buttons, 7-segment display and buzzer. No installation.">
+  <link rel="canonical" href="https://ee390.github.io/course_website/lab.html">
+  <meta name="theme-color" content="#0b6e4f">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="EE 390">
+  <meta property="og:title" content="8051 Simulator — EE 390">
+  <meta property="og:description" content="Write 8051 assembly in the browser and run it on a simulated Puzhong 51 A2 board: LEDs, buttons, 7-segment display and buzzer. No installation.">
+  <meta property="og:url" content="https://ee390.github.io/course_website/lab.html">
+  <meta property="og:image" content="https://ee390.github.io/course_website/assets/img/setup/board-annotated.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔬</text></svg>">
+  <link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body data-nav="resources.html">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="index.html"><span class="brand-mark">8051</span> EE 390</a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+      <nav class="site-nav" id="site-nav">
+        <a href="index.html">Home</a>
+        <a href="schedule.html">Schedule</a>
+        <a href="assignments.html">Assignments</a>
+        <a href="project.html">Project</a>
+        <a href="resources.html">Resources</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap" id="main">
+    <header class="page-header">
+      <h1 class="page-title">8051 Simulator</h1>
+      <p class="page-lead">Write assembly and run it on a simulated board, with the same pins as the real kit. Nothing to install. When it works here, build the <code>.hex</code> in MIDE-51 and program the board the usual way.</p>
+    </header>
+
+    <div class="lab-toolbar">
+      <button class="btn btn-primary" id="run" type="button">▶ Run</button>
+      <button class="btn" id="step" type="button">Step</button>
+      <button class="btn" id="reset" type="button">Reset</button>
+      <span class="lab-sep" aria-hidden="true"></span>
+      <label class="lab-field">Speed
+        <select id="speed">
+          <option value="1">Real time</option>
+          <option value="0.25">Slow (1/4)</option>
+          <option value="0.05">Very slow (1/20)</option>
+          <option value="4">Fast (4×)</option>
+        </select>
+      </label>
+      <label class="lab-field">Example
+        <select id="examples"><option value="">Load an example…</option></select>
+      </label>
+      <span class="lab-sep" aria-hidden="true"></span>
+      <button class="btn btn-sm" id="download" type="button">Download .hex</button>
+      <label class="lab-field lab-check"><input type="checkbox" id="sound" checked> Sound</label>
+    </div>
+
+    <div class="lab-layout">
+      <section class="lab-editor panel" aria-label="Program">
+        <div class="lab-panel-head">
+          <h2>Program</h2>
+          <span class="lab-hint" id="editor-status">ready</span>
+        </div>
+        <div class="lab-code">
+          <div class="lab-gutter" id="gutter" aria-hidden="true"></div>
+          <textarea id="source" spellcheck="false" aria-label="8051 assembly source"></textarea>
+        </div>
+        <div class="lab-errors" id="errors" role="status" aria-live="polite"></div>
+      </section>
+
+      <section class="lab-board panel" aria-label="Simulated board">
+        <div class="lab-panel-head">
+          <h2>Board</h2>
+          <span class="lab-hint" id="clock">0.000 s · 0 cycles</span>
+        </div>
+
+        <div class="board-block">
+          <div class="board-label">7-segment display <span class="pinnote">P0 · digit select P2.2–P2.4</span></div>
+          <div class="seg-row" id="segments"></div>
+        </div>
+
+        <div class="board-block">
+          <div class="board-label">LEDs D1–D8 <span class="pinnote">P2, on when LOW</span></div>
+          <div class="led-row" id="leds"></div>
+        </div>
+
+        <div class="board-block">
+          <div class="board-label">Buttons <span class="pinnote">read 0 while pressed</span></div>
+          <div class="key-row">
+            <button class="keybtn" data-bit="1" type="button">K1<span>P3.1</span></button>
+            <button class="keybtn" data-bit="0" type="button">K2<span>P3.0</span></button>
+            <button class="keybtn" data-bit="2" type="button">K3<span>P3.2</span></button>
+            <button class="keybtn" data-bit="3" type="button">K4<span>P3.3</span></button>
+          </div>
+          <p class="lab-hint">Hold the mouse button down, or use the keyboard keys 1, 2, 3 and 4.</p>
+        </div>
+
+        <div class="board-block">
+          <div class="board-label">Buzzer <span class="pinnote">P2.5</span></div>
+          <div class="buzz" id="buzzer"><span class="buzz-dot"></span><span id="buzz-text">silent</span></div>
+        </div>
+
+        <div class="board-block">
+          <div class="board-label">Registers</div>
+          <div class="regs" id="regs"></div>
+        </div>
+      </section>
+    </div>
+
+    <section class="lab-notes">
+      <h2>What this is, and what it is not</h2>
+      <ul>
+        <li>The assembler accepts the same syntax as MIDE-51 (ASEM-51). Every example on this site assembles here to <strong>exactly the same bytes</strong> as MIDE-51 produces, and that is checked automatically whenever the site changes.</li>
+        <li>The processor model is the one used to verify the course solutions: full instruction set, Timer 0 and Timer 1 in modes 1 and 2, interrupts with priority, and 12T timing at 11.0592&nbsp;MHz.</li>
+        <li>Timing here is <em>simulated</em> time, not your computer's clock. The reading under “Board” is what the chip would have experienced.</li>
+        <li>Not simulated: the LCD, I²C EEPROM, DS1302 clock, ADC, temperature sensor, IR receiver and the serial port. Programs using those still assemble, but their pins just move.</li>
+        <li>A working program here should behave the same on the real board. If it does not, trust the board, and tell us: <a href="https://github.com/EE390/course_website/issues/new?template=report-a-mistake.yml">report it</a>.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <a class="brand" href="index.html"><span class="brand-mark">8051</span> EE 390</a>
+        <p>Course website for the 8051 microcontroller lab on the Puzhong 51 A2 board (STC89C52RC).</p>
+      </div>
+      <nav aria-label="Resources">
+        <h2>Resources</h2>
+        <a href="getting-started.html">Getting Started</a>
+        <a href="lab-kit.html">Lab Kit</a>
+        <a href="wiki.html">Wiki</a>
+        <a href="examples.html">Examples</a>
+      </nav>
+      <nav aria-label="Coursework">
+        <h2>Coursework</h2>
+        <a href="schedule.html">Schedule</a>
+        <a href="assignments.html">Assignments</a>
+        <a href="project.html">Project</a>
+      </nav>
+      <nav aria-label="Site">
+        <h2>Site</h2>
+        <a href="https://github.com/EE390/course_website/issues">Report a site problem</a>
+      </nav>
+    </div>
+    <div class="wrap footer-legal">
+      <p>© 2026 EE 390 course staff · Code: <a href="https://github.com/EE390/course_website/blob/main/LICENSE">MIT License</a> · Written content: <a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a> · Third-party manuals and software belong to their owners · <a href="https://github.com/EE390/course_website">Source on GitHub</a></p>
+    </div>
+  </footer>
+  <script src="assets/js/site.js"></script>
+  <script src="assets/js/lab/asm8051.js"></script>
+  <script src="assets/js/lab/emu8051.js"></script>
+  <script src="assets/js/lab/lab.js"></script>
+</body>
+</html>

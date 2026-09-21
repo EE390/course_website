@@ -46,3 +46,16 @@ jobs:
             fi
           done
           exit $status
+
+  simulator:
+    name: Lab simulator (assembler + CPU model)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      # Assembles every example and compares the bytes with ASEM-51's output,
+      # then runs each program and compares against the Python emulator's trace.
+      - name: Run simulator tests
+        run: node .github/tests/run-tests.js
