@@ -1,34 +1,25 @@
-// EE 390 — Mini Project 2 (Bird Song Synthesizer): target-sound plots and audio preview.
-// Plots and previews use the specified frequencies (the target), not board reload values.
+// EE 390 — Mini Project 2 (Bird Song Synthesizer): worked-example plot and audio preview.
+// The plot/preview use the specified frequencies (the target), not board reload values.
 
 (function () {
   var STEP_MS = 5;
 
-  // Keep in sync with instructor/tools/birds.py and the specification table on the page.
   // segment: {type:"sweep", f1, f2, ms, step, curve} | {type:"tone", f, ms} | {type:"rest", ms}
   var CURVES = {
     linear: function (u) { return u; },
     fast: function (u) { return 1 - (1 - u) * (1 - u); },
     slow: function (u) { return u * u; }
   };
-  function repeat(n, segs) { var out = []; for (var i = 0; i < n; i++) out = out.concat(segs); return out; }
   function rest(ms) { return { type: "rest", ms: ms }; }
 
-  var PULSE1 = [
+  // Matches the worked example walked through in #birds: a fast rise then a slow fall, repeated.
+  var PULSE = [
     { type: "sweep", f1: 3000, f2: 4400, ms: 30, step: 5, curve: "fast" },
     { type: "sweep", f1: 4400, f2: 3200, ms: 40, step: 5, curve: "slow" }
   ];
-  var PULSE2 = [{ type: "sweep", f1: 4400, f2: 2000, ms: 150, step: 5, curve: "fast" }];
 
   var BIRDS = {
-    BIRD1: [].concat(PULSE1, rest(110), PULSE1, rest(160), PULSE1),
-    BIRD2: [].concat(PULSE2, rest(120), PULSE2, rest(100), PULSE2, rest(80), PULSE2, rest(60), PULSE2),
-    BIRD3: repeat(20, [{ type: "sweep", f1: 4600, f2: 3400, ms: 25, step: 5, curve: "linear" }, rest(35)]),
-    BIRD4: [
-      { type: "sweep", f1: 4000, f2: 3800, ms: 300, step: 10, curve: "linear" },
-      rest(80),
-      { type: "tone", f: 3550, ms: 300 }
-    ]
+    EXAMPLE: [].concat(PULSE, rest(110), PULSE, rest(160), PULSE)
   };
 
   // -> [{f (0 = rest), ms}]

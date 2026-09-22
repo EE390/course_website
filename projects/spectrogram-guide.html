@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reading a Spectrogram — EE 390</title>
+  <meta name="description" content="How to read frequencies and timing off a spectrogram, and which free tools to use — support material for the Bird Sound Synthesizer project.">
+  <link rel="canonical" href="https://ee390.github.io/course_website/projects/spectrogram-guide.html">
+  <meta name="theme-color" content="#0b6e4f">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="EE 390">
+  <meta property="og:title" content="Reading a Spectrogram — EE 390">
+  <meta property="og:description" content="How to read frequencies and timing off a spectrogram, and which free tools to use — support material for the Bird Sound Synthesizer project.">
+  <meta property="og:url" content="https://ee390.github.io/course_website/projects/spectrogram-guide.html">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
+  <link rel="stylesheet" href="../assets/css/site.css">
+</head>
+<body data-nav="assignments.html">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../index.html"><span class="brand-mark">8051</span> EE 390</a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+      <nav class="site-nav" id="site-nav">
+        <a href="../index.html">Home</a>
+        <a href="../schedule.html">Schedule</a>
+        <a href="../assignments.html">Assignments</a>
+        <a href="../project.html">Project</a>
+        <a href="../resources.html">Resources</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap" id="main">
+    <header class="page-header">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../assignments.html#practical">Assignments</a> › <a href="bird-sound.html">Mini Project 1</a> › <span aria-current="page">Reading a spectrogram</span>
+      </nav>
+      <h1 class="page-title">Reading a Spectrogram</h1>
+      <p class="page-lead">Support material for the <a href="bird-sound.html">Bird Sound Synthesizer</a> project: how to turn a recording of a real bird into the frequency numbers that go in your table.</p>
+    </header>
+
+    <h2>What a spectrogram shows</h2>
+    <p>A spectrogram is a picture of sound over time. Time runs left to right, frequency runs bottom to top, and brightness shows how much energy the recording has at that frequency at that instant. A bird call shows up as one or more bright bands: a band that climbs is a rising sweep, a band that falls is a falling sweep, a flat band is a steady tone, and a gap with nothing bright in it is a rest.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 520 170" class="freq-plot" role="img" style="background:var(--code-bg); border:1px solid var(--border); border-radius:8px; padding:6px">
+        <title>A spectrogram sketch: two rising sweeps separated by a rest</title>
+        <line x1="44" x2="510" y1="20" y2="20" class="grid"></line>
+        <text x="38" y="24" class="axis" text-anchor="end">high</text>
+        <line x1="44" x2="510" y1="80" y2="80" class="grid"></line>
+        <line x1="44" x2="510" y1="144" y2="144" class="baseline"></line>
+        <text x="38" y="148" class="axis" text-anchor="end">low</text>
+        <text x="44" y="162" class="axis">0</text>
+        <text x="510" y="162" class="axis" text-anchor="end">time →</text>
+        <path d="M60 130 Q 110 60 160 40" class="trace"></path>
+        <path d="M260 130 Q 310 60 360 40" class="trace"></path>
+        <text x="90" y="112" class="axis">sweep</text>
+        <text x="190" y="112" class="axis">rest</text>
+        <text x="290" y="112" class="axis">sweep</text>
+      </svg>
+      <figcaption>Sketch, not a real recording: two rising sweeps (bright, climbing bands) with a rest between them (nothing bright).</figcaption>
+    </figure>
+    <figure>
+      <img src="../assets/img/spectrogram-example.png" alt="Spectrogram of a real bird call, showing several dark, repeated frequency-sweep bands rising and falling between about 2 and 6 kHz over four seconds, separated by quieter gaps" width="906" height="460" loading="lazy">
+      <figcaption>A real one, for comparison: noisier than the sketch, but the same idea — dark rising/falling bands are syllables, the lighter gaps between them are rests.</figcaption>
+    </figure>
+
+    <h2>Tools that show you one</h2>
+    <ul>
+      <li><strong>Audacity</strong> (free, desktop, Windows/Mac/Linux) — the most accurate option for a saved recording. Open the audio file, then switch its track's view to <em>Spectrogram</em> from the track's dropdown menu. You can zoom in on a single syllable and read frequencies straight off the vertical axis. Use this for the recording you found on eBird.</li>
+      <li><strong>Spectroid</strong> (free, Android) — turns your phone's microphone into a live spectrogram. Point it at your own buzzer to check what your board is actually producing, for R8 and for the comparison spectrogram in R9. On iOS, search the App Store for a free "spectrogram" or "spectrum analyzer" app that shows a scrolling frequency-vs-time view — several exist; any one that lets you read off a frequency axis will do.</li>
+    </ul>
+    <p class="section-note">Use Audacity on the source recording (accurate, works from the file itself) and a phone app on your own buzzer (you need to measure a live sound, not a file). Mixing the two — for example recording your buzzer through a laptop mic into Audacity — works too if that's easier for your group.</p>
+
+    <h2>Worked example: measuring one syllable</h2>
+    <p>This is the same syllable used in the worked example on the main project page, as if it had been traced from a real recording. Zoomed into one rising syllable in Audacity's spectrogram view, the bright band starts at about 3000&nbsp;Hz, ends at about 4400&nbsp;Hz, and the whole syllable lasts about 30&nbsp;ms. Read off a few points along the band rather than just the endpoints — if they fall roughly on the <strong>fast</strong> curve from <a href="bird-sound.html#birds">How a sweep is defined</a> rather than a straight line, use that curve when you build the table.</p>
+    <p>Do this for each syllable of your call, measure the gaps between them the same way, and you have everything the sweep/rest table needs: a list of (<em>f</em><sub>1</sub>, <em>f</em><sub>2</sub>, duration, curve) for each syllable and a duration for each rest.</p>
+
+    <h2>Where to find a bird to measure</h2>
+    <p>Start from <a href="https://ebird.org/region/SA" target="_blank" rel="noopener">eBird's Saudi Arabia region page ↗</a> — most species pages there have at least one audio recording attached. Back on the project page: <a href="bird-sound.html#birds">Choosing your bird call</a>.</p>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <a class="brand" href="../index.html"><span class="brand-mark">8051</span> EE 390</a>
+        <p>Course website for the 8051 microcontroller lab on the Puzhong 51 A2 board (STC89C52RC).</p>
+      </div>
+      <nav aria-label="Resources">
+        <h2>Resources</h2>
+        <a href="../getting-started.html">Getting Started</a>
+        <a href="../lab-kit.html">Lab Kit</a>
+        <a href="../wiki.html">Wiki</a>
+        <a href="../examples.html">Examples</a>
+      </nav>
+      <nav aria-label="Coursework">
+        <h2>Coursework</h2>
+        <a href="../schedule.html">Schedule</a>
+        <a href="../assignments.html">Assignments</a>
+        <a href="../project.html">Project</a>
+      </nav>
+      <nav aria-label="Site">
+        <h2>Site</h2>
+        <a href="https://github.com/EE390/course_website/issues">Report a site problem</a>
+      </nav>
+    </div>
+    <div class="wrap footer-legal">
+      <p>© 2026 EE 390 course staff · Code: <a href="https://github.com/EE390/course_website/blob/main/LICENSE">MIT License</a> · Written content: <a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a> · Third-party manuals and software belong to their owners · <a href="https://github.com/EE390/course_website">Source on GitHub</a></p>
+    </div>
+  </footer>
+  <script src="../assets/js/site.js"></script>
+</body>
+</html>

@@ -463,6 +463,7 @@ pre {
   background: #000;
   display: block;
 }
+.video-compact { max-width: 420px; }
 
 /* ---------- Bird song project ---------- */
 
