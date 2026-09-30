@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,9 +15,11 @@
   <meta property="og:url" content="https://ee390.github.io/course_website/assignments.html">
   <meta property="og:image" content="https://ee390.github.io/course_website/assets/img/setup/board-annotated.jpg">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔌</text></svg>">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔌</text></svg>">
   <link rel="stylesheet" href="assets/css/site.css">
 </head>
+
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header">
@@ -36,14 +39,23 @@
   <main class="wrap" id="main">
     <header class="page-header">
       <h1 class="page-title">Assignments</h1>
-      <p class="page-lead">There are two kinds of assignment. <strong>Homework</strong> is done individually. <strong>Practical Assignments</strong> are the mini projects on the board and are done in groups of 2 to 3 students. Due dates are on the <a href="schedule.html#dates">Schedule</a>.</p>
-      <p class="page-lead"><strong>All homeworks and practical assignments are submitted through Gradescope:</strong> <a href="https://www.gradescope.com/courses/1416010" target="_blank" rel="noopener">gradescope.com/courses/1416010</a>.</p>
+      <p class="page-lead">There are two kinds of assignment. <strong>Homework</strong> is done individually.
+        <strong>Practical Assignments</strong> are the mini projects on the board and are done in groups of 2 to 3
+        students.</p>
+      <p class="page-lead"><strong>All homeworks and practical assignments are submitted through Gradescope:</strong> <a
+          href="https://www.gradescope.com/courses/1416010" target="_blank"
+          rel="noopener">gradescope.com/courses/1416010</a>.</p>
     </header>
 
     <h2 id="homework">Homework <span class="tag">Individual</span></h2>
     <div class="table-scroll">
       <table>
-        <thead><tr><th>Homework Title</th><th>Due Date</th></tr></thead>
+        <thead>
+          <tr>
+            <th>Homework Title</th>
+            <th>Due Date</th>
+          </tr>
+        </thead>
         <tbody>
           <tr>
             <td>Homework 1</td>
@@ -58,23 +70,42 @@
     </div>
 
     <h2 id="practical">Practical Assignments <span class="tag">Groups of 2–3</span></h2>
-    <p>Mini projects build something real on the development board, first in <strong>assembly</strong> and then in <strong>C</strong>. Each has a project page with the requirements, a starter template and grading. Practical Assignment&nbsp;1 runs in <a href="projects/bird-sound.html#stages">two stages</a>.</p>
+    <p>Mini projects build something real on the development board, first in <strong>assembly</strong> and then in
+      <strong>C</strong>. Each has a project page with the requirements, a starter template and grading. Practical
+      Assignment&nbsp;1 runs in <a href="projects/bird-sound.html#stages">two stages</a>.</p>
     <div class="table-scroll">
       <table class="roadmap">
-        <thead><tr><th>Title</th><th>Language</th><th>You learn</th></tr></thead>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Language</th>
+            <th>You learn</th>
+          </tr>
+        </thead>
         <tbody>
-          <tr><td><a href="projects/bird-sound.html">1 · Bird Sound Synthesizer</a></td><td><span class="lang-badge lang-asm">ASM</span></td><td>Timers, interrupts, lookup tables, timing accuracy</td></tr>
-          <tr><td><a href="projects/bird-sound-c.html">2 · Bird Sound Synthesizer in C</a></td><td><span class="lang-badge lang-c">C</span></td><td>Embedded C with SDCC, interrupts and memory in C, comparing C with assembly</td></tr>
+          <tr>
+            <td><a href="projects/bird-sound.html">1 · Bird Sound Synthesizer</a></td>
+            <td><span class="lang-badge lang-asm">ASM</span></td>
+            <td>Timers, interrupts, lookup tables, timing accuracy</td>
+          </tr>
+          <tr>
+            <td><a href="projects/bird-sound-c.html">2 · Bird Sound Synthesizer in C</a></td>
+            <td><span class="lang-badge lang-c">C</span></td>
+            <td>Embedded C with SDCC, interrupts and memory in C, comparing C with assembly</td>
+          </tr>
         </tbody>
       </table>
     </div>
 
     <h2>Before you start</h2>
     <ul>
-      <li>Make sure you can program the board. Follow <a href="getting-started.html">Getting Started</a> once, including the C setup for Project 2.</li>
+      <li>Make sure you can program the board. Follow <a href="getting-started.html">Getting Started</a> once, including
+        the C setup for Project 2.</li>
       <li>Look up the pins you need in the <a href="lab-kit.html#pins">pin map</a>.</li>
-      <li>Start from the closest <a href="examples.html">example</a> in your language. Reusing a delay, LCD or 7-segment routine is fine and saves time.</li>
-      <li>Never let the program end: finish assembly with an infinite loop (<code>SJMP $</code>) and C with <code>for (;;)</code> in <code>main()</code>.</li>
+      <li>Start from the closest <a href="examples.html">example</a> in your language. Reusing a delay, LCD or 7-segment
+        routine is fine and saves time.</li>
+      <li>Never let the program end: finish assembly with an infinite loop (<code>SJMP $</code>) and C with
+        <code>for (;;)</code> in <code>main()</code>.</li>
     </ul>
   </main>
 
@@ -103,9 +134,13 @@
       </nav>
     </div>
     <div class="wrap footer-legal">
-      <p>© 2026 EE 390 course staff · Code: <a href="https://github.com/EE390/course_website/blob/main/LICENSE">MIT License</a> · Written content: <a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a> · Third-party manuals and software belong to their owners · <a href="https://github.com/EE390/course_website">Source on GitHub</a></p>
+      <p>© 2026 EE 390 course staff · Code: <a href="https://github.com/EE390/course_website/blob/main/LICENSE">MIT
+          License</a> · Written content: <a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a> ·
+        Third-party manuals and software belong to their owners · <a
+          href="https://github.com/EE390/course_website">Source on GitHub</a></p>
     </div>
   </footer>
   <script src="assets/js/site.js"></script>
 </body>
+
 </html>
