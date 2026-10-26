@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Project — EE 390</title>
-  <meta name="description" content="EE 390 project information.">
+  <title>Final Project — EE 390</title>
+  <meta name="description" content="EE 390 final design project: requirements, milestones, sourcing, budget, PCB bonus and evaluation.">
   <link rel="canonical" href="https://ee390.github.io/course_website/project.html">
   <meta name="theme-color" content="#0b6e4f">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="EE 390">
-  <meta property="og:title" content="Project — EE 390">
-  <meta property="og:description" content="EE 390 project information.">
+  <meta property="og:title" content="Final Project — EE 390">
+  <meta property="og:description" content="EE 390 final design project: requirements, milestones, sourcing, budget, PCB bonus and evaluation.">
   <meta property="og:url" content="https://ee390.github.io/course_website/project.html">
   <meta property="og:image" content="https://ee390.github.io/course_website/assets/img/setup/board-annotated.jpg">
   <meta name="twitter:card" content="summary_large_image">
@@ -35,9 +35,270 @@
 
   <main class="wrap" id="main">
     <header class="page-header">
-      <h1 class="page-title">Project</h1>
-      <p class="page-lead">TBA</p>
+      <h1 class="page-title">Final Design Project</h1>
+      <p class="page-lead">Design, build and demonstrate a working embedded system that combines a microcontroller,
+        electronic components and your own C or assembly program to solve a practical problem.</p>
     </header>
+
+    <div class="wiki-layout">
+      <nav class="wiki-toc" aria-label="On this page">
+        <div class="toc-title">On this page</div>
+        <ol>
+          <li><a href="#overview">Overview</a></li>
+          <li><a href="#requirements">Requirements</a></li>
+          <li><a href="#milestones">Milestones</a></li>
+          <li><a href="#sourcing">Purchasing &amp; sourcing</a></li>
+          <li><a href="#budget">Budget &amp; reimbursement</a></li>
+          <li><a href="#pcb">PCB design bonus</a></li>
+          <li><a href="#ai">AI use policy</a></li>
+          <li><a href="#evaluation">Evaluation</a></li>
+        </ol>
+      </nav>
+
+      <div class="wiki-content">
+
+        <section id="overview">
+          <h2>Overview</h2>
+          <p>The final project is your chance to apply what you have learned in the course. You will design, implement
+            and demonstrate a functional embedded system that integrates hardware and software to solve a practical
+            problem or perform a specific task. The work is split into four milestones, so you get feedback and can
+            improve your design before the final evaluation.</p>
+          <p>For inspiration, browse the <a href="https://people.ece.cornell.edu/land/courses/ece4760/FinalProjects/"
+              target="_blank" rel="noopener">Cornell ECE 4760 final projects ↗</a>. Your project is not expected to
+            reach the same level of complexity; choose a scope that is feasible for this course.</p>
+          <div class="table-scroll">
+            <table>
+              <tbody>
+                <tr>
+                  <th scope="row">Proposal due</th>
+                  <td><time datetime="2026-11-05">5 Nov</time></td>
+                </tr>
+                <tr>
+                  <th scope="row">Final demo</th>
+                  <td><span class="tba">TBA</span></td>
+                </tr>
+                <tr>
+                  <th scope="row">Work in</th>
+                  <td>Teams</td>
+                </tr>
+                <tr>
+                  <th scope="row">Hardware</th>
+                  <td>A physical prototype built around a microcontroller. A simulation-only project needs prior
+                    instructor approval.</td>
+                </tr>
+                <tr>
+                  <th scope="row">Language</th>
+                  <td><span class="lang-badge lang-c">C</span> or <span class="lang-badge lang-asm">ASM</span>, your
+                    choice</td>
+                </tr>
+                <tr>
+                  <th scope="row">Deliverables</th>
+                  <td>Proposal · two check-off reports · final report with source code and design files · live
+                    demonstration</td>
+                </tr>
+                <tr>
+                  <th scope="row">Submission</th>
+                  <td><span class="tba">TBA</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="btn-row" style="margin-top:16px">
+            <a class="btn btn-primary" href="files/handouts/final-project.pdf" target="_blank" rel="noopener">Project
+              guidelines (PDF)</a>
+          </div>
+        </section>
+
+        <section id="requirements">
+          <h2>Requirements</h2>
+          <ol>
+            <li>Implement a <strong>physical prototype</strong> using a microcontroller and relevant electronic
+              components.</li>
+            <li>Develop the project software in <strong>C or assembly</strong>. You may choose either language, but you
+              must be able to explain your code.</li>
+            <li><strong>Integrate</strong> the hardware and software into a working system.</li>
+            <li><strong>Test</strong> the system and document the verification results.</li>
+            <li>Present a working prototype in the final <strong>live demonstration</strong>.</li>
+          </ol>
+          <p class="section-note">Project-specific requirements are finalized when your proposal is approved.</p>
+        </section>
+
+        <section id="milestones">
+          <h2>Milestones</h2>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Milestone</th>
+                  <th>Deliverable</th>
+                  <th>Due</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><a href="#m1">1 · Project proposal</a></td>
+                  <td>Proposal, approved before full implementation or significant purchases</td>
+                  <td><time datetime="2026-11-05">5 Nov</time></td>
+                </tr>
+                <tr>
+                  <td><a href="#m2">2 · Check-off 1</a></td>
+                  <td>Components ordered · short report (about one page)</td>
+                  <td><span class="tba">TBA</span></td>
+                </tr>
+                <tr>
+                  <td><a href="#m3">3 · Check-off 2</a></td>
+                  <td>Short report (about one page)</td>
+                  <td><span class="tba">TBA</span></td>
+                </tr>
+                <tr>
+                  <td><a href="#m4">4 · Final report &amp; demo</a></td>
+                  <td>Live demonstration · final report with source code and design files</td>
+                  <td><span class="tba">TBA</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 id="m1">Milestone 1: Project proposal</h3>
+          <p>Each team submits a proposal and must have it approved before starting full implementation or making
+            significant purchases. Include:</p>
+          <ul>
+            <li>Project title and team members (names and student IDs)</li>
+            <li>Problem statement, objectives and expected functions</li>
+            <li>Preliminary system block diagram and implementation approach</li>
+            <li>Component list, estimated budget and proposed suppliers</li>
+          </ul>
+
+          <h3 id="m2">Milestone 2: Check-off 1</h3>
+          <p>By this check-off your team must have ordered or purchased the components the project needs. Submit a short
+            report (about one page) that:</p>
+          <ul>
+            <li>Confirms all project components are ordered or purchased</li>
+            <li>Shows completed work and current functionality</li>
+            <li>Explains problems encountered and the troubleshooting you did</li>
+            <li>Keeps a brief log of progress and individual contributions</li>
+          </ul>
+
+          <h3 id="m3">Milestone 3: Check-off 2</h3>
+          <p>Submit a short report (about one page) that:</p>
+          <ul>
+            <li>Shows completed work and current functionality</li>
+            <li>Explains problems encountered and the troubleshooting you did</li>
+            <li>Identifies remaining tasks and next-week objectives</li>
+            <li>Keeps a brief log of progress and individual contributions</li>
+          </ul>
+
+          <h3 id="m4">Milestone 4: Final report and live demonstration</h3>
+          <p><strong>Live demonstration.</strong></p>
+          <ul>
+            <li>Present a fully integrated prototype and demonstrate its main functions.</li>
+            <li>Explain the system architecture, circuit connections and program operation.</li>
+            <li>Show relevant testing results and discuss limitations.</li>
+            <li>Answer technical questions and explain individual contributions.</li>
+          </ul>
+          <p><strong>Final report.</strong> Include an introduction, objectives, system block diagram, implementation,
+            tests and results, limitations, conclusion and references. Attach the complete source code (C or
+            assembly) and the relevant design files.</p>
+        </section>
+
+        <section id="sourcing">
+          <h2>Purchasing &amp; local sourcing</h2>
+          <div class="callout">
+            <p><strong>Order early.</strong> Shipping delays are the most common reason projects slip. Source parts
+              locally where you can.</p>
+          </div>
+          <ul>
+            <li><a href="https://ielectrony.com/en" target="_blank" rel="noopener">iElectrony ↗</a></li>
+            <li>Amazon SA</li>
+            <li><a href="https://drl.dtv.sa/services" target="_blank" rel="noopener">iHub / DRL ↗</a></li>
+            <li><a href="https://emdaad.kfupm.edu.sa/en/student/catalog/" target="_blank" rel="noopener">Emdaad (EE
+                store) ↗</a></li>
+          </ul>
+        </section>
+
+        <section id="budget">
+          <h2>Budget &amp; reimbursement</h2>
+          <p>Subject to departmental confirmation, reimbursement of up to <strong>200 SAR per team</strong> may be
+            available for eligible project expenses after a successful working final demonstration. Keep your
+            original invoices and receipts.</p>
+          <p class="section-note">Eligibility, documentation and approval procedures will be announced if the policy
+            is confirmed. Reimbursement is not guaranteed.</p>
+        </section>
+
+        <section id="pcb">
+          <h2>PCB design bonus <span class="tag">Optional</span></h2>
+          <p>For extra credit, turn part of your prototype into a custom PCB.</p>
+          <ul>
+            <li><strong>Deliverables:</strong> schematic, board layout and exported manufacturing files (e.g. Gerber),
+              by the end of Week 13/14.</li>
+            <li><strong>What we look for:</strong> a correct schematic, sensible component placement and routing,
+              passing design-rule checks, and a short note on your design decisions.</li>
+            <li><strong>Fabrication:</strong> boards are made by the Dream Realization Lab (DRL). Submit your
+              fabrication request through the <a href="https://drl.dtv.sa/services" target="_blank"
+                rel="noopener">DRL services page ↗</a>.</li>
+            <li><strong>Software:</strong> you may use PCB design software such as KiCad for the schematic, layout
+              and manufacturing files.</li>
+            <li><strong>Bonus value:</strong> <span class="tba">TBA</span></li>
+          </ul>
+        </section>
+
+        <section id="ai">
+          <h2>AI use policy</h2>
+          <p>You may use AI tools in this project, as long as you are transparent about it and you understand
+            everything you submit. You are responsible for all code and hardware in your project, and the staff may
+            ask you to explain any part of it.</p>
+        </section>
+
+        <section id="evaluation">
+          <h2>Evaluation</h2>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Criterion</th>
+                  <th>What is assessed</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Project proposal</td>
+                  <td>Feasibility, clarity, completeness</td>
+                </tr>
+                <tr>
+                  <td>Check-off 1, 2</td>
+                  <td>Demonstrated work and consistent development</td>
+                </tr>
+                <tr>
+                  <td>Hardware implementation</td>
+                  <td>Correctness and build quality</td>
+                </tr>
+                <tr>
+                  <td>Software implementation</td>
+                  <td>Functionality and code quality</td>
+                </tr>
+                <tr>
+                  <td>System integration</td>
+                  <td>Successful hardware–software interaction</td>
+                </tr>
+                <tr>
+                  <td>Final demonstration</td>
+                  <td>Reliability and technical understanding</td>
+                </tr>
+                <tr>
+                  <td>Final report</td>
+                  <td>Documentation and testing evidence</td>
+                </tr>
+                <tr>
+                  <td>Individual contribution</td>
+                  <td>Participation and understanding</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </div>
+    </div>
   </main>
 
   <footer class="site-footer">
@@ -69,5 +330,6 @@
     </div>
   </footer>
   <script src="assets/js/site.js"></script>
+  <script src="assets/js/wiki.js"></script>
 </body>
 </html>
